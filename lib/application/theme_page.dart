@@ -1,10 +1,10 @@
-import 'package:ecotrecko/login/themes/dark_theme.dart';
+import 'package:sport_meet/application/themes/dark_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:provider/provider.dart';
-import 'package:ecotrecko/login/themes/theme_manager.dart';
-import 'package:ecotrecko/login/presentation/home/home_page.dart';
+import 'package:sport_meet/application/themes/theme_manager.dart';
+import 'package:sport_meet/application/presentation/home/home_page.dart';
 
 class ThemePage extends StatefulWidget {
   const ThemePage({super.key});

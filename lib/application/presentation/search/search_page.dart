@@ -15,6 +15,9 @@ class _SearchPageState extends State<SearchPage> {
   List<String> selectedSports = [];
   bool isFree = false;
   bool showOpenTeam = false;
+  DateTime? selectedStartDate;
+  DateTime? selectedEndDate;
+
 
   @override
   void initState() {
@@ -38,6 +41,18 @@ class _SearchPageState extends State<SearchPage> {
     ));
   }
 
+  void resetFilters() {
+    setState(() {
+      selectedSports = List.from(sportsFilters); // Or an empty list if you want no selections
+      isFree = false;
+      showOpenTeam = false;
+      selectedStartDate = null;
+      selectedEndDate = null;
+      // Add any other filter resets here
+    });
+  }
+
+
   void showFilterDialog() {
     showDialog(
       context: context,
@@ -51,7 +66,13 @@ class _SearchPageState extends State<SearchPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Sort By'),
+                    const Text(
+                      'Sort By',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      ),
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Sort by',
@@ -64,20 +85,78 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text('Date'),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Select Date',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
+                    const Text(
+                      'Date Range',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                       ),
-                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Start Date Picker
+                          TextButton(
+                            onPressed: () async {
+                              final DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: selectedStartDate ?? DateTime.now(),
+                                firstDate: DateTime.now(), // Start from today
+                                lastDate: DateTime(2100),
+                              );
+                              if (pickedDate != null) {
+                                setState(() {
+                                  selectedStartDate = pickedDate;
+                                  // Clear the end date if it no longer fits the range
+                                  if (selectedEndDate != null &&
+                                      selectedEndDate!.isBefore(selectedStartDate!)) {
+                                    selectedEndDate = null;
+                                  }
+                                });
+                              }
+                            },
+                            child: Text(
+                              selectedStartDate != null
+                                  ? 'From: ${selectedStartDate!.toString().substring(0, 10)}'
+                                  : 'Select Start Date',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                          
+                          // End Date Picker
+                          TextButton(
+                            onPressed: () async {
+                              final DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: selectedEndDate ?? (selectedStartDate ?? DateTime.now()),
+                                firstDate: selectedStartDate ?? DateTime.now(), // Start from selectedStartDate or today
+                                lastDate: DateTime(2100),
+                              );
+                              if (pickedDate != null) {
+                                setState(() {
+                                  selectedEndDate = pickedDate;
+                                });
+                              }
+                            },
+                            child: Text(
+                              selectedEndDate != null
+                                  ? 'To: ${selectedEndDate!.toString().substring(0, 10)}'
+                                  : 'Select End Date',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+
+                          // Other filters, input fields, etc.
+                        ],
+                      ),
                     const SizedBox(height: 8),
-                    const Text('Hour Range'),
+                    const Text(
+                      'Hour Range',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      ),
                     Row(
                       children: [
                         Expanded(
@@ -111,7 +190,13 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                     const SizedBox(height: 8),
                     if (!isFree) ...[
-                      const Text('Price Range'),
+                      const Text(
+                        'Price Range',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       Row(
                         children: [
                           Expanded(
@@ -145,7 +230,13 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ],
                     const SizedBox(height: 8),
-                    const Text('Maximum Distance'),
+                    const Text(
+                      'Maximum Distance',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      ),
                     TextField(
                       decoration: InputDecoration(
                         hintText: '20',
@@ -161,7 +252,13 @@ class _SearchPageState extends State<SearchPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Show Open Teams'),
+                        const Text(
+                          'Show Open Teams',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         Switch(
                           value: showOpenTeam,
                           onChanged: (value) {
@@ -175,7 +272,13 @@ class _SearchPageState extends State<SearchPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Free'),
+                        const Text(
+                          'Free',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         Switch(
                           value: isFree,
                           onChanged: (value) {
@@ -192,7 +295,16 @@ class _SearchPageState extends State<SearchPage> {
               actions: [
                 TextButton(
                   onPressed: () {
+                    resetFilters(); 
                     Navigator.of(context).pop();
+                  },
+                  child: const Text('Reset', style: TextStyle(color: Colors.red)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      Navigator.of(context).pop(); 
+                    });
                   },
                   child: const Text('Apply'),
                 ),
@@ -270,7 +382,7 @@ class _SearchPageState extends State<SearchPage> {
                   return EventCard(
                     title: 'Basketball',
                     date: 'Date: 22.10.2024',
-                    time: 'Time: 10:00',
+                    time: '10:00',
                     address: 'Address: Avenida do Brasil',
                     field: 'Field: Clube Unidos do Estoril',
                     availability: 'Team Availability: OPEN',

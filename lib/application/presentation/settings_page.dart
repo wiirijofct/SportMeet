@@ -1,5 +1,5 @@
-import 'package:sport_meet/application/applogic/auth.dart';
-import 'package:sport_meet/application/applogic/user.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
 // import 'package:sport_meet/application/presentation/coming_soon_page.dart';
 import 'package:sport_meet/application/presentation/home/home_page.dart';
 
@@ -684,7 +684,7 @@ If you have any questions about this Privacy Policy, You can contact us:
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.surface,
                   Theme.of(context).colorScheme.primary,
                 ],
               ),

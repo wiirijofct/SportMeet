@@ -1,4 +1,4 @@
-import 'package:sport_meet/application/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/common/password_field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';

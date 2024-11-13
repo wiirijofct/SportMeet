@@ -4,7 +4,7 @@ ThemeData lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     brightness: Brightness.light,
     primary: Color(0xFF02B5A0),
-    background: Color(0xF000CE90),
+    surface: Color(0xF000CE90),
     tertiary: Color.fromARGB(235, 49, 195, 147),
     onPrimary: Color.fromARGB(162, 255, 255, 255),
 

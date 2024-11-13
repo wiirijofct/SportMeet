@@ -1,4 +1,4 @@
-import 'package:sport_meet/application/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/home/home_page.dart';
 import 'package:sport_meet/application/presentation/welcome/login_form.dart';
 import 'package:sport_meet/application/presentation/welcome/reset_password_form.dart';

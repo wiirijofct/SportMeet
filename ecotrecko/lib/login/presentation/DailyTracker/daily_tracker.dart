@@ -387,7 +387,7 @@ class _DailyTrackerState extends State<DailyTracker>
                                       .black, // Ícones no menu suspenso em branco
                                 ),
                                 style: ButtonStyle(
-                                  textStyle: MaterialStateProperty.all(
+                                  textStyle: WidgetStateProperty.all(
                                     TextStyle(
                                       color: Theme.of(context)
                                           .colorScheme
@@ -467,7 +467,7 @@ class _DailyTrackerState extends State<DailyTracker>
                                 .map(((int, String) gpsIntervalItem) {
                               return DropdownMenuEntry<int>(
                                   style: ButtonStyle(
-                                    textStyle: MaterialStateProperty.all(
+                                    textStyle: WidgetStateProperty.all(
                                       TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme

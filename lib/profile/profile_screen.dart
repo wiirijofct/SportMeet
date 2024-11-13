@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:sport_meet/application/applogic/user.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:ionicons/ionicons.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               height: 250,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
+                color: Theme.of(context).colorScheme.surface,
               ),
               child: Column(
                 children: [

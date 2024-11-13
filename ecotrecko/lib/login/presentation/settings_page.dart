@@ -684,7 +684,7 @@ If you have any questions about this Privacy Policy, You can contact us:
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.surface,
                   Theme.of(context).colorScheme.primary,
                 ],
               ),

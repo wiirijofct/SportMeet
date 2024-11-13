@@ -1,9 +1,7 @@
-import 'package:ecotrecko/login/presentation/welcome/welcome_page.dart';
+import 'package:sport_meet/application/presentation/welcome/welcome_page.dart';
 import 'package:flutter/material.dart';
-import 'package:ecotrecko/login/application/auth.dart';
-import 'package:ecotrecko/login/presentation/home/home_page.dart';
+import 'package:sport_meet/application/presentation/home/home_page.dart';
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
-import 'package:geolocator/geolocator.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,24 +16,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Authentication.verifyToken().then((isOK) => {
-          setState(() {
-            isLogged = isOK;
-          })
-        });
-
-    getLocPerm();
-    // Geolocator.requestPermission();
-
-    // Geolocator.checkPermission().then((value) {
-    //   if (value == LocationPermission.unableToDetermine) {
-    //
-    //   }
-    // });
-  }
-
-  Future<void> getLocPerm() async {
-    await Geolocator.requestPermission();
+    // Set a default value for isLogged (you can adjust based on your needs)
+    isLogged = true;
   }
 
   @override

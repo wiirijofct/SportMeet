@@ -22,7 +22,7 @@ class _AdminPageState extends State<AdminPage> {
   late Future<Map<String, dynamic>> _permissions;
   late Future<Map<String, dynamic>> _adminInfo;
 
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -225,7 +225,7 @@ class _AdminPageState extends State<AdminPage> {
                     alignLeft: false,
                     showFlag: false,
                     dialogBackgroundColor:
-                        Theme.of(context).colorScheme.background,
+                        Theme.of(context).colorScheme.surface,
                     dialogTextStyle: TextStyle(
                       color: Theme.of(context).colorScheme.onTertiary,
                       fontSize: 16,
@@ -1184,7 +1184,7 @@ class _AdminPageState extends State<AdminPage> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Theme.of(context).colorScheme.background,
+                          Theme.of(context).colorScheme.surface,
                           Theme.of(context).colorScheme.primary,
                         ],
                       ),

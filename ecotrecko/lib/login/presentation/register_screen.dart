@@ -131,7 +131,7 @@ Future<Uint8List?> generateRandomAvatarAsBytes(String seed, BuildContext context
       ),
     );
 
-    Overlay.of(context)!.insert(overlayEntry);
+    Overlay.of(context).insert(overlayEntry);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
@@ -246,23 +246,11 @@ Future<Uint8List?> generateRandomAvatarAsBytes(String seed, BuildContext context
         profilePicUrl = "https://api.multiavatar.com/$avatarSeed.png";
         print('Using default Profile Picture URL: $profilePicUrl'); // Debug print
       }
-
-      if (profilePicUrl == null) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return const AlertDialog(
-              content: Text("Failed to upload profile picture."),
-            );
-          },
-        );
-        return;
-      }
     }
 
     // Step 3: Update the user profile with the profile picture URL
     print('Attempting to update user profile picture URL...'); // Debug print
-    bool profileUpdated = await Authentication.updateUserProfilePic(username, profilePicUrl!);
+    bool profileUpdated = await Authentication.updateUserProfilePic(username, profilePicUrl);
     print('Profile Updated: $profileUpdated'); // Debug print
 
     if (!profileUpdated) {

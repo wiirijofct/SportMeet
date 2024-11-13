@@ -294,7 +294,7 @@ class DailyTrackerConfig {
     }
 
     String? lastRawLocation = locations.last;
-    final lastLocation = LocationData.fromJson(jsonDecode(lastRawLocation!));
+    final lastLocation = LocationData.fromJson(jsonDecode(lastRawLocation));
 
     double earthRadius = 6371000; // radius of Earth in meters
     double lat1 = lastLocation.latitude * (3.141592653589793 / 180); // current lat point converted to radians

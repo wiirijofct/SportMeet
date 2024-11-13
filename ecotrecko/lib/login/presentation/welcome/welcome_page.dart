@@ -35,12 +35,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   data.password,
                 );
 
-                if (errorMessage == null) {
-                  setState(() {
-                    form = WelcomeForm.login;
-                  });
-                }
-
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -68,12 +62,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   data.username,
                   data.email,
                 );
-
-                if (errorMessage == null) {
-                  setState(() {
-                    form = WelcomeForm.login;
-                  });
-                }
 
                 showDialog(
                   context: context,

@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:ecotrecko/login/themes/dark_theme.dart';
 import 'package:ecotrecko/login/themes/theme_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class GoalCard extends StatelessWidget {
   final Map<String, dynamic>? goal;

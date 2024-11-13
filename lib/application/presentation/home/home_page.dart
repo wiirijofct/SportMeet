@@ -8,8 +8,9 @@ import 'package:provider/provider.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:sport_meet/application/themes/theme_manager.dart';
 import 'package:sport_meet/application/themes/dark_theme.dart';
-import 'package:sport_meet/application/applogic/auth.dart';
-import 'package:sport_meet/application/applogic/user.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
+import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,11 +41,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   late Future<Map<String, dynamic>> userInfo;
+  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
+  List<String> selectedSports = [];
 
   @override
   void initState() {
     super.initState();
     userInfo = User.getInfo();
+    selectedSports = List.from(sportsFilters); // Initially select all sports
   }
 
   void profileButtonPressed() {
@@ -106,6 +110,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void toggleSportFilter(String sport) {
+    setState(() {
+      if (selectedSports.contains(sport)) {
+        selectedSports.remove(sport);
+      } else {
+        selectedSports.add(sport);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SideMenu(
@@ -120,11 +134,93 @@ class _HomePageState extends State<HomePage> {
           color: Theme.of(context).colorScheme.onSecondary),
       child: Scaffold(
         appBar: _buildAppBar(),
-        body: Center(
-          child: Text(
-            'Welcome to Sport Meet!',
-            style: Theme.of(context).textTheme.headlineLarge,
-          ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Upcoming Events',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: sportsFilters.map((sport) {
+                    bool isSelected = selectedSports.contains(sport);
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: ChoiceChip(
+                        label: Text(sport),
+                        selected: isSelected,
+                        onSelected: (_) => toggleSportFilter(sport),
+                        selectedColor: Colors.brown,
+                        backgroundColor: Colors.grey.shade300,
+                        labelStyle: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 5, // Placeholder for number of events
+                itemBuilder: (context, index) {
+                  if (selectedSports.contains('Basketball')) {
+                    return EventCard(
+                      title: 'Basketball',
+                      date: 'Date: 22.10.2024',
+                      time: 'Time: 10:00',
+                      address: 'Address: Avenida do Brasil',
+                      field: 'Field: Clube Unidos do Estoril',
+                      availability: 'Team Availability: OPEN',
+                      imagePath: 'lib/images/Gecko.png',
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.search),
+              label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.chatbubble_ellipses_outline),
+              label: 'Chat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.heart_outline),
+              label: 'Favorites',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.person_outline),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: 2,
+          selectedItemColor: Colors.red,
+          unselectedItemColor: Colors.grey,
+          onTap: (index) {
+            // Handle navigation here
+          },
         ),
       ),
     );
@@ -202,7 +298,7 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
+            return Text('\${snapshot.error}');
           }
           return const CircularProgressIndicator();
         });

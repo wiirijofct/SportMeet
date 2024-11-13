@@ -133,7 +133,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                     Container(
                       height: 250,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.background,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                       child: Column(
                         children: [

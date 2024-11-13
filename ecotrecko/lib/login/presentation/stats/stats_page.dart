@@ -43,10 +43,7 @@ class _StatsPageState extends State<StatsPage> {
         dietEmission = response['dietEmission'];
         habitationEmission = response['habitationEmission'];
 
-        if (totalEmission is double &&
-            transportEmission is double &&
-            dietEmission is double &&
-            habitationEmission is double) {
+        if (totalEmission is double) {
           setState(() {
             print("Daily emissions: $totalEmission");
             dailyEmission = totalEmission;
@@ -428,7 +425,7 @@ class _StatsPageState extends State<StatsPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background, // Light green
+                  Theme.of(context).colorScheme.surface, // Light green
                   Theme.of(context).colorScheme.primary, // Dark green
                 ],
               ),

@@ -8,7 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:ecotrecko/dio/http_service.dart';
 
 class MealsPage extends StatefulWidget {
-  const MealsPage({Key? key}) : super(key: key);
+  const MealsPage({super.key});
 
   @override
   _MealsPageState createState() => _MealsPageState();
@@ -57,21 +57,17 @@ class _MealsPageState extends State<MealsPage> {
     });
 
     try {
-      if (_controller != null) {
-        // If not 'Omnivore', skip the meat/fish question slide by moving two pages if possible
-        if (questionIndex == 0 && option != 'Omnivore') {
-          // Check if there are enough slides to skip one
-          if (mealQuestions.length > 2) {
-            await _controller.nextPage(
-                duration: Duration(milliseconds: 300), curve: Curves.linear);
-          }
+      // If not 'Omnivore', skip the meat/fish question slide by moving two pages if possible
+      if (questionIndex == 0 && option != 'Omnivore') {
+        // Check if there are enough slides to skip one
+        if (mealQuestions.length > 2) {
+          await _controller.nextPage(
+              duration: Duration(milliseconds: 300), curve: Curves.linear);
         }
-        await _controller.nextPage(
-            duration: Duration(milliseconds: 300), curve: Curves.linear);
-      } else {
-        print("CarouselController is null.");
       }
-    } catch (e) {
+      await _controller.nextPage(
+          duration: Duration(milliseconds: 300), curve: Curves.linear);
+        } catch (e) {
       print("Error navigating to the next page: $e");
     }
   }
@@ -378,7 +374,7 @@ class _MealsPageState extends State<MealsPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.surface,
                   Theme.of(context).colorScheme.primary
                 ],
               ),

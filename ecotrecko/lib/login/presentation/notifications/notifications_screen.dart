@@ -5,7 +5,7 @@ import 'package:ecotrecko/login/presentation/home/home_page.dart';
 import 'package:ecotrecko/profile/users_profile_screen.dart';
 
 class NotificationsPage extends StatefulWidget {
-  const NotificationsPage({Key? key});
+  const NotificationsPage({super.key, Key? key});
 
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
@@ -67,7 +67,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.surface,
                   Theme.of(context).colorScheme.primary,
                 ],
               ),

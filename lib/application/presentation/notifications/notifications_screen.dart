@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:sport_meet/application/applogic/user.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:sport_meet/application/presentation/home/home_page.dart';
 import 'package:sport_meet/profile/users_profile_screen.dart';
 
 class NotificationsPage extends StatefulWidget {
-  const NotificationsPage({Key? key});
+  const NotificationsPage({super.key});
 
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
@@ -67,7 +67,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.surface,
                   Theme.of(context).colorScheme.primary,
                 ],
               ),

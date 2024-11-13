@@ -208,7 +208,7 @@ class _FriendsPageState extends State<FriendsPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.surface,
                   Theme.of(context).colorScheme.primary,
                 ],
               ),
@@ -489,7 +489,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Friend'),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),

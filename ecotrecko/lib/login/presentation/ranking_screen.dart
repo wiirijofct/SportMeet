@@ -57,7 +57,7 @@ class RankingScreenState extends State<RankingScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background, // Light green
+                  Theme.of(context).colorScheme.surface, // Light green
                   Theme.of(context).colorScheme.primary, // Dark green
                 ],
               ),

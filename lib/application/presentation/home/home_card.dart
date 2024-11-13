@@ -1,5 +1,5 @@
-import 'package:ecotrecko/login/themes/dark_theme.dart';
-import 'package:ecotrecko/login/themes/theme_manager.dart';
+import 'package:sport_meet/application/themes/dark_theme.dart';
+import 'package:sport_meet/application/themes/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:provider/provider.dart';
@@ -12,13 +12,13 @@ class HomeCard extends StatelessWidget {
   final void Function() onPressed;
 
   const HomeCard({
-    Key? key,
+    super.key,
     required this.title,
     this.description,
     required this.icon,
     required this.color,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

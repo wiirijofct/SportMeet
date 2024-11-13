@@ -8,7 +8,7 @@ import 'package:ecotrecko/dio/http_service.dart';
 import 'package:ecotrecko/login/application/auth.dart';
 
 class HouseholdPage extends StatefulWidget {
-  const HouseholdPage({Key? key}) : super(key: key);
+  const HouseholdPage({super.key});
 
   @override
   _HouseholdPageState createState() => _HouseholdPageState();
@@ -445,7 +445,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.surface,
                   Theme.of(context).colorScheme.primary
                 ],
               ),

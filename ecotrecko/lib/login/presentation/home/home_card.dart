@@ -12,13 +12,13 @@ class HomeCard extends StatelessWidget {
   final void Function() onPressed;
 
   const HomeCard({
-    Key? key,
+    super.key,
     required this.title,
     this.description,
     required this.icon,
     required this.color,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

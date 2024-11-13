@@ -28,7 +28,7 @@ class PrivateProfileScreen extends StatelessWidget {
               Container(
                 height: 300,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
               Positioned(
@@ -185,7 +185,7 @@ class PrivateProfileScreen extends StatelessWidget {
                       },
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.background,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 20),
                       textStyle: const TextStyle(fontSize: 18),

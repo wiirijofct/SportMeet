@@ -1,97 +1,105 @@
 import 'package:flutter/material.dart';
 
-ThemeData darkTheme = ThemeData(
-  
-  colorScheme: const ColorScheme.dark(
-    brightness: Brightness.dark,
-    primary: Color.fromARGB(255, 0, 63, 56),
-    background: Color.fromARGB(239, 0, 93, 65),
-    tertiary: Color.fromARGB(255, 2, 68, 54),
-    onPrimary: Color.fromARGB(255, 3, 55, 44),
-    onSecondary: Colors.white,
-    onTertiary: Colors.white,
-    inversePrimary: Color.fromARGB(255, 206, 206, 206),
+ThemeData lightTheme = ThemeData(
+  colorScheme: const ColorScheme.light(
+    brightness: Brightness.light,
+    primary: Color(0xFF02B5A0),
+    background: Color(0xF000CE90),
+    tertiary: Color.fromARGB(235, 49, 195, 147),
+    onPrimary: Color.fromARGB(162, 255, 255, 255),
+
+    onSecondary: Color.fromARGB(255, 31, 31, 31),
+    onTertiary: Colors.black,
+    inversePrimary: Colors.black,
     primaryContainer: Color.fromARGB(239, 156, 170, 167),
-    onSecondaryContainer: Color.fromARGB(255, 219, 219, 219),
-     onTertiaryContainer:Color(0xF000CE90),
-      onSurfaceVariant: Color.fromARGB(255, 3, 55, 44),
+    onSecondaryContainer:Colors.white,
+    onTertiaryContainer: Color.fromARGB(255, 2, 68, 54),
+    onSurfaceVariant: Colors.white,
+   
+
+    //Color.fromARGB(255, 85, 85, 85),
   ),
   textTheme: const TextTheme(
     titleLarge: TextStyle(
         fontSize: 35,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "FredokaRegular"),
     titleMedium: TextStyle(
       fontFamily: "FredokaRegular",
       fontSize: 23,
-      color: Color.fromARGB(255, 226, 226, 226),
+      color: Colors.black,
     ),
     titleSmall: TextStyle(
       fontFamily: "FredokaRegular",
       fontSize: 20,
-      color: Colors.white,
+      color: Colors.black,
     ),
     headlineLarge: TextStyle(
-      fontFamily: 'FredokaRegular',
-      fontSize: 25,
-      color: Color.fromARGB(255, 224, 224, 224),
-    ),
+        fontFamily: 'FredokaRegular', 
+        fontSize: 25, 
+        color: Colors.black),
     headlineMedium: TextStyle(
       fontFamily: "FredokaRegular",
       fontSize: 23,
       fontWeight: FontWeight.bold,
-      color: Color.fromARGB(255, 194, 194, 194),
+      color: Colors.black,
+    ),
+
+    bodyLarge: TextStyle(
+      fontSize: 24,
+      color: Colors.black,
+      fontFamily: "FredokaRegular",
     ),
     bodyMedium: TextStyle(
       fontSize: 26,
       fontWeight: FontWeight.bold,
       fontFamily: 'FredokaRegular',
-      color: Color.fromARGB(255, 189, 189, 189),
+      color: Colors.black,
     ),
     bodySmall: TextStyle(
       fontFamily: "FredokaRegular",
       fontSize: 16,
-      color: Color.fromARGB(255, 197, 197, 197),
+      color: Colors.black,
     ),
     labelMedium: TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.bold,
-      color: Colors.white,
-      fontFamily: "FredokaRegular",
-    ),
-    bodyLarge: TextStyle(
-      fontSize: 24,
-      color: Colors.white,
+      color: Colors.black,
       fontFamily: "FredokaRegular",
     ),
     labelSmall: TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.bold,
-      color: Color.fromARGB(255, 153, 153, 153),
+      color: Colors.black,
       fontFamily: "FredokaRegular",
     ),
     headlineSmall: TextStyle(
       fontSize: 15,
-      color: Colors.white,
+      color: Colors.black,
       fontFamily: "FredokaRegular",
     ),
+
     displaySmall: TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.bold,
-      color: Colors.white,
+      color: Colors.black,
       fontFamily: "FredokaRegular",
-    ),
+
+    ) ,
     displayMedium: TextStyle(
       fontSize: 17,
-      color: Colors.white,
+      color: Colors.black,
+      fontFamily: "FredokaRegular",
+
+    ) ,
+     displayLarge: TextStyle(
+      color:    Color.fromARGB(255, 255, 0, 17),
+      fontSize: 12,
       fontFamily: "FredokaRegular",
     ),
-    displayLarge: TextStyle(
-      color: Color(0xff690005),
-      fontSize: 11,
-      fontFamily: "FredokaRegular",
-    ),
+
+    
   ),
 );
 //Color.fromARGB(255, 85, 85, 85)

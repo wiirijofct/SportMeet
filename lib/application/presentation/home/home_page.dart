@@ -11,6 +11,7 @@ import 'package:sport_meet/application/themes/dark_theme.dart';
 import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
+import 'package:sport_meet/application/presentation/search/search_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -220,6 +221,14 @@ class _HomePageState extends State<HomePage> {
           unselectedItemColor: Colors.grey,
           onTap: (index) {
             // Handle navigation here
+            if (index == 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchPage(),
+                ),
+              );
+            }
           },
         ),
       ),

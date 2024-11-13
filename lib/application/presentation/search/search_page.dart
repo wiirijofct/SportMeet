@@ -9,14 +9,14 @@ class SearchPage extends StatefulWidget {
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
-
-class _SearchPageState extends State<SearchPage> {
+ class _SearchPageState extends State<SearchPage> {
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
   List<String> selectedSports = [];
   bool isFree = false;
   bool showOpenTeam = false;
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
+  String searchQuery = ''; // Variável para armazenar o termo de pesquisa
 
 
   @override
@@ -81,7 +81,7 @@ class _SearchPageState extends State<SearchPage> {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.grey.shade200,
+                        fillColor: const Color.fromARGB(255, 255, 255, 255),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -329,17 +329,30 @@ class _SearchPageState extends State<SearchPage> {
               children: [
                 Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Ionicons.search),
-                      hintText: 'Search',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
+                        onChanged: (value) {
+                          searchQuery = value; // Atualiza o termo de pesquisa
+                        },
+                        onSubmitted: (value) {
+                          setState(() {
+                            searchQuery = value; // Aplica o termo de pesquisa ao pressionar "Enter"
+                          });
+                        },
+                        style: TextStyle(color: Colors.black), // Define o texto como preto
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Ionicons.search),
+                          hintText: 'Search',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey.shade200,
+                        ),
+                      
                       ),
-                      filled: true,
-                      fillColor: Colors.grey.shade200,
-                    ),
-                  ),
+
+
+
                 ),
                 const SizedBox(width: 10),
                 IconButton(
@@ -374,26 +387,37 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           const SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 5, // Placeholder for number of fields/events
-              itemBuilder: (context, index) {
-                if (selectedSports.contains('Basketball')) {
-                  return EventCard(
-                    title: 'Basketball',
-                    date: 'Date: 22.10.2024',
-                    time: '10:00',
-                    address: 'Address: Avenida do Brasil',
-                    field: 'Field: Clube Unidos do Estoril',
-                    availability: 'Team Availability: OPEN',
-                    imagePath: 'lib/images/Gecko.png',
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+         Expanded(
+          child: ListView.builder(
+            itemCount: 5, // Placeholder para número de eventos
+            itemBuilder: (context, index) {
+              // Filtro baseado no termo de pesquisa
+              if ('Basketball'.toLowerCase().contains(searchQuery.toLowerCase()) &&
+                  selectedSports.contains('Basketball')) {
+                return EventCard(
+                  title: 'Basketball',
+                  date: 'Date: 22.10.2024',
+                  time: '10:00',
+                  address: 'Address: Avenida do Brasil',
+                  field: 'Field: Clube Unidos do Estoril',
+                  availability: 'Team Availability: OPEN',
+                  imagePath: 'lib/images/Gecko.png',
+                );
+              } else {
+                return EventCard(
+                  title: 'VAZIO',
+                  date: 'Date: 22.10.2024',
+                  time: '10:00',
+                  address: 'Address: Avenida do Brasil',
+                  field: 'Field: Clube Unidos do Estoril',
+                  availability: 'Team Availability: OPEN',
+                  imagePath: 'lib/images/Gecko.png',
+                ); // Exibe um container vazio se o filtro não corresponde
+              }
+            },
           ),
+        ),
+
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

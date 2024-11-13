@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
+import 'package:sport_meet/application/presentation/search/meet_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -29,6 +30,12 @@ class _SearchPageState extends State<SearchPage> {
         selectedSports.add(sport);
       }
     });
+  }
+
+  void _navigateToMeetPage() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const MeetPage(),
+    ));
   }
 
   void showFilterDialog() {
@@ -321,12 +328,45 @@ class _SearchPageState extends State<SearchPage> {
       toolbarHeight: 70,
       centerTitle: true,
       backgroundColor: Colors.red,
-      title: const Text(
+      /*title: const Text(
         'SEARCH',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           letterSpacing: 2,
         ),
+      ),*/
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Highlight the active button with different colors
+          ElevatedButton(
+            onPressed: () {
+              // Stay on SearchPage
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+            ),
+            child: const Text('SEARCH'),
+          ),
+          const SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: _navigateToMeetPage,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade300,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+            ),
+            child: const Text('MEET'),
+          ),
+        ],
       ),
     );
   }

@@ -10,7 +10,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<String> sportsFilters = ['Football', 'Tennis', 'Swimming', 'Basketball'];
+  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
   List<String> selectedSports = [];
   bool isFree = false;
   bool showOpenTeam = false;
@@ -259,15 +259,19 @@ class _SearchPageState extends State<SearchPage> {
             child: ListView.builder(
               itemCount: 5, // Placeholder for number of fields/events
               itemBuilder: (context, index) {
-                return EventCard(
-                  title: 'Basketball',
-                  date: 'Date: 22.10.2024',
-                  time: 'Time: 10:00',
-                  address: 'Address: Avenida de Roma',
-                  field: 'Field: Clube Unidos do Estoril',
-                  availability: 'Team Availability: OPEN',
-                  imagePath: 'lib/images/Gecko.png',
-                );
+                if (selectedSports.contains('Basketball')) {
+                  return EventCard(
+                    title: 'Basketball',
+                    date: 'Date: 22.10.2024',
+                    time: 'Time: 10:00',
+                    address: 'Address: Avenida do Brasil',
+                    field: 'Field: Clube Unidos do Estoril',
+                    availability: 'Team Availability: OPEN',
+                    imagePath: 'lib/images/Gecko.png',
+                  );
+                } else {
+                  return Container();
+                }
               },
             ),
           ),

@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:flutter/material.dart';
 import 'search_page.dart';
 import 'package:sport_meet/application/presentation/widgets/person_card.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class MeetPage extends StatefulWidget {
   const MeetPage({super.key});
@@ -14,14 +15,27 @@ class _MeetPageState extends State<MeetPage> {
   bool isFree = false;
   bool showOpenTeam = false;
   final TextEditingController _searchController = TextEditingController();
+  
+  // Variáveis de seleção para os filtros
+  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
+  List<String> selectedSports = [];
+  List<String> selectedAvailability = [];
+  List<String> selectedMunicipality = [];
+  String selectedGender = '';
 
-  // Different people specific to the MeetPage
+  DateTime? selectedStartDate;
+  DateTime? selectedEndDate;
+  String selectedSortOption = ''; // Variável para a opção de ordenação
+  List<Map<String, String>> filteredEvent = []; // Variável para eventos filtrados
+
   final List<Map<String, String>> meetPeople = [
+    // Lista de pessoas para o MeetPage
     {
       'title': 'Maria Inês Silva',
       'address': 'Municipality: Amadora',    
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Basketball, Tennis',
+      'gender': 'Gender: Female',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
@@ -29,6 +43,7 @@ class _MeetPageState extends State<MeetPage> {
       'address': 'Municipality: Porto',
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Football, Tennis, Voleyball, Handball',
+      'gender': 'Gender: Female',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
@@ -36,6 +51,7 @@ class _MeetPageState extends State<MeetPage> {
       'address': 'Municipality: Sintra',
       'availability': 'Availability: Weekends',
       'sports': 'Favorite Sports: Boxing',
+      'gender': 'Gender: Male',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
@@ -43,6 +59,7 @@ class _MeetPageState extends State<MeetPage> {
       'address': 'Municipality: Sintra',
       'availability': 'Availability: Wednesdays, Fridays',
       'sports': 'Favorite Sports: Basketball',
+      'gender': 'Gender: Male',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
@@ -50,6 +67,7 @@ class _MeetPageState extends State<MeetPage> {
       'address': 'Municipality: Faro',
       'availability': 'Availability: Tuesdays',
       'sports': 'Favorite Sports: Tennis',
+      'gender': 'Gender: Female',
       'imagePath': 'lib/images/Gecko.png'
     },
     {
@@ -57,6 +75,7 @@ class _MeetPageState extends State<MeetPage> {
       'address': 'Municipality: Setúbal',
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Handball, Football',
+      'gender': 'Gender: Male',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
@@ -64,6 +83,7 @@ class _MeetPageState extends State<MeetPage> {
       'address': 'Municipality: Setúbal',
       'availability': 'Availability: Tuesdays, Fridays',
       'sports': 'Favorite Sports: Football',
+      'gender': 'Gender: Male',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
@@ -71,6 +91,7 @@ class _MeetPageState extends State<MeetPage> {
       'address': 'Municipality: Sintra',
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Basketball',
+      'gender': 'Gender: Female',
       'imagePath': 'lib/images/Gecko.png',
     },
   ];
@@ -81,13 +102,59 @@ class _MeetPageState extends State<MeetPage> {
       MaterialPageRoute(builder: (context) => const SearchPage()),
     );
   }
-  
+
+  @override
+  void initState() {
+    super.initState();
+    selectedSports = List.from(sportsFilters); // Seleciona todos os esportes inicialmente
+    filteredEvent = List.from(meetPeople); // Inicializa a lista de eventos filtrados
+  }
+
   @override
   void dispose() {
-    // Dispose of the controller when the widget is removed
+    // Dispara o controlador ao remover o widget
     _searchController.dispose();
     super.dispose();
   }
+
+  void toggleSportFilter(String sport) {
+    setState(() {
+      if (selectedSports.contains(sport)) {
+        selectedSports.remove(sport);
+      } else {
+        selectedSports.add(sport);
+      }
+    });
+  }
+
+  void resetFilters() {
+    setState(() {
+      selectedSports = List.from(sportsFilters); // Reseta para todos os esportes
+      selectedAvailability = [];
+      selectedMunicipality = [];
+      selectedGender = '';
+      isFree = false;
+      showOpenTeam = false;
+      selectedStartDate = null;
+      selectedEndDate = null;
+      selectedSortOption = '';
+      filteredEvent = List.from(meetPeople); // Reseta para todos os eventos
+    });
+  }
+
+  void applyFilters() {
+  setState(() {
+    // Filtra os dados com base nos filtros selecionados
+    filteredEvent = meetPeople.where((person) {
+      final sportsMatch = selectedSports.isEmpty || selectedSports.any((sport) => person['sports']!.contains(sport));
+      final availabilityMatch = selectedAvailability.isEmpty || selectedAvailability.any((day) => person['availability']!.contains(day));
+      final municipalityMatch = selectedMunicipality.isEmpty || selectedMunicipality.contains(person['address']!.split(': ')[1]);
+      final genderMatch = selectedGender.isEmpty || person['gender']!.contains(selectedGender);
+
+      return sportsMatch && availabilityMatch && municipalityMatch && genderMatch;
+    }).toList();
+  });
+}
 
   void showFilterDialog() {
     showDialog(
@@ -104,14 +171,156 @@ class _MeetPageState extends State<MeetPage> {
                   children: [
                     const Text(
                       'Sort By',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                    TextField(
+                    ),
+                    SizedBox(height: 16.0),
+
+                    // Multi-select dropdown para esportes favoritos
+                    MultiSelectDialogField(
+                      items: [
+                        MultiSelectItem('Basketball', 'Basketball'),
+                        MultiSelectItem('Tennis', 'Tennis'),
+                        MultiSelectItem('Swimming', 'Swimming'),
+                        MultiSelectItem('Football', 'Football'),
+                      ],
+                      listType: MultiSelectListType.LIST,
+                      title: const Text("Favorite Sports", 
+                        style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      buttonText: const Text(
+                        "Favorite Sports",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onConfirm: (values) {
+                        setState(() {
+                          selectedSports = values.cast<String>();
+                        });
+                      },
+                      chipDisplay: MultiSelectChipDisplay(
+                        chipColor: const Color.fromARGB(255, 193, 50, 74),
+                        textStyle: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+
+                    SizedBox(height: 16.0),
+
+                    // Multi-select dropdown para Disponibilidade
+                    MultiSelectDialogField(
+                      items: [
+                        MultiSelectItem('All days', 'All days'),
+                        MultiSelectItem('Weekends', 'Weekends'),
+                        MultiSelectItem('Mondays', 'Mondays'),
+                        MultiSelectItem('Tuesdays', 'Tuesday'),
+                        MultiSelectItem('Wednesdays', 'Wednesday'),
+                        MultiSelectItem('Thursdays', 'Thursdays'),
+                        MultiSelectItem('Fridays', 'Fridays'),
+                      ],
+                      title: const Text("Availability", 
+                        style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      buttonText: const Text(
+                        "Availability",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onConfirm: (values) {
+                        setState(() {
+                          selectedAvailability = values.cast<String>();
+                        });
+                      },
+                      chipDisplay: MultiSelectChipDisplay(
+                        chipColor: const Color.fromARGB(255, 193, 50, 74),
+                        textStyle: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+
+                    SizedBox(height: 16.0),
+
+                    // Multi-select dropdown para Município
+                    MultiSelectDialogField(
+                      items: [
+                        MultiSelectItem('Lisboa', 'Lisboa'),
+                        MultiSelectItem('Cascais', 'Cascais'),
+                        MultiSelectItem('Porto', 'Porto'),
+                        MultiSelectItem('Faro', 'Faro'),
+                      ],
+                      title: const Text("Municipality", 
+                        style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      buttonText: const Text(
+                        "Municipality",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onConfirm: (values) {
+                        setState(() {
+                          selectedMunicipality = values.cast<String>();
+                        });
+                      },
+                      chipDisplay: MultiSelectChipDisplay(
+                        chipColor: const Color.fromARGB(255, 193, 50, 74),
+                        textStyle: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+
+                    SizedBox(height: 16.0),
+
+                    // Dropdown de gênero
+                    DropdownButtonFormField<String>(
+                      value: selectedGender.isEmpty ? null : selectedGender,
+                      hint: const Text(
+                        'Gender',
+                       style: TextStyle(
+                        fontSize: 26.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                      )
+                        
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Male', child: Text('Male')),
+                        DropdownMenuItem(value: 'Female', child: Text('Female')),
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedGender = newValue ?? '';
+                        });
+                      },
                       decoration: InputDecoration(
-                        hintText: 'Sort by',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
@@ -119,172 +328,24 @@ class _MeetPageState extends State<MeetPage> {
                         filled: true,
                         fillColor: Colors.grey.shade200,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Date Range',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                      ),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Select Date',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Hour Range',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                      ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'From',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade200,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'To',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade200,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    if (!isFree) ...[
-                      const Text(
-                        'Price Range',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'From',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey.shade200,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'To',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey.shade200,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Maximum Distance',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                      ),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: '20',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Show Open Teams',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Switch(
-                          value: showOpenTeam,
-                          onChanged: (value) {
-                            setState(() {
-                              showOpenTeam = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Free',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Switch(
-                          value: isFree,
-                          onChanged: (value) {
-                            setState(() {
-                              isFree = value;
-                            });
-                          },
-                        ),
-                      ],
+                      style: const TextStyle(color: Colors.black),
+                      dropdownColor: const Color.fromARGB(255, 118, 120, 120),
+                      iconEnabledColor: Colors.black,
                     ),
                   ],
                 ),
               ),
               actions: [
+                 TextButton(
+                onPressed: () {
+                  resetFilters(); // Reseta todos os filtros
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Clear Filters'),
+                ),
                 TextButton(
                   onPressed: () {
+                    applyFilters(); // Aplica os filtros selecionados
                     Navigator.of(context).pop();
                   },
                   child: const Text('Apply'),
@@ -296,6 +357,7 @@ class _MeetPageState extends State<MeetPage> {
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -364,15 +426,16 @@ class _MeetPageState extends State<MeetPage> {
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredPeople.length,
+              itemCount: filteredEvent.length,
               itemBuilder: (context, index) {
-                final person = filteredPeople[index];
+                final person = filteredEvent[index]; // Usa filteredEvent ao invés de filteredPeople
                 return PersonCard(
                   title: person['title']!,
                   address: person['address']!,
                   availability: person['availability']!,
                   sports: person['sports']!,
                   imagePath: person['imagePath']!,
+                  gender: person['gender']!,
                 );
               },
             ),

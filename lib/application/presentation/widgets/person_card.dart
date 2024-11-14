@@ -6,6 +6,7 @@ class PersonCard extends StatelessWidget {
   final String availability;
   final String sports;
   final String imagePath;
+  final String gender;
 
   const PersonCard({
     Key? key,
@@ -13,7 +14,8 @@ class PersonCard extends StatelessWidget {
     required this.address,
     required this.availability,
     required this.sports,
-    required this.imagePath
+    required this.imagePath,
+    required this.gender
   }) : super(key: key);
 
   @override
@@ -52,6 +54,10 @@ class PersonCard extends StatelessWidget {
                   ),
                   Text(
                     sports,
+                    style: TextStyle(fontSize: 14.0), // Reduced font size
+                  ),
+                  Text(
+                    gender,
                     style: TextStyle(fontSize: 14.0), // Reduced font size
                   ),
                 ],

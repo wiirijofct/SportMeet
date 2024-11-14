@@ -12,6 +12,8 @@ import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/search_page.dart';
+import 'package:sport_meet/profile/profileSportMeet.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -194,44 +196,51 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Ionicons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Ionicons.chatbubble_ellipses_outline),
-              label: 'Chat',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Ionicons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Ionicons.heart_outline),
-              label: 'Favorites',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Ionicons.person_outline),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: 2,
-          selectedItemColor: Colors.red,
-          unselectedItemColor: Colors.grey,
-          onTap: (index) {
-            // Handle navigation here
-            if (index == 0) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SearchPage(),
-                ),
-              );
-            }
-          },
-        ),
-      ),
+                              items: const [
+                                BottomNavigationBarItem(
+                                  icon: Icon(Ionicons.search),
+                                  label: 'Search',
+                                ),
+                                BottomNavigationBarItem(
+                                  icon: Icon(Ionicons.chatbubble_ellipses_outline),
+                                  label: 'Chat',
+                                ),
+                                BottomNavigationBarItem(
+                                  icon: Icon(Ionicons.home),
+                                  label: 'Home',
+                                ),
+                                BottomNavigationBarItem(
+                                  icon: Icon(Ionicons.heart_outline),
+                                  label: 'Favorites',
+                                ),
+                                BottomNavigationBarItem(
+                                  icon: Icon(Ionicons.person_outline),
+                                  label: 'Profile',
+                                ),
+                              ],
+                              currentIndex: 2,
+                              selectedItemColor: Colors.red,
+                              unselectedItemColor: Colors.grey,
+                              onTap: (index) {
+                                if (index == 0) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const SearchPage(),
+                                    ),
+                                  );
+                                } else if (index == 4) { // Índice do ícone de perfil
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfileSportMeet(),
+                                    ),
+                                  );
+                                }
+                                // Adicione outras navegações conforme necessário
+                              },
+                            ),
+                                  ),
     );
   }
 

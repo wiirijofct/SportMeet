@@ -16,8 +16,84 @@ class SearchPage extends StatefulWidget {
   bool isFree = false;
   bool showOpenTeam = false;
   DateTime? selectedStartDate;
-  DateTime? selectedEndDate;
+  DateTime? selectedEndDate;    
   String searchQuery = '';
+
+  // Different people specific to the MeetPage
+  final List<Map<String, String>> eventCards = [
+    {
+      'title': 'Basketball',
+      'date': 'Date: 22.10.2024',
+      'time': '10:00',
+      'address': 'Address: Avenida do Brasil',
+      'field': 'Field: Clube Unidos do Estoril',
+      'availability': 'Team Availability: OPEN',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+    {
+      'title': 'Football',
+      'date': 'Date: 22.10.2024',
+      'time': '10:00',
+      'address': 'Address: Avenida Adamastor',
+      'field': 'Field: Clube Desunidos do Estoril',
+      'availability': 'Team Availability: OPEN',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+    {
+      'title': 'Football',
+      'date': 'Date: 22.11.2024',
+      'time': '12:00',
+      'address': 'Address: Avenida Conceição Lopes',
+      'field': 'Field: Campo Bartolomeu',
+      'availability': 'Team Availability: CLOSED',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+    {
+      'title': 'Swimming',
+      'date': 'Date: 23.11.2024',
+      'time': '21:00',
+      'address': 'Address: Rua Filo Lapa',
+      'field': 'Field: Piscinas Filo',
+      'availability': 'Team Availability: OPEN',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+    {
+      'title': 'Basketball',
+      'date': 'Date: 23.11.2024',
+      'time': '22:00',
+      'address': 'Address: Avenida dos missionarios',
+      'field': 'Field: Campo António Sérgio',
+      'availability': 'Team Availability: CLOSED',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+    {
+      'title': 'Football',
+      'date': 'Date: 25.11.2024',
+      'time': '19:00',
+      'address': 'Address: Rua Duarte Rei',
+      'field': 'Field: Escola Secundária Reitor Mor',
+      'availability': 'Team Availability: OPEN',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+    {
+      'title': 'Tennis',
+      'date': 'Date: 27.11.2024',
+      'time': '15:00',
+      'address': 'Address: Avenida de baixo',
+      'field': 'Field: Campo De cima',
+      'availability': 'Team Availability: OPEN',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+    {
+      'title': 'Football',
+      'date': 'Date: 23.11.2024',
+      'time': '15:00',
+      'address': 'Address: Avenida de cima',
+      'field': 'Field: Campo de baixo',
+      'availability': 'Team Availability: CLOSED',
+      'imagePath': 'lib/images/Gecko.png',
+    },
+  ];
 
 
   @override
@@ -319,6 +395,32 @@ class SearchPage extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Filter the list based on searchQuery to match all text fields
+    final filteredEvent = eventCards.where((event) {
+      final title = event['title']!.toLowerCase();
+      final address = event['address']!.toLowerCase();
+      final availability = event['availability']!.toLowerCase();
+      final field = event['field']!.toLowerCase();
+      final time = event['time']!.toLowerCase();
+      final date = event['date']!.toLowerCase();
+      final query = searchQuery.toLowerCase();
+
+      // Check if any of the fields contain the search query
+      final matchesSearchQuery = title.contains(query) ||
+            address.contains(query) ||
+            availability.contains(query) ||
+            time.contains(query) ||
+            date.contains(query) ||
+            field.contains(query);
+
+    // Check if the sport title is in selected sports
+    final matchesSelectedSports = selectedSports.contains(event['title']);
+
+    // Include event if it matches both the search query and selected sports
+    return matchesSearchQuery && matchesSelectedSports;
+
+    }).toList();
+
     return Scaffold(
       appBar: _buildAppBar(),
       body: Column(
@@ -351,9 +453,6 @@ class SearchPage extends StatefulWidget {
                         ),
                       
                       ),
-
-
-
                 ),
                 const SizedBox(width: 10),
                 IconButton(
@@ -390,21 +489,18 @@ class SearchPage extends StatefulWidget {
           const SizedBox(height: 10),
          Expanded(
           child: ListView.builder(
-            itemCount: 5, // Placeholder para número de eventos
+            itemCount: filteredEvent.length,
             itemBuilder: (context, index) {
-              // Filtro baseado no termo de pesquisa
-              if ('Basketball'.toLowerCase().contains(searchQuery.toLowerCase()) &&
-                  selectedSports.contains('Basketball')) {
-                return EventCard(
-                  title: 'Basketball',
-                  date: 'Date: 22.10.2024',
-                  time: '10:00',
-                  address: 'Address: Avenida do Brasil',
-                  field: 'Field: Clube Unidos do Estoril',
-                  availability: 'Team Availability: OPEN',
-                  imagePath: 'lib/images/Gecko.png',
-                );
-              }
+              final event = filteredEvent[index];
+              return EventCard(
+                title: event['title']!,
+                address: event['address']!,
+                availability: event['availability']!,
+                field: event['field']!,
+                date: event['date']!,
+                time: event['time']!,
+                imagePath: event['imagePath']!,
+              );
             },
           ),
         ),

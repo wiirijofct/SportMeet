@@ -10,7 +10,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
- class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> {
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
   List<String> selectedSports = [];
   bool isFree = false;
@@ -18,88 +18,90 @@ class SearchPage extends StatefulWidget {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   final TextEditingController _searchController = TextEditingController();
+  String selectedSortOption = ''; // Variable to hold the selected sort option
+  List<Map<String, String>> filteredEvent = []; // Class variable for filtered events
 
   // Different people specific to the MeetPage
   final List<Map<String, String>> eventCards = [
     {
-      'title': 'Basketball',
-      'date': 'Date: 22.10.2024',
+      'sport': 'Basketball',
+      'date': '22.10.2024',
       'time': '10:00',
-      'address': 'Address: Avenida do Brasil',
-      'field': 'Field: Clube Unidos do Estoril',
-      'availability': 'Team Availability: OPEN',
+      'address': 'Avenida do Brasil',
+      'field': 'Clube Unidos do Estoril',
+      'availability': 'OPEN',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
-      'title': 'Football',
-      'date': 'Date: 22.10.2024',
+      'sport': 'Football',
+      'date': '22.10.2024',
       'time': '10:00',
-      'address': 'Address: Avenida Adamastor',
-      'field': 'Field: Clube Desunidos do Estoril',
-      'availability': 'Team Availability: OPEN',
+      'address': 'Avenida Adamastor',
+      'field': 'Clube Desunidos do Estoril',
+      'availability': 'OPEN',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
-      'title': 'Football',
-      'date': 'Date: 22.11.2024',
+      'sport': 'Football',
+      'date': '22.11.2024',
       'time': '12:00',
-      'address': 'Address: Avenida Conceição Lopes',
-      'field': 'Field: Campo Bartolomeu',
-      'availability': 'Team Availability: CLOSED',
+      'address': 'Avenida Conceição Lopes',
+      'field': 'Campo Bartolomeu',
+      'availability': 'CLOSED',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
-      'title': 'Swimming',
-      'date': 'Date: 23.11.2024',
+      'sport': 'Swimming',
+      'date': '23.11.2024',
       'time': '21:00',
-      'address': 'Address: Rua Filo Lapa',
-      'field': 'Field: Piscinas Filo',
-      'availability': 'Team Availability: OPEN',
+      'address': 'Rua Filo Lapa',
+      'field': 'Piscinas Filo',
+      'availability': 'OPEN',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
-      'title': 'Basketball',
-      'date': 'Date: 23.11.2024',
+      'sport': 'Basketball',
+      'date': '23.11.2024',
       'time': '22:00',
-      'address': 'Address: Avenida dos missionarios',
-      'field': 'Field: Campo António Sérgio',
-      'availability': 'Team Availability: CLOSED',
+      'address': 'Avenida dos missionarios',
+      'field': 'Campo António Sérgio',
+      'availability': 'CLOSED',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
-      'title': 'Football',
-      'date': 'Date: 25.11.2024',
+      'sport': 'Football',
+      'date': '25.11.2024',
       'time': '19:00',
-      'address': 'Address: Rua Duarte Rei',
-      'field': 'Field: Escola Secundária Reitor Mor',
-      'availability': 'Team Availability: OPEN',
+      'address': 'Rua Duarte Rei',
+      'field': 'Escola Secundária Reitor Mor',
+      'availability': 'OPEN',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
-      'title': 'Tennis',
-      'date': 'Date: 27.11.2024',
+      'sport': 'Tennis',
+      'date': '27.11.2024',
       'time': '15:00',
-      'address': 'Address: Avenida de baixo',
-      'field': 'Field: Campo De cima',
-      'availability': 'Team Availability: OPEN',
+      'address': 'Avenida de baixo',
+      'field': 'Campo De cima',
+      'availability': 'OPEN',
       'imagePath': 'lib/images/Gecko.png',
     },
     {
-      'title': 'Football',
-      'date': 'Date: 23.11.2024',
+      'sport': 'Football',
+      'date': '23.11.2024',
       'time': '15:00',
-      'address': 'Address: Avenida de cima',
-      'field': 'Field: Campo de baixo',
-      'availability': 'Team Availability: CLOSED',
+      'address': 'Avenida de cima',
+      'field': 'Campo de baixo',
+      'availability': 'CLOSED',
       'imagePath': 'lib/images/Gecko.png',
     },
   ];
-
 
   @override
   void initState() {
     super.initState();
     selectedSports = List.from(sportsFilters); // Initially select all sports
+    filteredEvent = List.from(eventCards); // Initialize filteredEvent with all event cards
   }
   
   @override
@@ -132,10 +134,10 @@ class SearchPage extends StatefulWidget {
       showOpenTeam = false;
       selectedStartDate = null;
       selectedEndDate = null;
-      // Add any other filter resets here
+      selectedSortOption = ''; // Reset the sort option
+      filteredEvent = List.from(eventCards); // Reset filteredEvent to all events
     });
   }
-
 
   void showFilterDialog() {
     showDialog(
@@ -152,95 +154,112 @@ class SearchPage extends StatefulWidget {
                   children: [
                     const Text(
                       'Sort By',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                    TextField(
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedSortOption.isEmpty ? null : selectedSortOption,
+                      hint: const Text(
+                        'Select sorting option',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Sport', child: Text('Sport')),
+                        DropdownMenuItem(value: 'Date', child: Text('Date')),
+                        DropdownMenuItem(value: 'Time', child: Text('Time')),
+                        DropdownMenuItem(value: 'Address', child: Text('Address')),
+                        DropdownMenuItem(value: 'Field', child: Text('Field')),
+                        DropdownMenuItem(value: 'Availability', child: Text('Availability')),
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedSortOption = newValue ?? ''; // Update the selected sort option
+                        });
+                      },
                       decoration: InputDecoration(
-                        hintText: 'Sort by',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: const Color.fromARGB(255, 255, 255, 255),
+                        fillColor: Colors.grey.shade200,
                       ),
+                      style: const TextStyle(color: Colors.black),
+                      dropdownColor: Colors.lightGreenAccent[100],
+                      iconEnabledColor: Colors.black,
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       'Date Range',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Start Date Picker
-                          TextButton(
-                            onPressed: () async {
-                              final DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: selectedStartDate ?? DateTime.now(),
-                                firstDate: DateTime.now(), // Start from today
-                                lastDate: DateTime(2100),
-                              );
-                              if (pickedDate != null) {
-                                setState(() {
-                                  selectedStartDate = pickedDate;
-                                  // Clear the end date if it no longer fits the range
-                                  if (selectedEndDate != null &&
-                                      selectedEndDate!.isBefore(selectedStartDate!)) {
-                                    selectedEndDate = null;
-                                  }
-                                });
-                              }
-                            },
-                            child: Text(
-                              selectedStartDate != null
-                                  ? 'From: ${selectedStartDate!.toString().substring(0, 10)}'
-                                  : 'Select Start Date',
-                              style: TextStyle(color: Colors.blue),
-                            ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Start Date Picker
+                        TextButton(
+                          onPressed: () async {
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: selectedStartDate ?? DateTime.now(),
+                              firstDate: DateTime.now(), // Start from today
+                              lastDate: DateTime(2100),
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                selectedStartDate = pickedDate;
+                                // Clear the end date if it no longer fits the range
+                                if (selectedEndDate != null &&
+                                    selectedEndDate!.isBefore(selectedStartDate!)) {
+                                  selectedEndDate = null;
+                                }
+                              });
+                            }
+                          },
+                          child: Text(
+                            selectedStartDate != null
+                                ? 'From: ${selectedStartDate!.toString().substring(0, 10)}'
+                                : 'Select Start Date',
+                            style: TextStyle(color: Colors.blue),
                           ),
-                          
-                          // End Date Picker
-                          TextButton(
-                            onPressed: () async {
-                              final DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: selectedEndDate ?? (selectedStartDate ?? DateTime.now()),
-                                firstDate: selectedStartDate ?? DateTime.now(), // Start from selectedStartDate or today
-                                lastDate: DateTime(2100),
-                              );
-                              if (pickedDate != null) {
-                                setState(() {
-                                  selectedEndDate = pickedDate;
-                                });
-                              }
-                            },
-                            child: Text(
-                              selectedEndDate != null
-                                  ? 'To: ${selectedEndDate!.toString().substring(0, 10)}'
-                                  : 'Select End Date',
-                              style: TextStyle(color: Colors.blue),
-                            ),
+                        ),
+                        // End Date Picker
+                        TextButton(
+                          onPressed: () async {
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: selectedEndDate ?? (selectedStartDate ?? DateTime.now()),
+                              firstDate: selectedStartDate ?? DateTime.now(), // Start from selectedStartDate or today
+                              lastDate: DateTime(2100),
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                selectedEndDate = pickedDate;
+                              });
+                            }
+                          },
+                          child: Text(
+                            selectedEndDate != null
+                                ? 'To: ${selectedEndDate!.toString().substring(0, 10)}'
+                                : 'Select End Date',
+                            style: TextStyle(color: Colors.blue),
                           ),
-
-                          // Other filters, input fields, etc.
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 8),
                     const Text(
                       'Hour Range',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
                     Row(
                       children: [
                         Expanded(
@@ -276,11 +295,11 @@ class SearchPage extends StatefulWidget {
                     if (!isFree) ...[
                       const Text(
                         'Price Range',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
                       Row(
                         children: [
                           Expanded(
@@ -316,11 +335,11 @@ class SearchPage extends StatefulWidget {
                     const SizedBox(height: 8),
                     const Text(
                       'Maximum Distance',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
                     TextField(
                       decoration: InputDecoration(
                         hintText: '20',
@@ -387,6 +406,28 @@ class SearchPage extends StatefulWidget {
                 TextButton(
                   onPressed: () {
                     setState(() {
+                      if (selectedSortOption.isNotEmpty) {
+                        switch (selectedSortOption) {
+                          case 'Sport':
+                            eventCards.sort((a, b) => a['sport']!.compareTo(b['sport']!));
+                            break;
+                          case 'Date':
+                            eventCards.sort((a, b) => a['date']!.compareTo(b['date']!));
+                            break;
+                          case 'Time':
+                            eventCards.sort((a, b) => a['time']!.compareTo(b['time']!));
+                            break;
+                          case 'Address':
+                            eventCards.sort((a, b) => a['address']!.compareTo(b['address']!));
+                            break;
+                          case 'Field':
+                            eventCards.sort((a, b) => a['field']!.compareTo(b['field']!));
+                            break;
+                          case 'Availability':
+                            eventCards.sort((a, b) => a['availability']!.compareTo(b['availability']!));
+                            break;
+                        }
+                      }
                       Navigator.of(context).pop(); 
                     });
                   },
@@ -402,9 +443,9 @@ class SearchPage extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Filter the list based on searchQuery to match all text fields
+    // Filter the list based on searchQuery and showOpenTeam to match all text fields
     final filteredEvent = eventCards.where((event) {
-      final title = event['title']!.toLowerCase();
+      final sport = event['sport']!.toLowerCase();
       final address = event['address']!.toLowerCase();
       final availability = event['availability']!.toLowerCase();
       final field = event['field']!.toLowerCase();
@@ -413,18 +454,22 @@ class SearchPage extends StatefulWidget {
       final query = _searchController.text.toLowerCase();
 
       // Check if any of the fields contain the search query
-      final matchesSearchQuery = title.contains(query) ||
+      final matchesSearchQuery = sport.contains(query) ||
             address.contains(query) ||
             availability.contains(query) ||
             time.contains(query) ||
             date.contains(query) ||
             field.contains(query);
 
-    // Check if the sport title is in selected sports
-    final matchesSelectedSports = selectedSports.contains(event['title']);
+      // Check if the sport title is in selected sports
+      final matchesSelectedSports = selectedSports.contains(event['sport']);
 
-    // Include event if it matches both the search query and selected sports
-    return matchesSearchQuery && matchesSelectedSports;
+      // Check availability based on the showOpenTeam filter
+      final isOpen = availability.contains('OPEN'); // Assuming availability contains 'OPEN' or 'CLOSED'
+      final matchesAvailability = showOpenTeam ? isOpen : true; // If showOpenTeam is true, only show open teams
+
+      // Include event if it matches search query, selected sports, and availability
+      return matchesSearchQuery && matchesSelectedSports && matchesAvailability;
 
     }).toList();
 
@@ -439,33 +484,30 @@ class SearchPage extends StatefulWidget {
               children: [
                 Expanded(
                   child: TextField(
-                        controller: _searchController,
-                        onChanged: (value) {
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    style: TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Ionicons.search),
+                      hintText: 'Search',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade200,
+                      suffixIcon: IconButton(
+                        icon: const Icon(Ionicons.close_circle, color: Colors.red), // Cross icon
+                        onPressed: () {
                           setState(() {
-                            
+                            _searchController.clear();
                           });
                         },
-                        style: TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Ionicons.search),
-                          hintText: 'Search',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          suffixIcon: IconButton(
-                            icon: const Icon(Ionicons.close_circle, color: Colors.red), // Cross icon
-                            onPressed: () {
-                              setState(() {
-                                _searchController.clear();
-                              });
-                            },
-                          ),
-                        ),
-                      
                       ),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 IconButton(
@@ -500,24 +542,23 @@ class SearchPage extends StatefulWidget {
             ),
           ),
           const SizedBox(height: 10),
-         Expanded(
-          child: ListView.builder(
-            itemCount: filteredEvent.length,
-            itemBuilder: (context, index) {
-              final event = filteredEvent[index];
-              return EventCard(
-                title: event['title']!,
-                address: event['address']!,
-                availability: event['availability']!,
-                field: event['field']!,
-                date: event['date']!,
-                time: event['time']!,
-                imagePath: event['imagePath']!,
-              );
-            },
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredEvent.length,
+              itemBuilder: (context, index) {
+                final event = filteredEvent[index];
+                return EventCard(
+                  sport: event['sport']!,
+                  address: event['address']!,
+                  availability: event['availability']!,
+                  field: event['field']!,
+                  date: event['date']!,
+                  time: event['time']!,
+                  imagePath: event['imagePath']!,
+                );
+              },
+            ),
           ),
-        ),
-
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -564,13 +605,6 @@ class SearchPage extends StatefulWidget {
       toolbarHeight: 70,
       centerTitle: true,
       backgroundColor: Colors.red,
-      /*title: const Text(
-        'SEARCH',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          letterSpacing: 2,
-        ),
-      ),*/
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

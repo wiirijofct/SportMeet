@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
-  final String title;
+  final String sport;
   final String date;
   final String address;
   final String field;
@@ -11,7 +11,7 @@ class EventCard extends StatelessWidget {
 
   const EventCard({
     Key? key,
-    required this.title,
+    required this.sport,
     required this.date,
     required this.address,
     required this.field,
@@ -40,7 +40,7 @@ class EventCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    sport,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.0, // Reduced font size
@@ -48,7 +48,7 @@ class EventCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    date,
+                    'Date: $date',
                     style: TextStyle(fontSize: 14.0), // Reduced font size
                   ),
                   if (time != null)
@@ -57,15 +57,15 @@ class EventCard extends StatelessWidget {
                       style: TextStyle(fontSize: 14.0), // Reduced font size
                     ),
                   Text(
-                    address,
+                    'Address: $address',
                     style: TextStyle(fontSize: 14.0), // Reduced font size
                   ),
                   Text(
-                    field,
+                    'Field: $field',
                     style: TextStyle(fontSize: 14.0), // Reduced font size
                   ),
                   Text(
-                    availability,
+                    'Team Availability: $availability',
                     style: TextStyle(
                       fontSize: 14.0, // Reduced font size
                       color: availability.contains('OPEN')

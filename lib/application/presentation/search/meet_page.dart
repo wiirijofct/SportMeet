@@ -102,7 +102,13 @@ class _MeetPageState extends State<MeetPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Sort By'),
+                    const Text(
+                      'Sort By',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      ),
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Sort by',
@@ -115,7 +121,13 @@ class _MeetPageState extends State<MeetPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text('Date'),
+                    const Text(
+                      'Date Range',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      ),
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Select Date',
@@ -128,7 +140,13 @@ class _MeetPageState extends State<MeetPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text('Hour Range'),
+                    const Text(
+                      'Hour Range',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      ),
                     Row(
                       children: [
                         Expanded(
@@ -162,7 +180,13 @@ class _MeetPageState extends State<MeetPage> {
                     ),
                     const SizedBox(height: 8),
                     if (!isFree) ...[
-                      const Text('Price Range'),
+                      const Text(
+                        'Price Range',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       Row(
                         children: [
                           Expanded(
@@ -196,7 +220,13 @@ class _MeetPageState extends State<MeetPage> {
                       ),
                     ],
                     const SizedBox(height: 8),
-                    const Text('Maximum Distance'),
+                    const Text(
+                      'Maximum Distance',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      ),
                     TextField(
                       decoration: InputDecoration(
                         hintText: '20',
@@ -212,7 +242,13 @@ class _MeetPageState extends State<MeetPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Show Open Teams'),
+                        const Text(
+                          'Show Open Teams',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         Switch(
                           value: showOpenTeam,
                           onChanged: (value) {
@@ -226,7 +262,13 @@ class _MeetPageState extends State<MeetPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Free'),
+                        const Text(
+                          'Free',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         Switch(
                           value: isFree,
                           onChanged: (value) {

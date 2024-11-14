@@ -177,7 +177,7 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   if (selectedSports.contains('Basketball')) {
                     return EventCard(
-                      title: 'Basketball',
+                      sport: 'Basketball',
                       date: 'Date: 22.10.2024',
                       time: 'Time: 10:00',
                       address: 'Address: Avenida do Brasil',

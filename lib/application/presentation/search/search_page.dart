@@ -9,6 +9,7 @@ class SearchPage extends StatefulWidget {
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
+
  class _SearchPageState extends State<SearchPage> {
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
   List<String> selectedSports = [];
@@ -16,7 +17,7 @@ class SearchPage extends StatefulWidget {
   bool showOpenTeam = false;
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
-  String searchQuery = ''; // Variável para armazenar o termo de pesquisa
+  String searchQuery = '';
 
 
   @override
@@ -330,14 +331,14 @@ class SearchPage extends StatefulWidget {
                 Expanded(
                   child: TextField(
                         onChanged: (value) {
-                          searchQuery = value; // Atualiza o termo de pesquisa
+                          searchQuery = value; 
                         },
                         onSubmitted: (value) {
                           setState(() {
-                            searchQuery = value; // Aplica o termo de pesquisa ao pressionar "Enter"
+                            searchQuery = value;
                           });
                         },
-                        style: TextStyle(color: Colors.black), // Define o texto como preto
+                        style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Ionicons.search),
                           hintText: 'Search',
@@ -403,16 +404,6 @@ class SearchPage extends StatefulWidget {
                   availability: 'Team Availability: OPEN',
                   imagePath: 'lib/images/Gecko.png',
                 );
-              } else {
-                return EventCard(
-                  title: 'VAZIO',
-                  date: 'Date: 22.10.2024',
-                  time: '10:00',
-                  address: 'Address: Avenida do Brasil',
-                  field: 'Field: Clube Unidos do Estoril',
-                  availability: 'Team Availability: OPEN',
-                  imagePath: 'lib/images/Gecko.png',
-                ); // Exibe um container vazio se o filtro não corresponde
               }
             },
           ),

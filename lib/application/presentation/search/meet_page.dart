@@ -13,12 +13,13 @@ class MeetPage extends StatefulWidget {
 class _MeetPageState extends State<MeetPage> {
   bool isFree = false;
   bool showOpenTeam = false;
+  String searchQuery = '';
 
   // Different people specific to the MeetPage
   final List<Map<String, String>> meetPeople = [
     {
       'title': 'Maria Inês Silva',
-      'address': 'Municipality: Amadora',
+      'address': 'Municipality: Amadora',    
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Basketball, Tennis',
       'imagePath': 'lib/images/Gecko.png',
@@ -249,6 +250,21 @@ class _MeetPageState extends State<MeetPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Filter the list based on searchQuery to match all text fields
+    final filteredPeople = meetPeople.where((person) {
+      final title = person['title']!.toLowerCase();
+      final address = person['address']!.toLowerCase();
+      final availability = person['availability']!.toLowerCase();
+      final sports = person['sports']!.toLowerCase();
+      final query = searchQuery.toLowerCase();
+
+      // Check if any of the fields contain the search query
+      return title.contains(query) ||
+            address.contains(query) ||
+            availability.contains(query) ||
+            sports.contains(query);
+    }).toList();
+
     return Scaffold(
       appBar: _buildAppBar(),
       body: Column(
@@ -259,7 +275,16 @@ class _MeetPageState extends State<MeetPage> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                    child: TextField(
+                        onChanged: (value) {
+                        searchQuery = value; 
+                      },
+                      onSubmitted: (value) {
+                      setState(() {
+                        searchQuery = value;
+                      });
+                    },
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Ionicons.search),
                       hintText: 'Search',
@@ -283,15 +308,15 @@ class _MeetPageState extends State<MeetPage> {
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-              itemCount: meetPeople.length,
+              itemCount: filteredPeople.length,
               itemBuilder: (context, index) {
-                final event = meetPeople[index];
+                final person = filteredPeople[index];
                 return PersonCard(
-                  title: event['title']!,
-                  address: event['address']!,
-                  availability: event['availability']!,
-                  sports: event['sports']!,
-                  imagePath: event['imagePath']!,
+                  title: person['title']!,
+                  address: person['address']!,
+                  availability: person['availability']!,
+                  sports: person['sports']!,
+                  imagePath: person['imagePath']!,
                 );
               },
             ),

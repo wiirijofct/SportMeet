@@ -16,8 +16,8 @@ class SearchPage extends StatefulWidget {
   bool isFree = false;
   bool showOpenTeam = false;
   DateTime? selectedStartDate;
-  DateTime? selectedEndDate;    
-  String searchQuery = '';
+  DateTime? selectedEndDate;
+  final TextEditingController _searchController = TextEditingController();
 
   // Different people specific to the MeetPage
   final List<Map<String, String>> eventCards = [
@@ -100,6 +100,13 @@ class SearchPage extends StatefulWidget {
   void initState() {
     super.initState();
     selectedSports = List.from(sportsFilters); // Initially select all sports
+  }
+  
+  @override
+  void dispose() {
+    // Dispose of the controller when the widget is removed
+    _searchController.dispose();
+    super.dispose();
   }
 
   void toggleSportFilter(String sport) {
@@ -403,7 +410,7 @@ class SearchPage extends StatefulWidget {
       final field = event['field']!.toLowerCase();
       final time = event['time']!.toLowerCase();
       final date = event['date']!.toLowerCase();
-      final query = searchQuery.toLowerCase();
+      final query = _searchController.text.toLowerCase();
 
       // Check if any of the fields contain the search query
       final matchesSearchQuery = title.contains(query) ||
@@ -432,12 +439,10 @@ class SearchPage extends StatefulWidget {
               children: [
                 Expanded(
                   child: TextField(
+                        controller: _searchController,
                         onChanged: (value) {
-                          searchQuery = value; 
-                        },
-                        onSubmitted: (value) {
                           setState(() {
-                            searchQuery = value;
+                            
                           });
                         },
                         style: TextStyle(color: Colors.black),
@@ -450,6 +455,14 @@ class SearchPage extends StatefulWidget {
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade200,
+                          suffixIcon: IconButton(
+                            icon: const Icon(Ionicons.close_circle, color: Colors.red), // Cross icon
+                            onPressed: () {
+                              setState(() {
+                                _searchController.clear();
+                              });
+                            },
+                          ),
                         ),
                       
                       ),

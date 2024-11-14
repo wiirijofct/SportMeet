@@ -13,7 +13,7 @@ class MeetPage extends StatefulWidget {
 class _MeetPageState extends State<MeetPage> {
   bool isFree = false;
   bool showOpenTeam = false;
-  String searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
 
   // Different people specific to the MeetPage
   final List<Map<String, String>> meetPeople = [
@@ -80,6 +80,13 @@ class _MeetPageState extends State<MeetPage> {
       context,
       MaterialPageRoute(builder: (context) => const SearchPage()),
     );
+  }
+  
+  @override
+  void dispose() {
+    // Dispose of the controller when the widget is removed
+    _searchController.dispose();
+    super.dispose();
   }
 
   void showFilterDialog() {
@@ -256,7 +263,7 @@ class _MeetPageState extends State<MeetPage> {
       final address = person['address']!.toLowerCase();
       final availability = person['availability']!.toLowerCase();
       final sports = person['sports']!.toLowerCase();
-      final query = searchQuery.toLowerCase();
+      final query = _searchController.text.toLowerCase();
 
       // Check if any of the fields contain the search query
       return title.contains(query) ||
@@ -276,13 +283,12 @@ class _MeetPageState extends State<MeetPage> {
               children: [
                 Expanded(
                     child: TextField(
-                        onChanged: (value) {
-                        searchQuery = value; 
-                      },
-                      onSubmitted: (value) {
+                      controller: _searchController,
+                      onChanged: (value) {
                       setState(() {
-                        searchQuery = value;
-                      });
+                        
+                      }
+                      );
                     },
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
@@ -294,6 +300,14 @@ class _MeetPageState extends State<MeetPage> {
                       ),
                       filled: true,
                       fillColor: Colors.grey.shade200,
+                      suffixIcon: IconButton(
+                            icon: const Icon(Ionicons.close_circle, color: Colors.red), // Cross icon
+                            onPressed: () {
+                              setState(() {
+                                _searchController.clear();
+                              });
+                            },
+                          ),
                     ),
                   ),
                 ),

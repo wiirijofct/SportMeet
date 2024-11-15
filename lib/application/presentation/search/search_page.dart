@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
+import 'package:sport_meet/application/presentation/field_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -547,14 +548,32 @@ class _SearchPageState extends State<SearchPage> {
               itemCount: filteredEvent.length,
               itemBuilder: (context, index) {
                 final event = filteredEvent[index];
-                return EventCard(
-                  sport: event['sport']!,
-                  address: event['address']!,
-                  availability: event['availability']!,
-                  field: event['field']!,
-                  date: event['date']!,
-                  time: event['time']!,
-                  imagePath: event['imagePath']!,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => FieldPage(
+                          fieldName: event['field']!,
+                          location: event['address']!,
+                          imagePath: event['imagePath']!,
+                          schedule: event['date']!,
+                          contactEmail: 'sample@gmail.com',
+                          contactPhone: '999111333',
+                          pricing: '5p hora',
+                          upcomingEvents: eventCards,
+                        ),
+                      ),
+                    );
+                  },
+                  child: EventCard(
+                    sport: event['sport']!,
+                    address: event['address']!,
+                    availability: event['availability']!,
+                    field: event['field']!,
+                    date: event['date']!,
+                    time: event['time']!,
+                    imagePath: event['imagePath']!,
+                  ),
                 );
               },
             ),
@@ -590,9 +609,6 @@ class _SearchPageState extends State<SearchPage> {
         onTap: (index) {
           if (index == 2) {
             Navigator.of(context).pop();
-            // Navigator.of(context).pushReplacement(
-            //   MaterialPageRoute(builder: (context) => const HomePage()),
-            // );
           }
         },
       ),

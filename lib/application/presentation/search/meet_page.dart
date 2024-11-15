@@ -36,7 +36,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Basketball, Tennis',
       'gender': 'Gender: Female',
-      'imagePath': 'lib/images/Gecko.png',
+      'imagePath': 'lib/images/f1.png',
     },
     {
       'title': 'Mariana Coelho',
@@ -44,7 +44,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Football, Tennis, Voleyball, Handball',
       'gender': 'Gender: Female',
-      'imagePath': 'lib/images/Gecko.png',
+      'imagePath': 'lib/images/f2.png',
     },
     {
       'title': 'Rafael Santos',
@@ -52,7 +52,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: Weekends',
       'sports': 'Favorite Sports: Boxing',
       'gender': 'Gender: Male',
-      'imagePath': 'lib/images/Gecko.png',
+      'imagePath': 'lib/images/m1.png',
     },
     {
       'title': 'Hugo Canelas',
@@ -60,7 +60,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: Wednesdays, Fridays',
       'sports': 'Favorite Sports: Basketball',
       'gender': 'Gender: Male',
-      'imagePath': 'lib/images/Gecko.png',
+      'imagePath': 'lib/images/m2.png',
     },
     {
       'title': 'Joana Gonçalves',
@@ -68,7 +68,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: Tuesdays',
       'sports': 'Favorite Sports: Tennis',
       'gender': 'Gender: Female',
-      'imagePath': 'lib/images/Gecko.png'
+      'imagePath': 'lib/images/f3.png'
     },
     {
       'title': 'Pedro Pequeno',
@@ -76,7 +76,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Handball, Football',
       'gender': 'Gender: Male',
-      'imagePath': 'lib/images/Gecko.png',
+      'imagePath': 'lib/images/m3.png',
     },
     {
       'title': 'Gonçalo Marques',
@@ -84,7 +84,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: Tuesdays, Fridays',
       'sports': 'Favorite Sports: Football',
       'gender': 'Gender: Male',
-      'imagePath': 'lib/images/Gecko.png',
+      'imagePath': 'lib/images/m4.png',
     },
     {
       'title': 'Inês Bartolo',
@@ -92,7 +92,7 @@ class _MeetPageState extends State<MeetPage> {
       'availability': 'Availability: All days',
       'sports': 'Favorite Sports: Basketball',
       'gender': 'Gender: Female',
-      'imagePath': 'lib/images/Gecko.png',
+      'imagePath': 'lib/images/f4.png',
     },
   ];
 
@@ -155,6 +155,69 @@ class _MeetPageState extends State<MeetPage> {
     }).toList();
   });
 }
+
+void _showPersonDetails(Map<String, String> person) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(person['title']!, style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold,),), // Nome da pessoa
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Centraliza a imagem no topo
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                person['imagePath']!,
+                width: 150, // Tamanho ajustado da imagem
+                height: 150, // Tamanho ajustado da imagem
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 10), // Espaço entre a imagem e os esportes favoritos
+            // Esportes favoritos (texto pequeno e preto)
+            Text(
+              person['sports']!,
+              style: TextStyle(
+                fontSize: 12, // Tamanho pequeno
+                color: Colors.black, // Cor preta
+              ),
+            ),
+            const SizedBox(height: 20), // Espaço entre os esportes e os botões
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Botão de Adicionar Amigo
+                ElevatedButton(
+                  onPressed: () {
+                    // Lógica para adicionar como amigo
+                    Navigator.pop(context);
+                    // Aqui você pode adicionar a lógica de adicionar amigo
+                  },
+                  child: const Text('Adicionar Amigo'),
+                ),
+                const SizedBox(width: 10), // Espaço entre os botões
+                // Botão de Enviar Mensagem
+                ElevatedButton(
+                  onPressed: () {
+                    // Lógica para enviar mensagem
+                    Navigator.pop(context);
+                    // Aqui você pode adicionar a lógica de enviar mensagem
+                  },
+                  child: const Text('Enviar Mensagem'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 
   void showFilterDialog() {
     showDialog(
@@ -429,13 +492,19 @@ class _MeetPageState extends State<MeetPage> {
               itemCount: filteredEvent.length,
               itemBuilder: (context, index) {
                 final person = filteredEvent[index]; // Usa filteredEvent ao invés de filteredPeople
-                return PersonCard(
-                  title: person['title']!,
-                  address: person['address']!,
-                  availability: person['availability']!,
-                  sports: person['sports']!,
-                  imagePath: person['imagePath']!,
-                  gender: person['gender']!,
+                return GestureDetector(
+                  onTap: () {
+                    // Mostra o pop-up com as informações da pessoa
+                    _showPersonDetails(person);
+                  },
+                  child: PersonCard(
+                    title: person['title']!,
+                    address: person['address']!,
+                    availability: person['availability']!,
+                    sports: person['sports']!,
+                    imagePath: person['imagePath']!,
+                    gender: person['gender']!,
+                  ),
                 );
               },
             ),

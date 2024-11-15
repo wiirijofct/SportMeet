@@ -81,6 +81,14 @@ flutter:
     - lib/images/Gecko.png
     - lib/images/Logo.png
     - lib/images/Logo2.png
+    - lib/images/f1.png
+    - lib/images/f2.png
+    - lib/images/f3.png
+    - lib/images/f4.png
+    - lib/images/m1.png
+    - lib/images/m2.png
+    - lib/images/m3.png
+    - lib/images/m4.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

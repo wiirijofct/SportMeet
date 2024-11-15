@@ -4,17 +4,17 @@ ThemeData darkTheme = ThemeData(
   
   colorScheme: const ColorScheme.dark(
     brightness: Brightness.dark,
-    primary: Color.fromARGB(255, 0, 63, 56),
-    surface: Color.fromARGB(239, 0, 93, 65),
-    tertiary: Color.fromARGB(255, 2, 68, 54),
-    onPrimary: Color.fromARGB(255, 3, 55, 44),
+    primary: Color.fromARGB(255, 180, 50, 50),
+    surface: Color.fromARGB(255, 221, 221, 221),
+    tertiary: Color.fromARGB(255, 180, 50, 50),
+    onPrimary: Color.fromARGB(255, 180, 50, 50),
     onSecondary: Colors.white,
     onTertiary: Colors.white,
     inversePrimary: Color.fromARGB(255, 206, 206, 206),
-    primaryContainer: Color.fromARGB(239, 156, 170, 167),
+    primaryContainer: Color.fromARGB(238, 170, 156, 156),
     onSecondaryContainer: Color.fromARGB(255, 219, 219, 219),
-     onTertiaryContainer:Color(0xF000CE90),
-      onSurfaceVariant: Color.fromARGB(255, 3, 55, 44),
+     onTertiaryContainer:Color.fromARGB(239, 206, 0, 0),
+      onSurfaceVariant: Color.fromARGB(255, 55, 3, 3),
   ),
   textTheme: const TextTheme(
     titleLarge: TextStyle(

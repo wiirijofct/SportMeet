@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -11,12 +12,19 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
   List<String> selectedSports = [];
+  List<String> selectedTeamAvailability = ['OPEN', 'CLOSED'];
   bool isFree = false;
   bool showOpenTeam = false;
+
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
+  TimeOfDay? selectedStartTime;
+  TimeOfDay? selectedEndTime;
+
+
   final TextEditingController _searchController = TextEditingController();
   String selectedSortOption = ''; // Variable to hold the selected sort option
   List<Map<String, String>> filteredEvent = []; // Class variable for filtered events
@@ -130,16 +138,65 @@ class _SearchPageState extends State<SearchPage> {
   void resetFilters() {
     setState(() {
       selectedSports = List.from(sportsFilters); // Or an empty list if you want no selections
+      selectedTeamAvailability = ['OPEN', 'CLOSED'];
       isFree = false;
       showOpenTeam = false;
       selectedStartDate = null;
       selectedEndDate = null;
+      selectedStartTime = null;
+      selectedEndTime = null;
       selectedSortOption = ''; // Reset the sort option
       filteredEvent = List.from(eventCards); // Reset filteredEvent to all events
     });
   }
 
-  void showFilterDialog() {
+  
+  void applyFilters() {
+  setState(() {
+    // Filter the events based on the selected filters
+    filteredEvent = eventCards.where((event) {
+      final sportsMatch = selectedSports.isEmpty || selectedSports.any((sport) => event['sport']!.contains(sport));
+      final matchesAvailability = selectedTeamAvailability.isEmpty || selectedTeamAvailability.any((availability) => event['availability']!.contains(availability));
+
+      // Parse the event date
+      DateTime eventDate = DateTime.parse(event['date']!.split('.').reversed.join('-')); // Convert to DateTime
+      // Parse the event time
+      TimeOfDay eventTime = TimeOfDay(
+        hour: int.parse(event['time']!.split(':')[0]),
+        minute: int.parse(event['time']!.split(':')[1]),
+      );
+
+      // Check if the event date is within the selected date range
+      bool dateInRange = true;
+      if (selectedStartDate != null && selectedEndDate != null) {
+        // Both dates are selected
+        dateInRange = eventDate.isAfter(selectedStartDate!) && eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))); // Inclusive of end date
+      } else if (selectedStartDate != null) {
+        // Only start date is selected
+        dateInRange = eventDate.isAfter(selectedStartDate!.subtract(Duration(days: 1))); // Inclusive of start date
+      } else if (selectedEndDate != null) {
+        // Only end date is selected
+        dateInRange = eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))) && eventDate.isAfter(DateTime.now()); // Inclusive of end date
+      }
+
+      // Check if the event time is within the selected time range
+      bool timeInRange = true;
+      if (selectedStartTime != null && selectedEndTime != null) {
+        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute)) &&
+                      (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
+      } else if (selectedStartTime != null) {
+        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute));
+      } else if (selectedEndTime != null) {
+        timeInRange = (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
+      }
+      
+      return sportsMatch && matchesAvailability && dateInRange && timeInRange;
+    }).toList();
+  });
+}
+
+
+   void showFilterDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -159,277 +216,252 @@ class _SearchPageState extends State<SearchPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    DropdownButtonFormField<String>(
-                      value: selectedSortOption.isEmpty ? null : selectedSortOption,
-                      hint: const Text(
-                        'Select sorting option',
+                    SizedBox(height: 16.0),
+
+                    // Multi-select dropdown para esportes favoritos
+                   /* MultiSelectDialogField(
+                      items: [
+                        MultiSelectItem('Basketball', 'Basketball'),
+                        MultiSelectItem('Tennis', 'Tennis'),
+                        MultiSelectItem('Swimming', 'Swimming'),
+                        MultiSelectItem('Football', 'Football'),
+                      ],
+                      listType: MultiSelectListType.LIST,
+                      title: const Text("Sports", 
+                        style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      buttonText: const Text(
+                        "Sports",
                         style: TextStyle(color: Colors.black),
                       ),
-                      items: const [
-                        DropdownMenuItem(value: 'Sport', child: Text('Sport')),
-                        DropdownMenuItem(value: 'Date', child: Text('Date')),
-                        DropdownMenuItem(value: 'Time', child: Text('Time')),
-                        DropdownMenuItem(value: 'Address', child: Text('Address')),
-                        DropdownMenuItem(value: 'Field', child: Text('Field')),
-                        DropdownMenuItem(value: 'Availability', child: Text('Availability')),
-                      ],
-                      onChanged: (String? newValue) {
+                      initialValue: selectedSports,
+                      onConfirm: (values) {
                         setState(() {
-                          selectedSortOption = newValue ?? ''; // Update the selected sort option
+                          selectedSports = values.cast<String>();
                         });
                       },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
+                      chipDisplay: MultiSelectChipDisplay(
+                        chipColor: const Color.fromARGB(255, 193, 50, 74),
+                        textStyle: const TextStyle(color: Colors.black),
                       ),
-                      style: const TextStyle(color: Colors.black),
-                      dropdownColor: Colors.lightGreenAccent[100],
-                      iconEnabledColor: Colors.black,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Date Range',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
+                      buttonIcon: const Icon(
+                        Icons.arrow_drop_down, // Dropdown arrow icon
+                        color: Colors.black, // Set the arrow color to black
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Start Date Picker
-                        TextButton(
-                          onPressed: () async {
-                            final DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: selectedStartDate ?? DateTime.now(),
-                              firstDate: DateTime.now(), // Start from today
-                              lastDate: DateTime(2100),
-                            );
-                            if (pickedDate != null) {
-                              setState(() {
-                                selectedStartDate = pickedDate;
-                                // Clear the end date if it no longer fits the range
-                                if (selectedEndDate != null &&
-                                    selectedEndDate!.isBefore(selectedStartDate!)) {
-                                  selectedEndDate = null;
-                                }
-                              });
-                            }
-                          },
-                          child: Text(
-                            selectedStartDate != null
-                                ? 'From: ${selectedStartDate!.toString().substring(0, 10)}'
-                                : 'Select Start Date',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                        // End Date Picker
-                        TextButton(
-                          onPressed: () async {
-                            final DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: selectedEndDate ?? (selectedStartDate ?? DateTime.now()),
-                              firstDate: selectedStartDate ?? DateTime.now(), // Start from selectedStartDate or today
-                              lastDate: DateTime(2100),
-                            );
-                            if (pickedDate != null) {
-                              setState(() {
-                                selectedEndDate = pickedDate;
-                              });
-                            }
-                          },
-                          child: Text(
-                            selectedEndDate != null
-                                ? 'To: ${selectedEndDate!.toString().substring(0, 10)}'
-                                : 'Select End Date',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
+                    SizedBox(height: 16.0),
+
+                    // Multi-select dropdown para esportes favoritos
+                    MultiSelectDialogField(
+                      items: [
+                        MultiSelectItem('OPEN', 'OPEN'),
+                        MultiSelectItem('CLOSED', 'CLOSED'),
                       ],
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Hour Range',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'From',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade200,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'To',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade200,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    if (!isFree) ...[
-                      const Text(
-                        'Price Range',
+                      listType: MultiSelectListType.LIST,
+                      title: const Text("Team Availability", 
                         style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'From',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey.shade200,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'To',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey.shade200,
-                              ),
-                            ),
-                          ),
-                        ],
+                      buttonText: const Text(
+                        "Team Availability",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      initialValue: selectedTeamAvailability,
+                      onConfirm: (values) {
+                        setState(() {
+                          selectedTeamAvailability = values.cast<String>();
+                        });
+                      },
+                      chipDisplay: MultiSelectChipDisplay(
+                        chipColor: const Color.fromARGB(255, 193, 50, 74),
+                        textStyle: const TextStyle(color: Colors.black),
+                      ),
+                      buttonIcon: const Icon(
+                        Icons.arrow_drop_down, // Dropdown arrow icon
+                        color: Colors.black, // Set the arrow color to black
+                      ),
+                    ),
+                  SizedBox(height: 16.0),*/
+
+                  // Sports Selection
+                  const Text("Sports", style: TextStyle(fontSize: 18.0)),
+                  ...sportsFilters.map((sport) {
+                    return CheckboxListTile(
+                      title: Text(sport),
+                      value: selectedSports.contains(sport),
+                      onChanged: (bool? selected) {
+                        setState(() {
+                          if (selected == true) {
+                            selectedSports.add(sport);
+                          } else {
+                            selectedSports.remove(sport);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+
+                  const SizedBox(height: 16.0),
+
+                  // Team Availability Selection
+                  const Text("Team Availability", style: TextStyle(fontSize: 18.0)),
+                  ...['OPEN', 'CLOSED'].map((availability) {
+                    return CheckboxListTile(
+                      title: Text(availability),
+                      value: selectedTeamAvailability.contains(availability),
+                      onChanged: (bool? selected) {
+                        setState(() {
+                          if (selected == true) {
+                            selectedTeamAvailability.add(availability);
+                          } else {
+                            selectedTeamAvailability.remove(availability);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                  // Date Range Selection
+                  const Text(
+                    'Select Date Range',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedStartDate ?? DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2100),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              selectedStartDate = pickedDate;
+                            });
+                          }
+                        },
+                        child: Text(
+                          selectedStartDate != null
+                              ? 'From: ${selectedStartDate!.toLocal().toString().split(' ')[0]}'
+                              : 'Select Start Date',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          final DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedEndDate ?? (selectedStartDate ?? DateTime.now()),
+                            firstDate: selectedStartDate ?? DateTime.now(),
+                            lastDate: DateTime(2100),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              selectedEndDate = pickedDate;
+                            });
+                          }
+                        },
+                        child: Text(
+                          selectedEndDate != null
+                              ? 'To: ${selectedEndDate!.toLocal().toString().split(' ')[0]}'
+                              : 'Select End Date',
+                          style: TextStyle(color: Colors.blue),
+                        ),
                       ),
                     ],
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Maximum Distance',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  SizedBox(height: 16.0),
+                  const Text(
+                    'Select Time Range',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: '20',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Show Open Teams',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Switch(
-                          value: showOpenTeam,
-                          onChanged: (value) {
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: selectedStartTime ?? TimeOfDay.now(),
+                          );
+                          if (pickedTime != null) {
                             setState(() {
-                              showOpenTeam = value;
+                              selectedStartTime = pickedTime;
                             });
-                          },
+                          }
+                        },
+                        child: Text(
+                          selectedStartTime != null
+                              ? 'From: ${selectedStartTime!.format(context)}'
+                              : 'Select Start Time',
+                          style: TextStyle(color: Colors.blue),
                         ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Free',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Switch(
-                          value: isFree,
-                          onChanged: (value) {
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          final TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: selectedEndTime ?? TimeOfDay.now(),
+                          );
+                          if (pickedTime != null) {
                             setState(() {
-                              isFree = value;
+                              selectedEndTime = pickedTime;
                             });
-                          },
+                          }
+                        },
+                        child: Text(
+                          selectedEndTime != null
+                              ? 'To: ${selectedEndTime!.format(context)}'
+                              : 'Select End Time',
+                          style: TextStyle(color: Colors.blue),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+            ),
               actions: [
-                TextButton(
-                  onPressed: () {
-                    resetFilters(); 
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Reset', style: TextStyle(color: Colors.red)),
+                 TextButton(
+                onPressed: () {
+                  resetFilters(); // Reseta todos os filtros
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Clear Filters'),
                 ),
                 TextButton(
                   onPressed: () {
-                    setState(() {
-                      if (selectedSortOption.isNotEmpty) {
-                        switch (selectedSortOption) {
-                          case 'Sport':
-                            eventCards.sort((a, b) => a['sport']!.compareTo(b['sport']!));
-                            break;
-                          case 'Date':
-                            eventCards.sort((a, b) => a['date']!.compareTo(b['date']!));
-                            break;
-                          case 'Time':
-                            eventCards.sort((a, b) => a['time']!.compareTo(b['time']!));
-                            break;
-                          case 'Address':
-                            eventCards.sort((a, b) => a['address']!.compareTo(b['address']!));
-                            break;
-                          case 'Field':
-                            eventCards.sort((a, b) => a['field']!.compareTo(b['field']!));
-                            break;
-                          case 'Availability':
-                            eventCards.sort((a, b) => a['availability']!.compareTo(b['availability']!));
-                            break;
-                        }
-                      }
-                      Navigator.of(context).pop(); 
-                    });
+                    applyFilters(); // Aplica os filtros selecionados
+                    Navigator.of(context).pop();
                   },
                   child: const Text('Apply'),
                 ),
@@ -463,13 +495,42 @@ class _SearchPageState extends State<SearchPage> {
 
       // Check if the sport title is in selected sports
       final matchesSelectedSports = selectedSports.contains(event['sport']);
+      final matchesTeamAvailability = selectedTeamAvailability.contains(event['availability']);
 
-      // Check availability based on the showOpenTeam filter
-      final isOpen = availability.contains('OPEN'); // Assuming availability contains 'OPEN' or 'CLOSED'
-      final matchesAvailability = showOpenTeam ? isOpen : true; // If showOpenTeam is true, only show open teams
+      // Parse the event date
+      DateTime eventDate = DateTime.parse(event['date']!.split('.').reversed.join('-')); // Convert to DateTime
+      // Parse the event time
+      TimeOfDay eventTime = TimeOfDay(
+        hour: int.parse(event['time']!.split(':')[0]),
+        minute: int.parse(event['time']!.split(':')[1]),
+      );
+
+      // Check if the event date is within the selected date range
+      bool dateInRange = true;
+      if (selectedStartDate != null && selectedEndDate != null) {
+        // Both dates are selected
+        dateInRange = eventDate.isAfter(selectedStartDate!) && eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))); // Inclusive of end date
+      } else if (selectedStartDate != null) {
+        // Only start date is selected
+        dateInRange = eventDate.isAfter(selectedStartDate!.subtract(Duration(days: 1))); // Inclusive of start date
+      } else if (selectedEndDate != null) {
+        // Only end date is selected
+        dateInRange = eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))) && eventDate.isAfter(DateTime.now()); // Inclusive of end date
+      }
+
+      // Check if the event time is within the selected time range
+      bool timeInRange = true;
+      if (selectedStartTime != null && selectedEndTime != null) {
+        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute)) &&
+                      (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
+      } else if (selectedStartTime != null) {
+        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute));
+      } else if (selectedEndTime != null) {
+        timeInRange = (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
+      }
 
       // Include event if it matches search query, selected sports, and availability
-      return matchesSearchQuery && matchesSelectedSports && matchesAvailability;
+      return matchesSearchQuery && matchesSelectedSports && matchesTeamAvailability && dateInRange && timeInRange;
 
     }).toList();
 

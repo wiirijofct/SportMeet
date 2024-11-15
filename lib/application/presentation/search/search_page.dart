@@ -3,6 +3,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
 import 'package:sport_meet/application/presentation/field_page.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:sport_meet/application/presentation/widgets/field_card.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -21,90 +24,22 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   String selectedSortOption = ''; // Variable to hold the selected sort option
   List<Map<String, String>> filteredEvent = []; // Class variable for filtered events
-
-  // Different people specific to the MeetPage
-  final List<Map<String, String>> eventCards = [
-    {
-      'sport': 'Basketball',
-      'date': '22.10.2024',
-      'time': '10:00',
-      'address': 'Avenida do Brasil',
-      'field': 'Clube Unidos do Estoril',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '22.10.2024',
-      'time': '10:00',
-      'address': 'Avenida Adamastor',
-      'field': 'Clube Desunidos do Estoril',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '22.11.2024',
-      'time': '12:00',
-      'address': 'Avenida Conceição Lopes',
-      'field': 'Campo Bartolomeu',
-      'availability': 'CLOSED',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Swimming',
-      'date': '23.11.2024',
-      'time': '21:00',
-      'address': 'Rua Filo Lapa',
-      'field': 'Piscinas Filo',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Basketball',
-      'date': '23.11.2024',
-      'time': '22:00',
-      'address': 'Avenida dos missionarios',
-      'field': 'Campo António Sérgio',
-      'availability': 'CLOSED',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '25.11.2024',
-      'time': '19:00',
-      'address': 'Rua Duarte Rei',
-      'field': 'Escola Secundária Reitor Mor',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Tennis',
-      'date': '27.11.2024',
-      'time': '15:00',
-      'address': 'Avenida de baixo',
-      'field': 'Campo De cima',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '23.11.2024',
-      'time': '15:00',
-      'address': 'Avenida de cima',
-      'field': 'Campo de baixo',
-      'availability': 'CLOSED',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-  ];
+  List<dynamic> fieldData = []; // To hold field data from JSON
 
   @override
   void initState() {
     super.initState();
     selectedSports = List.from(sportsFilters); // Initially select all sports
-    filteredEvent = List.from(eventCards); // Initialize filteredEvent with all event cards
+    loadFieldsData(); // Load the fields data from JSON
   }
-  
+
+  Future<void> loadFieldsData() async {
+    final String response = await rootBundle.loadString('assets/data/fields.json');
+    setState(() {
+      fieldData = json.decode(response);
+    });
+  }
+
   @override
   void dispose() {
     // Dispose of the controller when the widget is removed
@@ -136,7 +71,6 @@ class _SearchPageState extends State<SearchPage> {
       selectedStartDate = null;
       selectedEndDate = null;
       selectedSortOption = ''; // Reset the sort option
-      filteredEvent = List.from(eventCards); // Reset filteredEvent to all events
     });
   }
 
@@ -156,7 +90,7 @@ class _SearchPageState extends State<SearchPage> {
                     const Text(
                       'Sort By',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -195,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
                     const Text(
                       'Date Range',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -257,7 +191,7 @@ class _SearchPageState extends State<SearchPage> {
                     const Text(
                       'Hour Range',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -297,7 +231,7 @@ class _SearchPageState extends State<SearchPage> {
                       const Text(
                         'Price Range',
                         style: TextStyle(
-                          fontSize: 20.0,
+                          fontSize: 16.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -337,7 +271,7 @@ class _SearchPageState extends State<SearchPage> {
                     const Text(
                       'Maximum Distance',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -359,7 +293,7 @@ class _SearchPageState extends State<SearchPage> {
                         const Text(
                           'Show Open Teams',
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -379,7 +313,7 @@ class _SearchPageState extends State<SearchPage> {
                         const Text(
                           'Free',
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -410,22 +344,22 @@ class _SearchPageState extends State<SearchPage> {
                       if (selectedSortOption.isNotEmpty) {
                         switch (selectedSortOption) {
                           case 'Sport':
-                            eventCards.sort((a, b) => a['sport']!.compareTo(b['sport']!));
+                            fieldData.sort((a, b) => a['sport'].compareTo(b['sport']));
                             break;
                           case 'Date':
-                            eventCards.sort((a, b) => a['date']!.compareTo(b['date']!));
+                            fieldData.sort((a, b) => a['date'].compareTo(b['date']));
                             break;
                           case 'Time':
-                            eventCards.sort((a, b) => a['time']!.compareTo(b['time']!));
+                            fieldData.sort((a, b) => a['time'].compareTo(b['time']));
                             break;
                           case 'Address':
-                            eventCards.sort((a, b) => a['address']!.compareTo(b['address']!));
+                            fieldData.sort((a, b) => a['location'].compareTo(b['location']));
                             break;
                           case 'Field':
-                            eventCards.sort((a, b) => a['field']!.compareTo(b['field']!));
+                            fieldData.sort((a, b) => a['name'].compareTo(b['name']));
                             break;
                           case 'Availability':
-                            eventCards.sort((a, b) => a['availability']!.compareTo(b['availability']!));
+                            fieldData.sort((a, b) => a['availability'].compareTo(b['availability']));
                             break;
                         }
                       }
@@ -444,36 +378,6 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter the list based on searchQuery and showOpenTeam to match all text fields
-    final filteredEvent = eventCards.where((event) {
-      final sport = event['sport']!.toLowerCase();
-      final address = event['address']!.toLowerCase();
-      final availability = event['availability']!.toLowerCase();
-      final field = event['field']!.toLowerCase();
-      final time = event['time']!.toLowerCase();
-      final date = event['date']!.toLowerCase();
-      final query = _searchController.text.toLowerCase();
-
-      // Check if any of the fields contain the search query
-      final matchesSearchQuery = sport.contains(query) ||
-            address.contains(query) ||
-            availability.contains(query) ||
-            time.contains(query) ||
-            date.contains(query) ||
-            field.contains(query);
-
-      // Check if the sport title is in selected sports
-      final matchesSelectedSports = selectedSports.contains(event['sport']);
-
-      // Check availability based on the showOpenTeam filter
-      final isOpen = availability.contains('OPEN'); // Assuming availability contains 'OPEN' or 'CLOSED'
-      final matchesAvailability = showOpenTeam ? isOpen : true; // If showOpenTeam is true, only show open teams
-
-      // Include event if it matches search query, selected sports, and availability
-      return matchesSearchQuery && matchesSelectedSports && matchesAvailability;
-
-    }).toList();
-
     return Scaffold(
       appBar: _buildAppBar(),
       body: Column(
@@ -545,34 +449,36 @@ class _SearchPageState extends State<SearchPage> {
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredEvent.length,
+              itemCount: fieldData.length,
               itemBuilder: (context, index) {
-                final event = filteredEvent[index];
+                final field = fieldData[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => FieldPage(
-                          fieldName: event['field']!,
-                          location: event['address']!,
-                          imagePath: event['imagePath']!,
-                          schedule: event['date']!,
-                          contactEmail: 'sample@gmail.com',
-                          contactPhone: '999111333',
-                          pricing: '5p hora',
-                          upcomingEvents: eventCards,
+                          fieldId: field['fieldId'],
+                          fieldName: field['name'],
+                          location: field['location'],
+                          imagePath: field['images'][0],
+                          schedule: '${field['schedule']['open']} - ${field['schedule']['close']}',
+                          contactEmail: field['contact']['email'],
+                          contactPhone: field['contact']['phone'],
+                          pricing: field['isPublic'] ? 'Free' : field['pricing'],
+                          // upcomingEvents: fieldData,
+                          ),
                         ),
-                      ),
                     );
                   },
-                  child: EventCard(
-                    sport: event['sport']!,
-                    address: event['address']!,
-                    availability: event['availability']!,
-                    field: event['field']!,
-                    date: event['date']!,
-                    time: event['time']!,
-                    imagePath: event['imagePath']!,
+                  child: FieldCard(
+                    sport: field['sport'],
+                    name: field['name'],
+                    location: field['location'],
+                    // schedule: '${field['schedule']['open']} - ${field['schedule']['close']}',
+                    openTime: field['schedule']['open'],
+                    closeTime: field['schedule']['close'],
+                    isPublic: field['isPublic'],
+                    imagePath: field['images'][0],
                   ),
                 );
               },

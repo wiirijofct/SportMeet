@@ -1,0 +1,162 @@
+[
+    {
+        "fieldId": "1",
+        "sport": "Basketball",
+        "name": "Clube Unidos do Estoril",
+        "location": "Avenida do Brasil",
+        "schedule": {
+            "open": "08:00",
+            "close": "22:00"
+        },
+        "pricing": "20€/hour",
+        "isPublic": false,
+        "contact": {
+            "email": "contact@clubunidos.com",
+            "phone": "+351 123 456 789"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    },
+    {
+        "fieldId": "2",
+        "sport": "Swimming",
+        "name": "Piscinas Filo",
+        "location": "Rua Filo Lapa",
+        "schedule": {
+            "open": "09:00",
+            "close": "20:00"
+        },
+        "pricing": "Free",
+        "isPublic": true,
+        "contact": {
+            "email": "contact@filopool.com",
+            "phone": "+351 987 654 321"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    },
+    {
+        "fieldId": "3",
+        "sport": "Football",
+        "name": "Clube Desunidos do Estoril",
+        "location": "Avenida Adamastor",
+        "schedule": {
+            "open": "07:00",
+            "close": "23:00"
+        },
+        "pricing": "15€/hour",
+        "isPublic": false,
+        "contact": {
+            "email": "contact@clubdesunidos.com",
+            "phone": "+351 234 567 890"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    },
+    {
+        "fieldId": "4",
+        "sport": "Football",
+        "name": "Campo Bartolomeu",
+        "location": "Avenida Conceição Lopes",
+        "schedule": {
+            "open": "06:00",
+            "close": "22:00"
+        },
+        "pricing": "10€/hour",
+        "isPublic": true,
+        "contact": {
+            "email": "contact@campobartolomeu.com",
+            "phone": "+351 345 678 901"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    },
+    {
+        "fieldId": "5",
+        "sport": "Basketball",
+        "name": "Campo António Sérgio",
+        "location": "Avenida dos missionarios",
+        "schedule": {
+            "open": "08:00",
+            "close": "21:00"
+        },
+        "pricing": "20€/hour",
+        "isPublic": false,
+        "contact": {
+            "email": "contact@campoantoniosergio.com",
+            "phone": "+351 456 789 012"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    },
+    {
+        "fieldId": "6",
+        "sport": "Basketball",
+        "name": "Escola Secundária Reitor Mor",
+        "location": "Rua Duarte Rei",
+        "schedule": {
+            "open": "09:00",
+            "close": "18:00"
+        },
+        "pricing": "Free",
+        "isPublic": true,
+        "contact": {
+            "email": "contact@esreitor.com",
+            "phone": "+351 567 890 123"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    },
+    {
+        "fieldId": "7",
+        "sport": "Padel",
+        "name": "Campo De cima",
+        "location": "Avenida de baixo",
+        "schedule": {
+            "open": "10:00",
+            "close": "20:00"
+        },
+        "pricing": "25€/hour",
+        "isPublic": false,
+        "contact": {
+            "email": "contact@campodecima.com",
+            "phone": "+351 678 901 234"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    },
+    {
+        "fieldId": "8",
+        "sport": "Padel",
+        "name": "Campo de baixo",
+        "location": "Avenida de cima",
+        "schedule": {
+            "open": "11:00",
+            "close": "19:00"
+        },
+        "pricing": "30€/hour",
+        "isPublic": false,
+        "contact": {
+            "email": "contact@campodebaixo.com",
+            "phone": "+351 789 012 345"
+        },
+        "images": [
+            "lib/images/Gecko.png",
+            "lib/images/Gecko.png"
+        ]
+    }
+]

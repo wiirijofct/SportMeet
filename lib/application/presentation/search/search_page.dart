@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -170,13 +169,13 @@ class _SearchPageState extends State<SearchPage> {
       bool dateInRange = true;
       if (selectedStartDate != null && selectedEndDate != null) {
         // Both dates are selected
-        dateInRange = eventDate.isAfter(selectedStartDate!) && eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))); // Inclusive of end date
+        dateInRange = eventDate.isAfter(selectedStartDate!.subtract(Duration(days: 1))) && eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))); // Inclusive of end date
       } else if (selectedStartDate != null) {
         // Only start date is selected
         dateInRange = eventDate.isAfter(selectedStartDate!.subtract(Duration(days: 1))); // Inclusive of start date
       } else if (selectedEndDate != null) {
         // Only end date is selected
-        dateInRange = eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))) && eventDate.isAfter(DateTime.now()); // Inclusive of end date
+        dateInRange = eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))) && eventDate.isAfter(DateTime.now().subtract(Duration(days: 1))); // Inclusive of end date
       }
 
       // Check if the event time is within the selected time range
@@ -195,6 +194,28 @@ class _SearchPageState extends State<SearchPage> {
   });
 }
 
+  // Method to count active filters
+  int countActiveFilters() {
+    int count = 0;
+
+    // Count selected sports
+    count += sportsFilters.length - selectedSports.length;
+
+    // Count selected team availability
+    count += 2 - selectedTeamAvailability.length;
+
+    // Count date range filters
+    if (selectedStartDate != null || selectedEndDate != null) {
+      count += 1; // At least one date filter is applied
+    }
+
+    // Count time range filters
+    if (selectedStartTime != null || selectedEndTime != null) {
+      count += 1; // At least one time filter is applied
+    }
+
+    return count;
+  }
 
    void showFilterDialog() {
     showDialog(
@@ -217,93 +238,6 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ),
                     SizedBox(height: 16.0),
-
-                    // Multi-select dropdown para esportes favoritos
-                   /* MultiSelectDialogField(
-                      items: [
-                        MultiSelectItem('Basketball', 'Basketball'),
-                        MultiSelectItem('Tennis', 'Tennis'),
-                        MultiSelectItem('Swimming', 'Swimming'),
-                        MultiSelectItem('Football', 'Football'),
-                      ],
-                      listType: MultiSelectListType.LIST,
-                      title: const Text("Sports", 
-                        style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),),
-                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      buttonText: const Text(
-                        "Sports",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      initialValue: selectedSports,
-                      onConfirm: (values) {
-                        setState(() {
-                          selectedSports = values.cast<String>();
-                        });
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        chipColor: const Color.fromARGB(255, 193, 50, 74),
-                        textStyle: const TextStyle(color: Colors.black),
-                      ),
-                      buttonIcon: const Icon(
-                        Icons.arrow_drop_down, // Dropdown arrow icon
-                        color: Colors.black, // Set the arrow color to black
-                      ),
-                    ),
-                    SizedBox(height: 16.0),
-
-                    // Multi-select dropdown para esportes favoritos
-                    MultiSelectDialogField(
-                      items: [
-                        MultiSelectItem('OPEN', 'OPEN'),
-                        MultiSelectItem('CLOSED', 'CLOSED'),
-                      ],
-                      listType: MultiSelectListType.LIST,
-                      title: const Text("Team Availability", 
-                        style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),),
-                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      buttonText: const Text(
-                        "Team Availability",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      initialValue: selectedTeamAvailability,
-                      onConfirm: (values) {
-                        setState(() {
-                          selectedTeamAvailability = values.cast<String>();
-                        });
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        chipColor: const Color.fromARGB(255, 193, 50, 74),
-                        textStyle: const TextStyle(color: Colors.black),
-                      ),
-                      buttonIcon: const Icon(
-                        Icons.arrow_drop_down, // Dropdown arrow icon
-                        color: Colors.black, // Set the arrow color to black
-                      ),
-                    ),
-                  SizedBox(height: 16.0),*/
-
                   // Sports Selection
                   const Text("Sports", style: TextStyle(fontSize: 18.0)),
                   ...sportsFilters.map((sport) {
@@ -575,6 +509,31 @@ class _SearchPageState extends State<SearchPage> {
                   icon: const Icon(Ionicons.filter_outline),
                   onPressed: showFilterDialog,
                 ),
+                 // Badge for active filters
+                  if (countActiveFilters() > 0)
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4.0),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${countActiveFilters()}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
               ],
             ),
           ),

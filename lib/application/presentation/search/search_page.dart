@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
+import 'package:sport_meet/application/presentation/field_page.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
+import 'package:sport_meet/application/presentation/widgets/field_card.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -12,7 +16,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
 
-  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
+  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football', 'Padel'];
   List<String> selectedSports = [];
   List<String> selectedTeamAvailability = ['OPEN', 'CLOSED'];
   bool isFree = false;
@@ -20,95 +24,29 @@ class _SearchPageState extends State<SearchPage> {
 
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
-  TimeOfDay? selectedStartTime;
-  TimeOfDay? selectedEndTime;
-
+  TimeOfDay? selectedTime;
 
   final TextEditingController _searchController = TextEditingController();
   String selectedSortOption = ''; // Variable to hold the selected sort option
-  List<Map<String, String>> filteredEvent = []; // Class variable for filtered events
-
-  // Different people specific to the MeetPage
-  final List<Map<String, String>> eventCards = [
-    {
-      'sport': 'Basketball',
-      'date': '22.10.2024',
-      'time': '10:00',
-      'address': 'Avenida do Brasil',
-      'field': 'Clube Unidos do Estoril',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '22.10.2024',
-      'time': '10:00',
-      'address': 'Avenida Adamastor',
-      'field': 'Clube Desunidos do Estoril',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '22.11.2024',
-      'time': '12:00',
-      'address': 'Avenida Conceição Lopes',
-      'field': 'Campo Bartolomeu',
-      'availability': 'CLOSED',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Swimming',
-      'date': '23.11.2024',
-      'time': '21:00',
-      'address': 'Rua Filo Lapa',
-      'field': 'Piscinas Filo',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Basketball',
-      'date': '23.11.2024',
-      'time': '22:00',
-      'address': 'Avenida dos missionarios',
-      'field': 'Campo António Sérgio',
-      'availability': 'CLOSED',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '25.11.2024',
-      'time': '19:00',
-      'address': 'Rua Duarte Rei',
-      'field': 'Escola Secundária Reitor Mor',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Tennis',
-      'date': '27.11.2024',
-      'time': '15:00',
-      'address': 'Avenida de baixo',
-      'field': 'Campo De cima',
-      'availability': 'OPEN',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-    {
-      'sport': 'Football',
-      'date': '23.11.2024',
-      'time': '15:00',
-      'address': 'Avenida de cima',
-      'field': 'Campo de baixo',
-      'availability': 'CLOSED',
-      'imagePath': 'lib/images/Gecko.png',
-    },
-  ];
+  List<dynamic> filteredEvent = []; // Class variable for filtered events
+  List<dynamic> fieldData = []; // To hold field data from JSON
+  List<dynamic> filteredFieldData = [];
+  bool? isPublicFilter; // null = no preference, true = public, false = private
 
   @override
   void initState() {
     super.initState();
     selectedSports = List.from(sportsFilters); // Initially select all sports
-    filteredEvent = List.from(eventCards); // Initialize filteredEvent with all event cards
+    //filteredEvent = List.from(eventCards); // Initialize filteredEvent with all event cards
+    loadFieldsData(); // Load the fields data from JSON
+  }
+
+  Future<void> loadFieldsData() async {
+    final String response = await rootBundle.loadString('assets/data/fields.json');
+    setState(() {
+      fieldData = json.decode(response);
+      filteredFieldData = fieldData;
+    });
   }
   
   @override
@@ -137,62 +75,43 @@ class _SearchPageState extends State<SearchPage> {
   void resetFilters() {
     setState(() {
       selectedSports = List.from(sportsFilters); // Or an empty list if you want no selections
-      selectedTeamAvailability = ['OPEN', 'CLOSED'];
       isFree = false;
       showOpenTeam = false;
       selectedStartDate = null;
       selectedEndDate = null;
-      selectedStartTime = null;
-      selectedEndTime = null;
+      selectedTime = null;
       selectedSortOption = ''; // Reset the sort option
-      filteredEvent = List.from(eventCards); // Reset filteredEvent to all events
+      isPublicFilter = null; // Reset isPublic filter
+      loadFieldsData();
     });
+  }
+
+  TimeOfDay _parseTime(String time) {
+    final parts = time.split(':');
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 
   
   void applyFilters() {
-  setState(() {
-    // Filter the events based on the selected filters
-    filteredEvent = eventCards.where((event) {
-      final sportsMatch = selectedSports.isEmpty || selectedSports.any((sport) => event['sport']!.contains(sport));
-      final matchesAvailability = selectedTeamAvailability.isEmpty || selectedTeamAvailability.any((availability) => event['availability']!.contains(availability));
+    setState(() {
+      filteredFieldData = fieldData.where((field) {
+        final sportsMatch = selectedSports.isEmpty || selectedSports.any((sport) => field['sport'].toString().toLowerCase().contains(sport));
 
-      // Parse the event date
-      DateTime eventDate = DateTime.parse(event['date']!.split('.').reversed.join('-')); // Convert to DateTime
-      // Parse the event time
-      TimeOfDay eventTime = TimeOfDay(
-        hour: int.parse(event['time']!.split(':')[0]),
-        minute: int.parse(event['time']!.split(':')[1]),
-      );
+        final isPublicMatch = isPublicFilter == null ||
+            (field['isPublic'] != null && field['isPublic'] == isPublicFilter);
 
-      // Check if the event date is within the selected date range
-      bool dateInRange = true;
-      if (selectedStartDate != null && selectedEndDate != null) {
-        // Both dates are selected
-        dateInRange = eventDate.isAfter(selectedStartDate!.subtract(Duration(days: 1))) && eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))); // Inclusive of end date
-      } else if (selectedStartDate != null) {
-        // Only start date is selected
-        dateInRange = eventDate.isAfter(selectedStartDate!.subtract(Duration(days: 1))); // Inclusive of start date
-      } else if (selectedEndDate != null) {
-        // Only end date is selected
-        dateInRange = eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))) && eventDate.isAfter(DateTime.now().subtract(Duration(days: 1))); // Inclusive of end date
-      }
+        final fieldOpenTime = _parseTime(field['schedule']['open']);
+        final fieldCloseTime = _parseTime(field['schedule']['close']);
 
-      // Check if the event time is within the selected time range
-      bool timeInRange = true;
-      if (selectedStartTime != null && selectedEndTime != null) {
-        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute)) &&
-                      (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
-      } else if (selectedStartTime != null) {
-        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute));
-      } else if (selectedEndTime != null) {
-        timeInRange = (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
-      }
-      
-      return sportsMatch && matchesAvailability && dateInRange && timeInRange;
-    }).toList();
-  });
-}
+        final timeMatch = selectedTime == null ||
+            (selectedTime!.hour >= fieldOpenTime.hour &&
+            selectedTime!.hour < fieldCloseTime.hour);
+
+        return sportsMatch && isPublicMatch && timeMatch;
+      }).toList();
+    });
+  }
+
 
   // Method to count active filters
   int countActiveFilters() {
@@ -210,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     // Count time range filters
-    if (selectedStartTime != null || selectedEndTime != null) {
+    if (selectedTime != null) {
       count += 1; // At least one time filter is applied
     }
 
@@ -255,129 +174,62 @@ class _SearchPageState extends State<SearchPage> {
                       },
                     );
                   }).toList(),
-
-                  const SizedBox(height: 16.0),
-
-                  // Team Availability Selection
-                  const Text("Team Availability", style: TextStyle(fontSize: 18.0)),
-                  ...['OPEN', 'CLOSED'].map((availability) {
-                    return CheckboxListTile(
-                      title: Text(availability),
-                      value: selectedTeamAvailability.contains(availability),
-                      onChanged: (bool? selected) {
-                        setState(() {
-                          if (selected == true) {
-                            selectedTeamAvailability.add(availability);
-                          } else {
-                            selectedTeamAvailability.remove(availability);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                  // Date Range Selection
                   const Text(
-                    'Select Date Range',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    'Field Privacy',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  RadioListTile<bool?>(
+                    title: const Text('Public'),
+                    value: true,
+                    groupValue: isPublicFilter,
+                    onChanged: (value) {
+                      setState(() {
+                        isPublicFilter = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<bool?>(
+                    title: const Text('Private'),
+                    value: false,
+                    groupValue: isPublicFilter,
+                    onChanged: (value) {
+                      setState(() {
+                        isPublicFilter = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<bool?>(
+                    title: const Text('No Preference'),
+                    value: null,
+                    groupValue: isPublicFilter,
+                    onChanged: (value) {
+                      setState(() {
+                        isPublicFilter = value;
+                      });
+                    },
+                  ),
+                  const Text(
+                    'Time Filter',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TextButton(
+                      Text(selectedTime != null
+                          ? '${selectedTime!.hour}:${selectedTime!.minute.toString().padLeft(2, '0')}'
+                          : 'No time selected'),
+                      IconButton(
+                        icon: const Icon(Ionicons.time_outline),
                         onPressed: () async {
-                          final DateTime? pickedDate = await showDatePicker(
+                          TimeOfDay? pickedTime = await showTimePicker(
                             context: context,
-                            initialDate: selectedStartDate ?? DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2100),
-                          );
-                          if (pickedDate != null) {
-                            setState(() {
-                              selectedStartDate = pickedDate;
-                            });
-                          }
-                        },
-                        child: Text(
-                          selectedStartDate != null
-                              ? 'From: ${selectedStartDate!.toLocal().toString().split(' ')[0]}'
-                              : 'Select Start Date',
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: selectedEndDate ?? (selectedStartDate ?? DateTime.now()),
-                            firstDate: selectedStartDate ?? DateTime.now(),
-                            lastDate: DateTime(2100),
-                          );
-                          if (pickedDate != null) {
-                            setState(() {
-                              selectedEndDate = pickedDate;
-                            });
-                          }
-                        },
-                        child: Text(
-                          selectedEndDate != null
-                              ? 'To: ${selectedEndDate!.toLocal().toString().split(' ')[0]}'
-                              : 'Select End Date',
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.0),
-                  const Text(
-                    'Select Time Range',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: () async {
-                          final TimeOfDay? pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: selectedStartTime ?? TimeOfDay.now(),
+                            initialTime: TimeOfDay.now(),
                           );
                           if (pickedTime != null) {
                             setState(() {
-                              selectedStartTime = pickedTime;
+                              selectedTime = pickedTime;
                             });
                           }
                         },
-                        child: Text(
-                          selectedStartTime != null
-                              ? 'From: ${selectedStartTime!.format(context)}'
-                              : 'Select Start Time',
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final TimeOfDay? pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: selectedEndTime ?? TimeOfDay.now(),
-                          );
-                          if (pickedTime != null) {
-                            setState(() {
-                              selectedEndTime = pickedTime;
-                            });
-                          }
-                        },
-                        child: Text(
-                          selectedEndTime != null
-                              ? 'To: ${selectedEndTime!.format(context)}'
-                              : 'Select End Time',
-                          style: TextStyle(color: Colors.blue),
-                        ),
                       ),
                     ],
                   ),
@@ -410,61 +262,35 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     // Filter the list based on searchQuery and showOpenTeam to match all text fields
-    final filteredEvent = eventCards.where((event) {
-      final sport = event['sport']!.toLowerCase();
-      final address = event['address']!.toLowerCase();
-      final availability = event['availability']!.toLowerCase();
-      final field = event['field']!.toLowerCase();
-      final time = event['time']!.toLowerCase();
-      final date = event['date']!.toLowerCase();
+      final filteredFieldData = fieldData.where((field) {
+      final sport = field['sport'].toString().toLowerCase();
+      final location = field['location'].toString().toLowerCase();
+      final isPublic = field['isPublic'].toString().toLowerCase();
+      final name = field['name'].toString().toLowerCase();
+      final openTime = field['schedule']['open'].toString().toLowerCase();
+      final closeTime = field['schedule']['close'].toString().toLowerCase();
       final query = _searchController.text.toLowerCase();
 
       // Check if any of the fields contain the search query
       final matchesSearchQuery = sport.contains(query) ||
-            address.contains(query) ||
-            availability.contains(query) ||
-            time.contains(query) ||
-            date.contains(query) ||
-            field.contains(query);
+            location.contains(query) ||
+            isPublic.contains(query) ||
+            name.contains(query) ||
+            openTime.contains(query) ||
+            closeTime.contains(query);
+      
+      final matchesSelectedSports = selectedSports.contains(field['sport']);
+      final isPublicMatch = isPublicFilter == null ||
+        (field['isPublic'] != null && field['isPublic'] == isPublicFilter);
 
-      // Check if the sport title is in selected sports
-      final matchesSelectedSports = selectedSports.contains(event['sport']);
-      final matchesTeamAvailability = selectedTeamAvailability.contains(event['availability']);
+      final fieldOpenTime = _parseTime(field['schedule']['open']);
+      final fieldCloseTime = _parseTime(field['schedule']['close']);
 
-      // Parse the event date
-      DateTime eventDate = DateTime.parse(event['date']!.split('.').reversed.join('-')); // Convert to DateTime
-      // Parse the event time
-      TimeOfDay eventTime = TimeOfDay(
-        hour: int.parse(event['time']!.split(':')[0]),
-        minute: int.parse(event['time']!.split(':')[1]),
-      );
+      final timeMatch = selectedTime == null ||
+          (selectedTime!.hour >= fieldOpenTime.hour &&
+          selectedTime!.hour < fieldCloseTime.hour);
 
-      // Check if the event date is within the selected date range
-      bool dateInRange = true;
-      if (selectedStartDate != null && selectedEndDate != null) {
-        // Both dates are selected
-        dateInRange = eventDate.isAfter(selectedStartDate!) && eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))); // Inclusive of end date
-      } else if (selectedStartDate != null) {
-        // Only start date is selected
-        dateInRange = eventDate.isAfter(selectedStartDate!.subtract(Duration(days: 1))); // Inclusive of start date
-      } else if (selectedEndDate != null) {
-        // Only end date is selected
-        dateInRange = eventDate.isBefore(selectedEndDate!.add(Duration(days: 1))) && eventDate.isAfter(DateTime.now()); // Inclusive of end date
-      }
-
-      // Check if the event time is within the selected time range
-      bool timeInRange = true;
-      if (selectedStartTime != null && selectedEndTime != null) {
-        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute)) &&
-                      (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
-      } else if (selectedStartTime != null) {
-        timeInRange = (eventTime.hour > selectedStartTime!.hour || (eventTime.hour == selectedStartTime!.hour && eventTime.minute >= selectedStartTime!.minute));
-      } else if (selectedEndTime != null) {
-        timeInRange = (eventTime.hour < selectedEndTime!.hour || (eventTime.hour == selectedEndTime!.hour && eventTime.minute <= selectedEndTime!.minute));
-      }
-
-      // Include event if it matches search query, selected sports, and availability
-      return matchesSearchQuery && matchesSelectedSports && matchesTeamAvailability && dateInRange && timeInRange;
+      return matchesSearchQuery && matchesSelectedSports && isPublicMatch && timeMatch;
 
     }).toList();
 
@@ -564,17 +390,37 @@ class _SearchPageState extends State<SearchPage> {
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredEvent.length,
+              itemCount: filteredFieldData.length,
               itemBuilder: (context, index) {
-                final event = filteredEvent[index];
-                return EventCard(
-                  sport: event['sport']!,
-                  address: event['address']!,
-                  availability: event['availability']!,
-                  field: event['field']!,
-                  date: event['date']!,
-                  time: event['time']!,
-                  imagePath: event['imagePath']!,
+                final field = filteredFieldData[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => FieldPage(
+                          fieldId: field['fieldId'],
+                          fieldName: field['name'],
+                          location: field['location'],
+                          imagePath: field['images'][0],
+                          schedule: '${field['schedule']['open']} - ${field['schedule']['close']}',
+                          contactEmail: field['contact']['email'],
+                          contactPhone: field['contact']['phone'],
+                          pricing: field['isPublic'] ? 'Free' : field['pricing'],
+                          // upcomingEvents: fieldData,
+                          ),
+                        ),
+                    );
+                  },
+                  child: FieldCard(
+                    sport: field['sport'],
+                    name: field['name'],
+                    location: field['location'],
+                    // schedule: '${field['schedule']['open']} - ${field['schedule']['close']}',
+                    openTime: field['schedule']['open'],
+                    closeTime: field['schedule']['close'],
+                    isPublic: field['isPublic'],
+                    imagePath: field['images'][0],
+                  ),
                 );
               },
             ),

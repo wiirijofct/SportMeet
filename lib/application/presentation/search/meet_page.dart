@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'search_page.dart';
 import 'package:sport_meet/application/presentation/widgets/person_card.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:flutter/material.dart';
 
 class MeetPage extends StatefulWidget {
   const MeetPage({super.key});
@@ -203,9 +204,8 @@ void _showPersonDetails(Map<String, String> person) {
                 // Botão de Enviar Mensagem
                 ElevatedButton(
                   onPressed: () {
-                    // Lógica para enviar mensagem
-                    Navigator.pop(context);
-                    // Aqui você pode adicionar a lógica de enviar mensagem
+                    Navigator.pop(context); // Fecha o diálogo atual
+                    _showChatDialog(person); // Mostra o chat pop-up
                   },
                   child: const Text('Enviar Mensagem'),
                 ),
@@ -213,6 +213,111 @@ void _showPersonDetails(Map<String, String> person) {
             ),
           ],
         ),
+      );
+    },
+  );
+}
+
+void _showChatDialog(Map<String, String> person) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // Lista para armazenar mensagens. Cada mensagem pode ter uma flag para indicar se é do usuário ou da outra pessoa.
+      List<Map<String, String>> messages = [];
+
+      TextEditingController controller = TextEditingController(); // Controlador para o TextField
+
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            content: Container(
+              width: double.maxFinite,
+              height: 300, // Ajuste a altura conforme necessário
+              child: Column(
+                children: [
+                  // Imagem da pessoa com quem você está conversando
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      person['imagePath']!, // A imagem é extraída da lista de pessoas
+                      width: 80, // Tamanho ajustado da imagem
+                      height: 80, // Tamanho ajustado da imagem
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Espaço entre a imagem e as mensagens
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: messages.length, // Número de mensagens
+                      itemBuilder: (context, index) {
+                        // Verifica se a mensagem é do usuário ou da outra pessoa
+                        bool isUserMessage = messages[index]['sender'] == 'user';
+
+                        return Align(
+                          alignment: isUserMessage
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            margin: EdgeInsets.symmetric(vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isUserMessage ? Colors.red[200] : Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 4,
+                                  offset: Offset(2, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              messages[index]['text']!, // Exibe a mensagem armazenada na lista
+                              style: TextStyle(
+                                color: isUserMessage ? Colors.white : Colors.black,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  TextField(
+                    controller: controller, // Atribuindo o controlador ao TextField
+                    decoration: InputDecoration(
+                      hintText: 'Escreva uma mensagem...',
+                      hintStyle: TextStyle(fontSize: 14),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.send),
+                        onPressed: () {
+                          if (controller.text.isNotEmpty) {
+                            // Adiciona a mensagem do usuário na lista
+                            setState(() {
+                              messages.add({
+                                'sender': 'user', // Marca que a mensagem é do usuário
+                                'text': controller.text,
+                              });
+                            });
+                            controller.clear(); // Limpa o campo de texto após enviar
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Fechar o chat
+                },
+                child: const Text('Fechar'),
+              ),
+            ],
+          );
+        },
       );
     },
   );

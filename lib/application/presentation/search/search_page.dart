@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/field_page.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
 import 'package:sport_meet/application/presentation/widgets/field_card.dart';

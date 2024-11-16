@@ -90,6 +90,9 @@ flutter:
     - lib/images/m3.png
     - lib/images/m4.png
 
+    - assets/data/fields.json
+    - assets/data/reservations.json
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

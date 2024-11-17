@@ -14,7 +14,6 @@ import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/search_page.dart';
 import 'package:sport_meet/profile/profileSportMeet.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -44,6 +43,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   late Future<Map<String, dynamic>> userInfo;
+  late Future<List<Map<String, dynamic>>> userEvents;
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
   List<String> selectedSports = [];
 
@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     userInfo = User.getInfo();
     selectedSports = List.from(sportsFilters); // Initially select all sports
+    userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
   }
 
   void profileButtonPressed() {
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void logoutButtonPressed() {
-    Authentication.logout();
+    Authentication.logoutUser();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const WelcomePage()),
@@ -120,6 +121,7 @@ class _HomePageState extends State<HomePage> {
       } else {
         selectedSports.add(sport);
       }
+      userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
     });
   }
 
@@ -174,73 +176,89 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: 5, // Placeholder for number of events
-                itemBuilder: (context, index) {
-                  if (selectedSports.contains('Basketball')) {
-                    return EventCard(
-                      sport: 'Basketball',
-                      date: 'Date: 22.10.2024',
-                      time: 'Time: 10:00',
-                      address: 'Address: Avenida do Brasil',
-                      field: 'Field: Clube Unidos do Estoril',
-                      availability: 'Team Availability: OPEN',
-                      imagePath: 'lib/images/Gecko.png',
-                    );
-                  } else {
-                    return Container();
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: userEvents,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    print('Error loading events: \${snapshot.error}');
+                    return Center(child: Text('Error: \${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    print('No upcoming events found.');
+                    return const Center(child: Text('No upcoming events'));
                   }
+
+                  final events = snapshot.data!;
+                  print('Loaded events: \$events');
+
+                  return ListView.builder(
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return EventCard(
+                        reservationId: int.parse(event['reservationId']),
+                        fieldId: int.parse(event['fieldId']),
+                        sport: event['sport'],
+                        date: event['date'],
+                        address: event['location'],
+                        field: event['name'],
+                        availability: event['teamAvailability'],
+                        imagePath: event['images'][0],
+                        time: event['time'],
+                      );
+                    },
+                  );
                 },
               ),
             ),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-                              items: const [
-                                BottomNavigationBarItem(
-                                  icon: Icon(Ionicons.search),
-                                  label: 'Search',
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: Icon(Ionicons.chatbubble_ellipses_outline),
-                                  label: 'Chat',
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: Icon(Ionicons.home),
-                                  label: 'Home',
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: Icon(Ionicons.heart_outline),
-                                  label: 'Favorites',
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: Icon(Ionicons.person_outline),
-                                  label: 'Profile',
-                                ),
-                              ],
-                              currentIndex: 2,
-                              selectedItemColor: Colors.red,
-                              unselectedItemColor: Colors.grey,
-                              onTap: (index) {
-                                if (index == 0) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const SearchPage(),
-                                    ),
-                                  );
-                                } else if (index == 4) { // Índice do ícone de perfil
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ProfileSportMeet(),
-                                    ),
-                                  );
-                                }
-                                // Adicione outras navegações conforme necessário
-                              },
-                            ),
-                                  ),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.search),
+              label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.chatbubble_ellipses_outline),
+              label: 'Chat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.heart_outline),
+              label: 'Favorites',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Ionicons.person_outline),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: 2,
+          selectedItemColor: Colors.red,
+          unselectedItemColor: Colors.grey,
+          onTap: (index) {
+            if (index == 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchPage(),
+                ),
+              );
+            } else if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileSportMeet(),
+                ),
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 

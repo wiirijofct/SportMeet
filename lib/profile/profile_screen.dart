@@ -225,8 +225,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             );
 
                             if (_profileImage != null && _changedPfp) {
-                              updated = await User.uploadProfilePicture(
-                                  _profileImage as Uint8List);
+                              updated = await User.updateProfilePicture(
+                                  personalInformation['username'] ?? '',
+                                  _profileImage);
                             } else {
                               _changedPfp = false;
                             }

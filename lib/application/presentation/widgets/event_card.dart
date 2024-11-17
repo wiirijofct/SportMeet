@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
+  final int reservationId;
+  final int fieldId;
   final String sport;
   final String date;
   final String address;
@@ -11,6 +13,8 @@ class EventCard extends StatelessWidget {
 
   const EventCard({
     Key? key,
+    required this.reservationId,
+    required this.fieldId,
     required this.sport,
     required this.date,
     required this.address,

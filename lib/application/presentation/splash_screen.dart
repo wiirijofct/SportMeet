@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Set a default value for isLogged (you can adjust based on your needs)
-    isLogged = true;
+    isLogged = false;
   }
 
   @override

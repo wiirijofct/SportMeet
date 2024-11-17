@@ -1,10 +1,5 @@
-// ignore_for_file: avoid_print
-
-import 'dart:typed_data';
 import 'dart:convert';
-import 'package:sport_meet/application/presentation/applogic/auth.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {}
 
@@ -13,166 +8,161 @@ class User {
   static Map<String, dynamic> info = {};
 
   static Future<Map<String, dynamic>> getInfo() async {
-    String url = '${Authentication.getUrl()}/user/info';
-    try {
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        info = jsonDecode(response.body);
-        return info;
-      } else {
-        print(response.statusCode);
-        return {};
-      }
-    } catch (e) {
-      print(e);
-      return {};
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('loggedInUser');
+    if (userJson != null) {
+      info = jsonDecode(userJson);
+      return info;
     }
+    return {};
   }
 
   static Future<Map<String, dynamic>> getProfileInfo(String username) async {
-    String url = '${Authentication.getUrl()}/user/profile?username=$username';
-    try {
-      final response = await http.get(Uri.parse(url));
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? usersJson = prefs.getString('users');
+    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        print(response.statusCode);
-        return {};
+    for (var user in users) {
+      if (user['username'] == username) {
+        return user;
       }
-    } catch (e) {
-      print(e);
-      return {};
     }
+    return {};
   }
 
   static Future<List<Map<String, dynamic>>> getFriends(String username) async {
-    String url = '${Authentication.getUrl()}/friends/list?username=$username';
-    try {
-      final response = await http.get(Uri.parse(url));
+    // In this example, friends data is stored in the user's profile under 'friends' key
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? usersJson = prefs.getString('users');
+    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-      if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(jsonDecode(response.body));
-      } else {
-        print(response.statusCode);
-        return [];
+    for (var user in users) {
+      if (user['username'] == username) {
+        List<int> friendsIds = List<int>.from(user['friends']);
+        return users
+            .where((u) => friendsIds.contains(u['userId']))
+            .map((u) => Map<String, dynamic>.from(u))
+            .toList();
       }
-    } catch (e) {
-      print(e);
-      return [];
     }
+    return [];
   }
 
   static Future<bool> addFriend(String friendUsername) async {
-    String url = '${Authentication.getUrl()}/friends/add';
-    try {
-      final response = await http.post(Uri.parse(url),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'username': friendUsername}));
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? usersJson = prefs.getString('users');
+    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-      return response.statusCode == 200;
-    } catch (e) {
-      print(e);
-      return false;
+    String? loggedInUserJson = prefs.getString('loggedInUser');
+    if (loggedInUserJson == null) return false;
+
+    Map<String, dynamic> loggedInUser = jsonDecode(loggedInUserJson);
+
+    for (var user in users) {
+      if (user['username'] == friendUsername) {
+        loggedInUser['friends'].add(user['userId']);
+        prefs.setString('loggedInUser', jsonEncode(loggedInUser));
+        prefs.setString('users', jsonEncode(users));
+        return true;
+      }
     }
+    return false;
   }
 
   static Future<bool> removeFriend(String friendUsername) async {
-    String url = '${Authentication.getUrl()}/friends/remove';
-    try {
-      final response = await http.post(Uri.parse(url),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'username': friendUsername}));
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? usersJson = prefs.getString('users');
+    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-      return response.statusCode == 200;
-    } catch (e) {
-      print(e);
-      return false;
+    String? loggedInUserJson = prefs.getString('loggedInUser');
+    if (loggedInUserJson == null) return false;
+
+    Map<String, dynamic> loggedInUser = jsonDecode(loggedInUserJson);
+
+    for (var user in users) {
+      if (user['username'] == friendUsername) {
+        loggedInUser['friends'].remove(user['userId']);
+        prefs.setString('loggedInUser', jsonEncode(loggedInUser));
+        prefs.setString('users', jsonEncode(users));
+        return true;
+      }
     }
+    return false;
   }
 
   static Future<bool> updateInfo(String username, String email, String name,
       String countryCode, String phone, String profile) async {
-    String url = '${Authentication.getUrl()}/user';
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? usersJson = prefs.getString('users');
+    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-    final data = {
-      "targetUsername": username,
-      "email": email,
-      "name": name,
-      "countryCode": countryCode,
-      "phoneNumber": phone,
-      "isProfilePublic": profile == 'Public' ? true : false,
-    };
+    String? loggedInUserJson = prefs.getString('loggedInUser');
+    if (loggedInUserJson == null) return false;
 
-    try {
-      final response = await http.patch(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(data),
-      );
+    Map<String, dynamic> loggedInUser = jsonDecode(loggedInUserJson);
 
-      return response.statusCode == 200;
-    } catch (e) {
-      print(e);
-      return false;
+    loggedInUser['email'] = email;
+    loggedInUser['name'] = name;
+    loggedInUser['countryCode'] = countryCode;
+    loggedInUser['phoneNumber'] = phone;
+    loggedInUser['isProfilePublic'] = profile == 'Public';
+
+    // Update users list
+    for (int i = 0; i < users.length; i++) {
+      if (users[i]['username'] == username) {
+        users[i] = loggedInUser;
+        break;
+      }
     }
+
+    prefs.setString('loggedInUser', jsonEncode(loggedInUser));
+    prefs.setString('users', jsonEncode(users));
+    return true;
   }
 
   static Future<bool> updatePassword(String oldPassword, String newPassword) async {
-    String url = '${Authentication.getUrl()}/user/updatePassword';
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? loggedInUserJson = prefs.getString('loggedInUser');
+    if (loggedInUserJson == null) return false;
 
-    final data = {
-      "oldPassword": oldPassword,
-      "newPassword": newPassword,
-    };
+    Map<String, dynamic> loggedInUser = jsonDecode(loggedInUserJson);
 
-    try {
-      final response = await http.patch(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(data),
-      );
+    if (loggedInUser['password'] == oldPassword) {
+      loggedInUser['password'] = newPassword;
+      prefs.setString('loggedInUser', jsonEncode(loggedInUser));
 
-      return response.statusCode == 200;
-    } catch (e) {
-      print(e);
-      return false;
+      // Update users list
+      String? usersJson = prefs.getString('users');
+      List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
+      for (int i = 0; i < users.length; i++) {
+        if (users[i]['username'] == loggedInUser['username']) {
+          users[i] = loggedInUser;
+          break;
+        }
+      }
+      prefs.setString('users', jsonEncode(users));
+      return true;
     }
+    return false;
   }
 
-  static Future<bool> uploadProfilePicture(Uint8List file) async {
-    String url = '${Authentication.getUrl()}/user/uploadProfilePicture';
+  static Future<bool> updateProfilePicture(String imagePath, profileImage) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? loggedInUserJson = prefs.getString('loggedInUser');
+    if (loggedInUserJson == null) return false;
 
-    try {
-      var request = http.MultipartRequest('POST', Uri.parse(url));
-      request.files.add(http.MultipartFile.fromBytes('file', file,
-          filename: 'profile.png', contentType: MediaType('image', 'png')));
-      request.fields['username'] = info['username'];
+    Map<String, dynamic> loggedInUser = jsonDecode(loggedInUserJson);
+    loggedInUser['imagePath'] = imagePath;
 
-      var response = await request.send();
-      return response.statusCode == 200;
-    } catch (e) {
-      print(e);
-      return false;
-    }
+    prefs.setString('loggedInUser', jsonEncode(loggedInUser));
+    return true;
   }
 
   static Future<Map<String, Map<String, dynamic>>> getUserList() async {
-    String url = '${Authentication.getUrl()}/users';
-    try {
-      final response = await http.get(Uri.parse(url));
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? usersJson = prefs.getString('users');
+    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-      if (response.statusCode == 200) {
-        return (jsonDecode(response.body) as Map<String, dynamic>)
-            .map((key, value) => MapEntry(key, value as Map<String, dynamic>));
-      } else {
-        print(response.statusCode);
-        return {};
-      }
-    } catch (e) {
-      print(e);
-      return {};
-    }
+    return {for (var user in users) user['username']: user};
   }
 }

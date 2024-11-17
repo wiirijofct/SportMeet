@@ -1,0 +1,18 @@
+[
+    {
+        "userId": 1,
+        "username": "wiirijo",
+        "firstName": "Yaroslav",
+        "lastName": "Hayduk",
+        "email": "wiirijo@gmail.com",
+        "password": "123456",
+        "phone": "911888555",
+        "birthDate": "31/10/2000",
+        "sports": ["Tennis", "Padel", "Volleyball"],
+        "favFields": [1, 2, 3],
+        "reservations": [109, 110, 111],
+        "friends": [2, 3, 4],
+        "imagePath": "lib/images/m1.png",
+        "hostUser": false
+    }
+]

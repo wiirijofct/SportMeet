@@ -114,7 +114,7 @@
   {
     "reservationId": "109",
     "fieldId": "1",
-    "sport": "Tennis",
+    "sport": "Basketball",
     "date": "2025-01-05",
     "time": "09:00",
     "teamAvailability": "OPEN",
@@ -128,7 +128,7 @@
   {
     "reservationId": "110",
     "fieldId": "2",
-    "sport": "Volleyball",
+    "sport": "Swimming",
     "date": "2025-01-10",
     "time": "11:00",
     "teamAvailability": "CLOSED",
@@ -142,7 +142,7 @@
   {
     "reservationId": "111",
     "fieldId": "3",
-    "sport": "Cricket",
+    "sport": "Football",
     "date": "2025-01-15",
     "time": "13:00",
     "teamAvailability": "OPEN",

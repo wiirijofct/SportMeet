@@ -2,15 +2,18 @@ import 'package:sport_meet/application/presentation/splash_screen.dart';
 import 'package:sport_meet/application/themes/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart'; // Import the Authentication class
 
-void main() {
-  // DailyTrackerConfig.start();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Required to initialize async code in main
+  await Authentication.initializeUsers(); // Initialize users before the app starts
 
   runApp(
     ChangeNotifierProvider(
-      create : (context) => ThemeManager(),
-    child: const MyApp(),
-  ));
+      create: (context) => ThemeManager(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -25,8 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: true,
       navigatorKey: navigatorKey,
       theme: Provider.of<ThemeManager>(context).themeData,
-
-      home: const SplashScreen()
+      home: const SplashScreen(),
     );
   }
 }

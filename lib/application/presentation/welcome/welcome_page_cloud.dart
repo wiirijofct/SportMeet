@@ -1,9 +1,9 @@
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/home/home_page.dart';
 import 'package:sport_meet/application/presentation/welcome/login_form.dart';
 import 'package:sport_meet/application/presentation/welcome/reset_password_form.dart';
 import 'package:sport_meet/application/presentation/welcome/signup_form.dart';
 import 'package:flutter/material.dart';
-import 'package:sport_meet/application/presentation/applogic/auth.dart';
 
 void main() => runApp(const WelcomePage());
 
@@ -19,23 +19,6 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   WelcomeForm form = WelcomeForm.login;
 
-  @override
-  void initState() {
-    super.initState();
-    _checkLoginStatus();
-  }
-
-  Future<void> _checkLoginStatus() async {
-    var loggedInUser = await Authentication.getLoggedInUser();
-    if (loggedInUser != null) {
-      // Navigate directly to HomePage if a user is already logged in
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    }
-  }
-
   Widget renderForm() {
     switch (form) {
       case WelcomeForm.signUp:
@@ -43,7 +26,7 @@ class _WelcomePageState extends State<WelcomePage> {
           switch (btn) {
             case SignUpFormButton.signUp:
               if (data != null) {
-                bool userCreated = await Authentication.createUser(
+                String? errorMessage = await Authentication.createUser(
                   data.username,
                   data.email,
                   data.name,
@@ -52,21 +35,18 @@ class _WelcomePageState extends State<WelcomePage> {
                   data.password,
                 );
 
-                String? message;
-                if (userCreated) {
-                  message = "Account created! To activate your account, click the link we sent to your email.";
+                if (errorMessage == null) {
                   setState(() {
                     form = WelcomeForm.login;
                   });
-                } else {
-                  message = "Username or email already exists.";
                 }
 
                 showDialog(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                        content: Text(message!));
+                        content: Text(errorMessage ??
+                            "Account created! To activate your account, click the link we sent to your email."));
                   },
                 );
               }
@@ -167,10 +147,11 @@ class _WelcomePageState extends State<WelcomePage> {
             dialogBackgroundColor: Colors.white,
             checkboxTheme: CheckboxThemeData(
                 side: const BorderSide(),
-                fillColor: MaterialStateColor.resolveWith((states) =>
-                    states.contains(MaterialState.selected)
+                fillColor: WidgetStateColor.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
                         ? Colors.green
                         : Colors.transparent)),
+            
             inputDecorationTheme: const InputDecorationTheme(
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(

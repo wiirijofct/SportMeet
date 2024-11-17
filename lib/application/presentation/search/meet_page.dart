@@ -107,7 +107,7 @@ class _MeetPageState extends State<MeetPage> {
   @override
   void initState() {
     super.initState();
-    selectedSports = List.from(sportsFilters); // Seleciona todos os esportes inicialmente
+    // selectedSports = List.from(sportsFilters); // Seleciona todos os esportes inicialmente
     filteredEvent = List.from(meetPeople); // Inicializa a lista de eventos filtrados
   }
 
@@ -130,7 +130,7 @@ class _MeetPageState extends State<MeetPage> {
 
   void resetFilters() {
     setState(() {
-      selectedSports = List.from(sportsFilters); // Reseta para todos os esportes
+      selectedSports = [];
       selectedAvailability = [];
       selectedMunicipality = [];
       selectedGender = '';
@@ -143,19 +143,41 @@ class _MeetPageState extends State<MeetPage> {
     });
   }
 
-  void applyFilters() {
+ void applyFilters() {
   setState(() {
-    // Filtra os dados com base nos filtros selecionados
+    // Expande os filtros de disponibilidade com base nas novas regras
+    Set<String> expandedAvailability = selectedAvailability.toSet();
+
+    // Regras de expansão
+    if (selectedAvailability.contains('Weekends')) {
+      expandedAvailability.add('All days'); // Pessoas com "All days" também aparecem
+    }
+    if (selectedAvailability.any((day) => ['Saturdays', 'Sundays'].contains(day))) {
+      expandedAvailability.add('Weekends'); // Pessoas com "Weekends" também aparecem
+    }
+    if (selectedAvailability.any((day) => 
+        ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays'].contains(day))) {
+      expandedAvailability.add('All days'); // Pessoas com "All days" também aparecem
+    }
+
+    // Filtra os dados com base nos filtros expandidos e outros critérios
     filteredEvent = meetPeople.where((person) {
       final sportsMatch = selectedSports.isEmpty || selectedSports.any((sport) => person['sports']!.contains(sport));
-      final availabilityMatch = selectedAvailability.isEmpty || selectedAvailability.any((day) => person['availability']!.contains(day));
-      final municipalityMatch = selectedMunicipality.isEmpty || selectedMunicipality.contains(person['address']!.split(': ')[1]);
-      final genderMatch = selectedGender.isEmpty || person['gender']!.contains(selectedGender);
+      
+      final availabilityMatch = expandedAvailability.isEmpty || 
+          expandedAvailability.any((day) => person['availability']!.contains(day));
+      
+      final municipalityMatch = selectedMunicipality.isEmpty || 
+          selectedMunicipality.contains(person['address']!.split(': ')[1]);
+      
+      final genderMatch = selectedGender.isEmpty || 
+          person['gender']!.contains(selectedGender);
 
       return sportsMatch && availabilityMatch && municipalityMatch && genderMatch;
     }).toList();
   });
 }
+
 
 void _showPersonDetails(Map<String, String> person) {
   showDialog(
@@ -323,226 +345,232 @@ void _showChatDialog(Map<String, String> person) {
   );
 }
 
+void showFilterDialog() {
+  // Função para extrair valores únicos de um campo específico
+  Set<String> extractUniqueValues(String key) {
+    return meetPeople.map((person) {
+      final value = person[key]?.split(': ').last ?? '';
+      if (value.contains(',')) {
+        return value.split(',').map((item) => item.trim());
+      }
+      return [value.trim()];
+    }).expand((element) => element).toSet();
+  }
 
-  void showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Filter Options'),
-              content: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Sort By',
+  // Extrair valores únicos para cada filtro
+  final municipalities = extractUniqueValues('address');
+  final availabilityOptions = extractUniqueValues('availability');
+  final sportsOptions = extractUniqueValues('sports');
+  final genderOptions = extractUniqueValues('gender');
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Filter Options'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Sort By',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+
+                  // Multi-select dropdown para esportes favoritos
+                  MultiSelectDialogField(
+                    items: sportsOptions
+                        .map((sport) => MultiSelectItem(sport, sport))
+                        .toList(),
+                    initialValue: selectedSports,
+                    listType: MultiSelectListType.LIST,
+                    title: const Text(
+                      "Favorite Sports",
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                    ),
+                    buttonText: const Text(
+                      "Favorite Sports",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onConfirm: (values) {
+                      setState(() {
+                        selectedSports = values.cast<String>();
+                      });
+                    },
+                    chipDisplay: MultiSelectChipDisplay(
+                      chipColor: const Color.fromARGB(255, 193, 50, 74),
+                      textStyle: const TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
 
-                    // Multi-select dropdown para esportes favoritos
-                    MultiSelectDialogField(
-                      items: [
-                        MultiSelectItem('Basketball', 'Basketball'),
-                        MultiSelectItem('Tennis', 'Tennis'),
-                        MultiSelectItem('Swimming', 'Swimming'),
-                        MultiSelectItem('Football', 'Football'),
-                      ],
-                      listType: MultiSelectListType.LIST,
-                      title: const Text("Favorite Sports", 
-                        style: TextStyle(
+                  // Multi-select dropdown para Disponibilidade
+                  MultiSelectDialogField(
+                    items: availabilityOptions
+                        .map((availability) =>
+                            MultiSelectItem(availability, availability))
+                        .toList(),
+                    initialValue: selectedAvailability,
+                    title: const Text(
+                      "Availability",
+                      style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
-                      ),),
-                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      buttonText: const Text(
-                        "Favorite Sports",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      onConfirm: (values) {
-                        setState(() {
-                          selectedSports = values.cast<String>();
-                        });
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        chipColor: const Color.fromARGB(255, 193, 50, 74),
-                        textStyle: const TextStyle(color: Colors.black),
                       ),
                     ),
+                    selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                    ),
+                    buttonText: const Text(
+                      "Availability",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onConfirm: (values) {
+                      setState(() {
+                        selectedAvailability = values.cast<String>();
+                      });
+                    },
+                    chipDisplay: MultiSelectChipDisplay(
+                      chipColor: const Color.fromARGB(255, 193, 50, 74),
+                      textStyle: const TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
 
-                    SizedBox(height: 16.0),
-
-                    // Multi-select dropdown para Disponibilidade
-                    MultiSelectDialogField(
-                      items: [
-                        MultiSelectItem('All days', 'All days'),
-                        MultiSelectItem('Weekends', 'Weekends'),
-                        MultiSelectItem('Mondays', 'Mondays'),
-                        MultiSelectItem('Tuesdays', 'Tuesday'),
-                        MultiSelectItem('Wednesdays', 'Wednesday'),
-                        MultiSelectItem('Thursdays', 'Thursdays'),
-                        MultiSelectItem('Fridays', 'Fridays'),
-                      ],
-                      title: const Text("Availability", 
-                        style: TextStyle(
+                  // Multi-select dropdown para Município
+                  MultiSelectDialogField(
+                    items: municipalities
+                        .map((municipality) =>
+                            MultiSelectItem(municipality, municipality))
+                        .toList(),
+                    initialValue: selectedMunicipality,
+                    title: const Text(
+                      "Municipality",
+                      style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
-                      ),),
-                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      buttonText: const Text(
-                        "Availability",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      onConfirm: (values) {
-                        setState(() {
-                          selectedAvailability = values.cast<String>();
-                        });
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        chipColor: const Color.fromARGB(255, 193, 50, 74),
-                        textStyle: const TextStyle(color: Colors.black),
                       ),
                     ),
-
-                    SizedBox(height: 16.0),
-
-                    // Multi-select dropdown para Município
-                    MultiSelectDialogField(
-                      items: [
-                        MultiSelectItem('Lisboa', 'Lisboa'),
-                        MultiSelectItem('Cascais', 'Cascais'),
-                        MultiSelectItem('Porto', 'Porto'),
-                        MultiSelectItem('Faro', 'Faro'),
-                      ],
-                      title: const Text("Municipality", 
-                        style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),),
-                      selectedColor: const Color.fromARGB(255, 193, 50, 74),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      buttonText: const Text(
-                        "Municipality",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      onConfirm: (values) {
-                        setState(() {
-                          selectedMunicipality = values.cast<String>();
-                        });
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        chipColor: const Color.fromARGB(255, 193, 50, 74),
-                        textStyle: const TextStyle(color: Colors.black),
+                    selectedColor: const Color.fromARGB(255, 193, 50, 74),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1,
                       ),
                     ),
-
-                    SizedBox(height: 16.0),
-
-                    // Dropdown de gênero
-                    DropdownButtonFormField<String>(
-                      value: selectedGender.isEmpty ? null : selectedGender,
-                      hint: const Text(
-                        'Gender',
-                       style: TextStyle(
-                        fontSize: 26.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black
-                      )
-                        
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'Male', child: Text('Male')),
-                        DropdownMenuItem(value: 'Female', child: Text('Female')),
-                      ],
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedGender = newValue ?? '';
-                        });
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                      ),
-                      style: const TextStyle(color: Colors.black),
-                      dropdownColor: const Color.fromARGB(255, 118, 120, 120),
-                      iconEnabledColor: Colors.black,
+                    buttonText: const Text(
+                      "Municipality",
+                      style: TextStyle(color: Colors.black),
                     ),
-                  ],
-                ),
+                    onConfirm: (values) {
+                      setState(() {
+                        selectedMunicipality = values.cast<String>();
+                      });
+                    },
+                    chipDisplay: MultiSelectChipDisplay(
+                      chipColor: const Color.fromARGB(255, 193, 50, 74),
+                      textStyle: const TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+
+                  // Dropdown de gênero
+                  DropdownButtonFormField<String>(
+                    value: selectedGender.isEmpty ? null : selectedGender,
+                    hint: const Text(
+                      'Gender',
+                      style: TextStyle(
+                          fontSize: 26.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    items: genderOptions
+                        .map((gender) =>
+                            DropdownMenuItem(value: gender, child: Text(gender)))
+                        .toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedGender = newValue ?? '';
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade200,
+                    ),
+                    style: const TextStyle(color: Colors.black),
+                    dropdownColor: const Color.fromARGB(255, 118, 120, 120),
+                    iconEnabledColor: Colors.black,
+                  ),
+                ],
               ),
-              actions: [
-                 TextButton(
+            ),
+            actions: [
+              TextButton(
                 onPressed: () {
                   resetFilters(); // Reseta todos os filtros
                   Navigator.of(context).pop();
                 },
                 child: const Text('Clear Filters'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    applyFilters(); // Aplica os filtros selecionados
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Apply'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+              ),
+              TextButton(
+                onPressed: () {
+                  applyFilters(); // Aplica os filtros selecionados
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Apply'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+int countActiveFilters() {
+    int count = 0;
+    if(selectedAvailability.isNotEmpty)count++;
+    if(selectedGender.isNotEmpty)count++;
+    if(selectedMunicipality.isNotEmpty)count++;
+    if(selectedSports.isNotEmpty)count++;
+    return count;
   }
 
 
   @override
   Widget build(BuildContext context) {
     // Filter the list based on searchQuery to match all text fields
-    final filteredPeople = meetPeople.where((person) {
-      final title = person['title']!.toLowerCase();
-      final address = person['address']!.toLowerCase();
-      final availability = person['availability']!.toLowerCase();
-      final sports = person['sports']!.toLowerCase();
-      final query = _searchController.text.toLowerCase();
-
-      // Check if any of the fields contain the search query
-      return title.contains(query) ||
-            address.contains(query) ||
-            availability.contains(query) ||
-            sports.contains(query);
-    }).toList();
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -588,6 +616,31 @@ void _showChatDialog(Map<String, String> person) {
                   icon: const Icon(Ionicons.filter_outline),
                   onPressed: showFilterDialog,
                 ),
+                 // Badge for active filters
+                  if (countActiveFilters() > 0)
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4.0),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${countActiveFilters()}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
               ],
             ),
           ),

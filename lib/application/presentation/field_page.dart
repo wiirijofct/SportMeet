@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/reservation_card.dart';
 import 'package:http/http.dart' as http;
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
 
-class FieldPage extends StatelessWidget {
+class FieldPage extends StatefulWidget {
   final String fieldId;
   final String fieldName;
   final String location;
@@ -26,13 +27,26 @@ class FieldPage extends StatelessWidget {
     required this.pricing,
   }) : super(key: key);
 
+  @override
+  _FieldPageState createState() => _FieldPageState();
+}
+
+class _FieldPageState extends State<FieldPage> {
+  late Future<List<Map<String, dynamic>>> _reservationsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _reservationsFuture = _fetchReservations();
+  }
+
   Future<List<Map<String, dynamic>>> _fetchReservations() async {
     try {
       final response = await http.get(Uri.parse('http://localhost:3000/reservations'));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         return data
-            .where((reservation) => reservation['fieldId'].toString() == fieldId)
+            .where((reservation) => reservation['fieldId'].toString() == widget.fieldId)
             .map<Map<String, dynamic>>(
                 (reservation) => reservation as Map<String, dynamic>)
             .toList();
@@ -45,12 +59,96 @@ class FieldPage extends StatelessWidget {
     }
   }
 
+  Future<void> _handleJoinReservation(BuildContext context, Map<String, dynamic> reservation) async {
+  final user = await Authentication.getLoggedInUser();
+  if (user == null) {
+    return;
+  }
+
+  // Check if the user has already joined the reservation
+  if (user['reservations'].contains(int.parse(reservation['reservationId'].toString()))) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('You have already joined this reservation.')),
+    );
+    return;
+  }
+
+  if (reservation['maxSlots'] > reservation['slotsAvailable']) {
+    final int newSlotsAvailable = reservation['slotsAvailable'] + 1;
+
+    reservation['slotsAvailable'] = newSlotsAvailable;
+    final response = await http.put(
+      Uri.parse('http://localhost:3000/reservations/${reservation['reservationId']}'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(reservation),
+    );
+
+    if (response.statusCode == 200) {
+      user['reservations'].add(int.parse(reservation['reservationId'].toString()));
+      final userResponse = await http.put(
+        Uri.parse('http://localhost:3000/users/${user['id']}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(user),
+      );
+      await Authentication.saveLoggedInUser(user);
+      if (userResponse.statusCode != 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to join reservation. Please try again.')),
+        );
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You have successfully joined the reservation!')),
+      );
+      setState(() {
+        _reservationsFuture = _fetchReservations();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to join reservation. Please try again.')),
+      );
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('No slots available for this reservation.')),
+    );
+  }
+}
+
+
+  void _showJoinDialog(BuildContext context, Map<String, dynamic> reservation) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Join Reservation'),
+          content: const Text('Do you want to join this reservation?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Join'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _handleJoinReservation(context, reservation);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _fetchReservations(),
+        future: _reservationsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -67,7 +165,7 @@ class FieldPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.asset(
-                  imagePath,
+                  widget.imagePath,
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
@@ -78,7 +176,7 @@ class FieldPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        fieldName,
+                        widget.fieldName,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -91,7 +189,7 @@ class FieldPage extends StatelessWidget {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              location,
+                              widget.location,
                               style: const TextStyle(fontSize: 16),
                             ),
                           ),
@@ -101,25 +199,25 @@ class FieldPage extends StatelessWidget {
                       _buildFieldDetailRow(
                         icon: Ionicons.time_outline,
                         title: 'Schedule',
-                        detail: schedule,
+                        detail: widget.schedule,
                       ),
                       const SizedBox(height: 8),
                       _buildFieldDetailRow(
                         icon: Ionicons.mail_outline,
                         title: 'Email',
-                        detail: contactEmail,
+                        detail: widget.contactEmail,
                       ),
                       const SizedBox(height: 8),
                       _buildFieldDetailRow(
                         icon: Ionicons.call_outline,
                         title: 'Phone',
-                        detail: contactPhone,
+                        detail: widget.contactPhone,
                       ),
                       const SizedBox(height: 8),
                       _buildFieldDetailRow(
                         icon: Ionicons.cash_outline,
                         title: 'Pricing per hour',
-                        detail: pricing,
+                        detail: widget.pricing,
                       ),
                       const SizedBox(height: 24),
                       const Text(
@@ -136,25 +234,24 @@ class FieldPage extends StatelessWidget {
                         itemCount: reservations.length,
                         itemBuilder: (context, index) {
                           final reservation = reservations[index];
-                          return Padding(
+                          return GestureDetector(
+                            onTap: () {
+                              _showJoinDialog(context, reservation);
+                            },
+                            child: Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: ReservationCard(
-                                creatorName:
-                                    reservation['creatorName'] ?? 'Unknown',
-                                creatorGender:
-                                    reservation['creatorGender'] ?? 'Unknown',
+                                creatorName: reservation['creatorName'] ?? 'Unknown',
+                                creatorGender: reservation['creatorGender'] ?? 'Unknown',
                                 creatorAge: reservation['creatorAge'] ?? 0,
-                                reservationDate:
-                                    reservation['date'] ?? 'N/A',
-                                reservationTime:
-                                    reservation['time'] ?? 'N/A',
-                                slotsAvailable:
-                                    reservation['slotsAvailable'] ?? 0,
+                                reservationDate: reservation['date'] ?? 'N/A',
+                                reservationTime: reservation['time'] ?? 'N/A',
+                                slotsAvailable: reservation['slotsAvailable'] ?? 0,
                                 maxSlots: reservation['maxSlots'] ?? 1,
-                                creatorImagePath:
-                                    reservation['creatorImagePath'] ??
-                                        'assets/images/default.png',
-                              ));
+                                creatorImagePath: reservation['creatorImagePath'] ?? 'assets/images/default.png',
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ],

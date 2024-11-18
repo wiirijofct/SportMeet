@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/field_page.dart';
+import 'package:sport_meet/application/presentation/home/home_page.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
 import 'package:sport_meet/application/presentation/widgets/field_card.dart';
 import 'dart:convert';
@@ -460,10 +461,9 @@ class _SearchPageState extends State<SearchPage> {
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           if (index == 2) {
-            Navigator.of(context).pop();
-            // Navigator.of(context).pushReplacement(
-            //   MaterialPageRoute(builder: (context) => const HomePage()),
-            // );
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
           }
         },
       ),

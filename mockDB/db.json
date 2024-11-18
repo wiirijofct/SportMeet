@@ -1,6 +1,7 @@
 {
   "users": [
     {
+      "id": "1",
       "userId": 1,
       "username": "wiirijo",
       "firstName": "Yaroslav",
@@ -10,6 +11,9 @@
       "phone": "911888555",
       "birthDate": "31/10/2000",
       "sports": [
+        "Football",
+        "Basketball",
+        "Swimming",
         "Tennis",
         "Padel",
         "Volleyball"
@@ -22,7 +26,11 @@
       "reservations": [
         109,
         110,
-        111
+        111,
+        109,
+        101,
+        119,
+        103
       ],
       "friends": [
         2,
@@ -33,6 +41,7 @@
       "hostUser": false
     },
     {
+      "id": "2",
       "userId": 2,
       "username": "joe",
       "firstName": "John",
@@ -61,6 +70,7 @@
       "hostUser": true
     },
     {
+      "id": "3",
       "userId": 3,
       "username": "jane_smith",
       "firstName": "Jane",
@@ -100,7 +110,45 @@
       "birthDate": "",
       "sports": [],
       "favFields": [],
-      "reservations": [],
+      "reservations": [
+        101,
+        106,
+        102,
+        107,
+        118
+      ],
+      "friends": [],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": false
+    },
+    {
+      "id": "3dcf",
+      "userId": 1731954850376,
+      "username": "test1",
+      "firstName": "test1",
+      "lastName": "",
+      "email": "test1@gmail.com",
+      "password": "123",
+      "phone": "953624362",
+      "birthDate": "",
+      "sports": [
+        "Basketball",
+        "Football",
+        "Swimming",
+        "Tennis",
+        "Padel"
+      ],
+      "favFields": [],
+      "reservations": [
+        101,
+        102,
+        101,
+        109,
+        103,
+        117,
+        110,
+        118
+      ],
       "friends": [],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
@@ -303,7 +351,7 @@
       "creatorName": "Jane Smith",
       "creatorGender": "Female",
       "creatorAge": 25,
-      "slotsAvailable": 5,
+      "slotsAvailable": 3,
       "maxSlots": 5,
       "creatorImagePath": "lib/images/f1.png"
     },
@@ -318,7 +366,7 @@
       "creatorName": "Robert Johnson",
       "creatorGender": "Male",
       "creatorAge": 34,
-      "slotsAvailable": 8,
+      "slotsAvailable": 6,
       "maxSlots": 10,
       "creatorImagePath": "lib/images/m2.png"
     },
@@ -333,7 +381,7 @@
       "creatorName": "Emily Davis",
       "creatorGender": "Female",
       "creatorAge": 22,
-      "slotsAvailable": 10,
+      "slotsAvailable": 6,
       "maxSlots": 10,
       "creatorImagePath": "lib/images/f2.png"
     },
@@ -348,7 +396,7 @@
       "creatorName": "Michael Brown",
       "creatorGender": "Male",
       "creatorAge": 28,
-      "slotsAvailable": 4,
+      "slotsAvailable": 3,
       "maxSlots": 6,
       "creatorImagePath": "lib/images/m3.png"
     },
@@ -363,7 +411,7 @@
       "creatorName": "Laura Wilson",
       "creatorGender": "Female",
       "creatorAge": 30,
-      "slotsAvailable": 6,
+      "slotsAvailable": 3,
       "maxSlots": 6,
       "creatorImagePath": "lib/images/f3.png"
     },
@@ -393,7 +441,7 @@
       "creatorName": "Sophia Taylor",
       "creatorGender": "Female",
       "creatorAge": 24,
-      "slotsAvailable": 4,
+      "slotsAvailable": 2,
       "maxSlots": 4,
       "creatorImagePath": "lib/images/f4.png"
     },
@@ -408,8 +456,8 @@
       "creatorName": "Alice Green",
       "creatorGender": "Female",
       "creatorAge": 26,
-      "slotsAvailable": 1,
-      "maxSlots": 2,
+      "slotsAvailable": 3,
+      "maxSlots": 5,
       "creatorImagePath": "lib/images/f1.png"
     },
     {
@@ -423,7 +471,7 @@
       "creatorName": "Chris White",
       "creatorGender": "Male",
       "creatorAge": 31,
-      "slotsAvailable": 6,
+      "slotsAvailable": 3,
       "maxSlots": 6,
       "creatorImagePath": "lib/images/m2.png"
     },
@@ -438,7 +486,7 @@
       "creatorName": "David Black",
       "creatorGender": "Male",
       "creatorAge": 29,
-      "slotsAvailable": 10,
+      "slotsAvailable": 3,
       "maxSlots": 11,
       "creatorImagePath": "lib/images/m3.png"
     },
@@ -453,7 +501,7 @@
       "creatorName": "Eva Brown",
       "creatorGender": "Female",
       "creatorAge": 27,
-      "slotsAvailable": 8,
+      "slotsAvailable": 2,
       "maxSlots": 8,
       "creatorImagePath": "lib/images/f2.png"
     },
@@ -484,7 +532,7 @@
       "creatorGender": "Female",
       "creatorAge": 24,
       "slotsAvailable": 2,
-      "maxSlots": 2,
+      "maxSlots": 7,
       "creatorImagePath": "lib/images/f3.png"
     },
     {
@@ -499,7 +547,7 @@
       "creatorGender": "Male",
       "creatorAge": 28,
       "slotsAvailable": 1,
-      "maxSlots": 2,
+      "maxSlots": 5,
       "creatorImagePath": "lib/images/m1.png"
     },
     {
@@ -514,7 +562,7 @@
       "creatorGender": "Female",
       "creatorAge": 30,
       "slotsAvailable": 2,
-      "maxSlots": 2,
+      "maxSlots": 20,
       "creatorImagePath": "lib/images/f4.png"
     },
     {
@@ -528,8 +576,8 @@
       "creatorName": "Jack Green",
       "creatorGender": "Male",
       "creatorAge": 35,
-      "slotsAvailable": 3,
-      "maxSlots": 4,
+      "slotsAvailable": 5,
+      "maxSlots": 15,
       "creatorImagePath": "lib/images/m2.png"
     },
     {
@@ -543,7 +591,7 @@
       "creatorName": "Karen White",
       "creatorGender": "Female",
       "creatorAge": 29,
-      "slotsAvailable": 9,
+      "slotsAvailable": 4,
       "maxSlots": 9,
       "creatorImagePath": "lib/images/f1.png"
     },
@@ -558,7 +606,7 @@
       "creatorName": "Liam Black",
       "creatorGender": "Male",
       "creatorAge": 33,
-      "slotsAvailable": 7,
+      "slotsAvailable": 8,
       "maxSlots": 9,
       "creatorImagePath": "lib/images/m3.png"
     },
@@ -604,7 +652,7 @@
       "creatorGender": "Female",
       "creatorAge": 28,
       "slotsAvailable": 2,
-      "maxSlots": 2,
+      "maxSlots": 5,
       "creatorImagePath": "lib/images/f3.png"
     },
     {
@@ -619,7 +667,7 @@
       "creatorGender": "Male",
       "creatorAge": 27,
       "slotsAvailable": 1,
-      "maxSlots": 2,
+      "maxSlots": 10,
       "creatorImagePath": "lib/images/m1.png"
     },
     {
@@ -640,219 +688,219 @@
   ],
   "sports": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Football"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Basketball"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Tennis"
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Padel"
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "Volleyball"
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "Golf"
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "Rugby"
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "Hockey"
     },
     {
-      "id": 9,
+      "id": "9",
       "name": "Baseball"
     },
     {
-      "id": 10,
+      "id": "10",
       "name": "Cricket"
     },
     {
-      "id": 11,
+      "id": "11",
       "name": "Table Tennis"
     },
     {
-      "id": 12,
+      "id": "12",
       "name": "Badminton"
     },
     {
-      "id": 13,
+      "id": "13",
       "name": "Squash"
     },
     {
-      "id": 14,
+      "id": "14",
       "name": "Bowling"
     },
     {
-      "id": 15,
+      "id": "15",
       "name": "Boxing"
     },
     {
-      "id": 16,
+      "id": "16",
       "name": "MMA"
     },
     {
-      "id": 17,
+      "id": "17",
       "name": "Karate"
     },
     {
-      "id": 18,
+      "id": "18",
       "name": "Judo"
     },
     {
-      "id": 19,
+      "id": "19",
       "name": "Taekwondo"
     },
     {
-      "id": 20,
+      "id": "20",
       "name": "Wrestling"
     },
     {
-      "id": 21,
+      "id": "21",
       "name": "Swimming"
     },
     {
-      "id": 22,
+      "id": "22",
       "name": "Diving"
     },
     {
-      "id": 23,
+      "id": "23",
       "name": "Water Polo"
     },
     {
-      "id": 24,
+      "id": "24",
       "name": "Surfing"
     },
     {
-      "id": 25,
+      "id": "25",
       "name": "Sailing"
     },
     {
-      "id": 26,
+      "id": "26",
       "name": "Rowing"
     },
     {
-      "id": 27,
+      "id": "27",
       "name": "Canoeing"
     },
     {
-      "id": 28,
+      "id": "28",
       "name": "Kayaking"
     },
     {
-      "id": 29,
+      "id": "29",
       "name": "Fishing"
     },
     {
-      "id": 30,
+      "id": "30",
       "name": "Hunting"
     },
     {
-      "id": 31,
+      "id": "31",
       "name": "Shooting"
     },
     {
-      "id": 32,
+      "id": "32",
       "name": "Archery"
     },
     {
-      "id": 33,
+      "id": "33",
       "name": "Cycling"
     },
     {
-      "id": 34,
+      "id": "34",
       "name": "Mountain Biking"
     },
     {
-      "id": 35,
+      "id": "35",
       "name": "BMX"
     },
     {
-      "id": 36,
+      "id": "36",
       "name": "Road Cycling"
     },
     {
-      "id": 37,
+      "id": "37",
       "name": "Track Cycling"
     },
     {
-      "id": 38,
+      "id": "38",
       "name": "Running"
     },
     {
-      "id": 39,
+      "id": "39",
       "name": "Marathon"
     },
     {
-      "id": 40,
+      "id": "40",
       "name": "Sprint"
     },
     {
-      "id": 41,
+      "id": "41",
       "name": "Middle Distance"
     },
     {
-      "id": 42,
+      "id": "42",
       "name": "Long Distance"
     },
     {
-      "id": 43,
+      "id": "43",
       "name": "Hurdles"
     },
     {
-      "id": 44,
+      "id": "44",
       "name": "Jumps"
     },
     {
-      "id": 45,
+      "id": "45",
       "name": "Throws"
     },
     {
-      "id": 46,
+      "id": "46",
       "name": "Decathlon"
     },
     {
-      "id": 47,
+      "id": "47",
       "name": "Heptathlon"
     },
     {
-      "id": 48,
+      "id": "48",
       "name": "Pentathlon"
     },
     {
-      "id": 49,
+      "id": "49",
       "name": "Triathlon"
     },
     {
-      "id": 50,
+      "id": "50",
       "name": "Duathlon"
     },
     {
-      "id": 51,
+      "id": "51",
       "name": "Aquathlon"
     },
     {
-      "id": 52,
+      "id": "52",
       "name": "Biathlon"
     },
     {
-      "id": 53,
+      "id": "53",
       "name": "Modern Pentathlon"
     },
     {
-      "id": 54,
+      "id": "54",
       "name": "Cross Country"
     }
   ]

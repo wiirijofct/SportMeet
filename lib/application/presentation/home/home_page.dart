@@ -46,20 +46,36 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   late Future<Map<String, dynamic>> userInfo;
   late Future<List<Map<String, dynamic>>> userEvents;
-  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
+  List<String> sportsFilters = [];
   List<String> selectedSports = [];
   bool isHostUser = false;
 
   @override
   void initState() {
     super.initState();
+    Authentication.getUserSports().then((value) {
+      setState(() {
+        sportsFilters = value;
+        selectedSports =
+            List.from(sportsFilters); // Initially select all sports
+        fetchUserData(); // Fetch user data after setting sports filters
+      });
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchUserData();
+  }
+
+  void fetchUserData() {
     userInfo = User.getInfo();
     userInfo.then((value) {
       setState(() {
         isHostUser = value['hostUser'] ?? false;
       });
     });
-    selectedSports = List.from(sportsFilters); // Initially select all sports
     userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
   }
 
@@ -190,15 +206,15 @@ class _HomePageState extends State<HomePage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    print('Error loading events: \${snapshot.error}');
-                    return Center(child: Text('Error: \${snapshot.error}'));
+                    print('Error loading events: ${snapshot.error}');
+                    return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     print('No upcoming events found.');
                     return const Center(child: Text('No upcoming events'));
                   }
 
                   final events = snapshot.data!;
-                  print('Loaded events: \$events');
+                  print('Loaded events: $events');
 
                   return ListView.builder(
                     itemCount: events.length,
@@ -358,7 +374,7 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           } else if (snapshot.hasError) {
-            return Text('\${snapshot.error}');
+            return Text('${snapshot.error}');
           }
           return const CircularProgressIndicator();
         });

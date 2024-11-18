@@ -46,8 +46,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 bool userCreated = await Authentication.createUser(
                   data.username,
                   data.email,
-                  data.name,
-                  data.countryCode,
+                  data.firstName,
                   data.phoneNumber,
                   data.password,
                 );

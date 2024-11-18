@@ -35,7 +35,7 @@ class Authentication {
   }
 
   static Future<bool> createUser(String username, String email, String name,
-      String countryCode, String phone, String password) async {
+      String phone, String password) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // Load users from shared preferences
@@ -45,6 +45,8 @@ class Authentication {
     // Check if username or email already exists
     for (var user in users) {
       if (user['username'] == username || user['email'] == email) {
+        print('Loaded users: $users');
+        print('Trying to log in with username: $username, password: $password');
         return false; // User already exists
       }
     }
@@ -55,7 +57,6 @@ class Authentication {
       "username": username,
       "email": email,
       "name": name,
-      "countryCode": countryCode,
       "phoneNumber": phone,
       "password": password,
       "isProfilePublic": false,
@@ -67,29 +68,40 @@ class Authentication {
   }
 
   static Future<bool> loginUser(
-    String username, String password, bool isPermanent) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String username, String password, bool isPermanent) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  // Load users from shared preferences
-  String? usersJson = prefs.getString('users');
-  List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
+    // Load users from shared preferences
+    String? usersJson = prefs.getString('users');
+    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-  // Debug print statements
-  print('Loaded users: $users');
-  print('Trying to log in with username: $username, password: $password');
+    // Debug print statements
+    print('Loaded users: $users');
+    print('Trying to log in with username: $username, password: $password');
 
-  // Check for matching user
-  for (var user in users) {
-    if (user['username'] == username && user['password'] == password) {
-      // Save logged-in user
-      prefs.setString('loggedInUser', jsonEncode(user));
-      return true;
+    // Check for matching user
+    for (var user in users) {
+      if (user['username'] == username && user['password'] == password) {
+        // Save logged-in user
+        prefs.setString('loggedInUser', jsonEncode(user));
+        if (isPermanent) {
+          await _saveLoggedInUser(user);
+        }
+        return true;
+      }
+    }
+    return false; // No matching user found
+  }
+
+  static Future<void> _saveLoggedInUser(Map<String, dynamic> user) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('loggedInUser', jsonEncode(user));
+      print('Logged-in user saved to SharedPreferences.');
+    } catch (e) {
+      print('Error saving logged-in user: $e');
     }
   }
-  return false; // No matching user found
-}
-
-
 
   static Future<Map<String, dynamic>?> getLoggedInUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -159,13 +171,15 @@ class Authentication {
     Map<String, dynamic> loggedInUser = jsonDecode(userJson);
 
     // Load reservations from JSON file or SharedPreferences
-    String reservationsJson = await rootBundle.loadString('assets/data/reservations.json');
+    String reservationsJson =
+        await rootBundle.loadString('assets/data/reservations.json');
     List<dynamic> reservations = jsonDecode(reservationsJson);
 
     // Filter reservations for the logged-in user
     List<int> userReservationIds = List<int>.from(loggedInUser['reservations']);
     List<Map<String, dynamic>> userReservations = reservations
-        .where((reservation) => userReservationIds.contains(int.parse(reservation['reservationId'])))
+        .where((reservation) => userReservationIds
+            .contains(int.parse(reservation['reservationId'])))
         .map((reservation) => Map<String, dynamic>.from(reservation))
         .toList();
 
@@ -179,7 +193,8 @@ class Authentication {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // Load reservations data from JSON file or SharedPreferences
-    String reservationsJson = await rootBundle.loadString('assets/data/reservations.json');
+    String reservationsJson =
+        await rootBundle.loadString('assets/data/reservations.json');
     prefs.setString('reservations', reservationsJson);
 
     // Load fields data from JSON file or SharedPreferences
@@ -200,11 +215,13 @@ class Authentication {
 
     // Load reservations from SharedPreferences
     String? reservationsJson = prefs.getString('reservations');
-    List<dynamic> reservations = reservationsJson != null ? jsonDecode(reservationsJson) : [];
+    List<dynamic> reservations =
+        reservationsJson != null ? jsonDecode(reservationsJson) : [];
 
     List<int> userReservationIds = List<int>.from(loggedInUser['reservations']);
     List<Map<String, dynamic>> userReservations = reservations
-        .where((reservation) => userReservationIds.contains(int.parse(reservation['reservationId'])))
+        .where((reservation) => userReservationIds
+            .contains(int.parse(reservation['reservationId'])))
         .map((reservation) => Map<String, dynamic>.from(reservation))
         .toList();
 
@@ -222,10 +239,12 @@ class Authentication {
     List<dynamic> fields = fieldsJson != null ? jsonDecode(fieldsJson) : [];
 
     print('All fields: \$fields');
-    return fields.firstWhere((field) => int.parse(field['fieldId']) == fieldId, orElse: () => {});
+    return fields.firstWhere((field) => int.parse(field['fieldId']) == fieldId,
+        orElse: () => {});
   }
 
-  static Future<List<Map<String, dynamic>>> getFilteredEvents(List<String> selectedSports) async {
+  static Future<List<Map<String, dynamic>>> getFilteredEvents(
+      List<String> selectedSports) async {
     List<Map<String, dynamic>> userEvents = await getUserEvents();
     List<Map<String, dynamic>> filteredEvents = userEvents
         .where((event) => selectedSports.contains(event['sport']))
@@ -235,11 +254,13 @@ class Authentication {
     return filteredEvents;
   }
 
-  static Future<Map<String, dynamic>?> getFieldForEvent(Map<String, dynamic> event) async {
+  static Future<Map<String, dynamic>?> getFieldForEvent(
+      Map<String, dynamic> event) async {
     return await getFieldById(int.parse(event['fieldId']));
   }
 
-  static Future<List<Map<String, dynamic>>> getCompleteEventDetails(List<Map<String, dynamic>> events) async {
+  static Future<List<Map<String, dynamic>>> getCompleteEventDetails(
+      List<Map<String, dynamic>> events) async {
     List<Map<String, dynamic>> completeEvents = [];
     for (var event in events) {
       print('Processing event: \$event');
@@ -252,8 +273,10 @@ class Authentication {
     return completeEvents;
   }
 
-  static Future<List<Map<String, dynamic>>> getUserFilteredCompleteEvents(List<String> selectedSports) async {
-    List<Map<String, dynamic>> filteredEvents = await getFilteredEvents(selectedSports);
+  static Future<List<Map<String, dynamic>>> getUserFilteredCompleteEvents(
+      List<String> selectedSports) async {
+    List<Map<String, dynamic>> filteredEvents =
+        await getFilteredEvents(selectedSports);
     return await getCompleteEventDetails(filteredEvents);
   }
 
@@ -267,8 +290,17 @@ class Authentication {
       prefs.setString('users', jsonString);
     }
   }
-}
 
+  static Future<bool> isHostUser() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('loggedInUser');
+    if (userJson == null) {
+      return false;
+    }
+    Map<String, dynamic> loggedInUser = jsonDecode(userJson);
+    return loggedInUser['hostUser'];
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

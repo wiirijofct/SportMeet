@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sport_meet/application/presentation/applogic/auth.dart'; // Import the Authentication class
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Required to initialize async code in main
   await Authentication.initializeUsers(); // Initialize users before the app starts

@@ -13,6 +13,8 @@ import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/search_page.dart';
 import 'package:sport_meet/profile/profileSportMeet.dart';
+import 'package:sport_meet/application/presentation/manage_field_page.dart';
+import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,11 +48,17 @@ class _HomePageState extends State<HomePage> {
   late Future<List<Map<String, dynamic>>> userEvents;
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
   List<String> selectedSports = [];
+  bool isHostUser = false;
 
   @override
   void initState() {
     super.initState();
     userInfo = User.getInfo();
+    userInfo.then((value) {
+      setState(() {
+        isHostUser = value['hostUser'] ?? false;
+      });
+    });
     selectedSports = List.from(sportsFilters); // Initially select all sports
     userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
   }
@@ -215,24 +223,24 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Ionicons.search),
               label: 'Search',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Ionicons.chatbubble_ellipses_outline),
               label: 'Chat',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Ionicons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Ionicons.heart_outline),
-              label: 'Favorites',
+              icon: Icon(isHostUser ? Ionicons.add : Ionicons.heart_outline),
+              label: isHostUser ? 'Field' : 'Favorites',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Ionicons.person_outline),
               label: 'Profile',
             ),
@@ -248,6 +256,22 @@ class _HomePageState extends State<HomePage> {
                   builder: (context) => const SearchPage(),
                 ),
               );
+            } else if (index == 3) {
+              if (isHostUser) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManageFieldPage(),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FavoriteFieldsPage(),
+                  ),
+                );
+              }
             } else if (index == 4) {
               Navigator.push(
                 context,

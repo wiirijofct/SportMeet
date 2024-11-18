@@ -1,11 +1,12 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 class Authentication {
   static const int minPasswordLength = 8;
+  static bool _isCreatingUser = false;
+  static const String apiUrl = "http://localhost:3000"; // Replace with your json-server endpoint
 
   static bool isPasswordCompliant(String password) {
     if (password.isEmpty) return false;
@@ -14,7 +15,7 @@ class Authentication {
     bool hasDigits = password.contains(RegExp(r'[0-9]'));
     bool hasLowercase = password.contains(RegExp(r'[a-z]'));
     bool hasSpecialCharacters =
-        password.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'));
+        password.contains(RegExp(r'[!@#\\$%^&*(),.?":{}|<>]'));
     bool hasMinLength = password.length > minPasswordLength;
 
     return hasDigits &&
@@ -36,61 +37,89 @@ class Authentication {
 
   static Future<bool> createUser(String username, String email, String name,
       String phone, String password) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Load users from shared preferences
-    String? usersJson = prefs.getString('users');
-    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
-
-    // Check if username or email already exists
-    for (var user in users) {
-      if (user['username'] == username || user['email'] == email) {
-        print('Loaded users: $users');
-        print('Trying to log in with username: $username, password: $password');
-        return false; // User already exists
-      }
+    if (_isCreatingUser) {
+      return false; // If a user is already being created, return false
     }
 
-    // Add new user
-    users.add({
-      "userId": users.length + 1,
-      "username": username,
-      "email": email,
-      "name": name,
-      "phoneNumber": phone,
-      "password": password,
-      "isProfilePublic": false,
-    });
+    _isCreatingUser = true; // Set flag to indicate user creation in progress
 
-    // Save updated users list
-    prefs.setString('users', jsonEncode(users));
-    return true;
+    try {
+      // Check if username or email already exists
+      final response = await http.get(Uri.parse('$apiUrl/users'));
+      if (response.statusCode == 200) {
+        List<dynamic> users = json.decode(response.body);
+        for (var user in users) {
+          if (user['username'] == username || user['email'] == email) {
+            print('User already exists: $user');
+            _isCreatingUser = false; // Reset flag before returning
+            return false; // User already exists
+          }
+        }
+      } else {
+        throw Exception('Failed to load users');
+      }
+
+      // Add new user
+      final newUser = {
+        "userId": DateTime.now().millisecondsSinceEpoch, // Generate a unique ID
+        "username": username,
+        "firstName": name.split(' ').first,
+        "lastName": name.split(' ').skip(1).join(' '),
+        "email": email,
+        "password": password,
+        "phone": phone,
+        "birthDate": "", // Can be filled during signup
+        "sports": [],
+        "favFields": [],
+        "reservations": [],
+        "friends": [],
+        "imagePath": "lib/images/m1.png",
+        "hostUser": false,
+      };
+
+      final createResponse = await http.post(
+        Uri.parse('$apiUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(newUser),
+      );
+
+      if (createResponse.statusCode == 201) {
+        print('User created: $newUser');
+        return true;
+      } else {
+        throw Exception('Failed to create user');
+      }
+    } catch (e) {
+      print('Error creating user: $e');
+      return false;
+    } finally {
+      _isCreatingUser = false; // Reset flag after user creation is complete
+    }
   }
 
   static Future<bool> loginUser(
       String username, String password, bool isPermanent) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/users'));
+      if (response.statusCode == 200) {
+        List<dynamic> users = json.decode(response.body);
 
-    // Load users from shared preferences
-    String? usersJson = prefs.getString('users');
-    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
-
-    // Debug print statements
-    print('Loaded users: $users');
-    print('Trying to log in with username: $username, password: $password');
-
-    // Check for matching user
-    for (var user in users) {
-      if (user['username'] == username && user['password'] == password) {
-        // Save logged-in user
-        prefs.setString('loggedInUser', jsonEncode(user));
-        if (isPermanent) {
-          await _saveLoggedInUser(user);
+        for (var user in users) {
+          if (user['username'] == username && user['password'] == password) {
+            final SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString('loggedInUser', jsonEncode(user));
+            if (isPermanent) {
+              await _saveLoggedInUser(user);
+            }
+            return true;
+          }
         }
-        return true;
       }
+      return false; // No matching user found
+    } catch (e) {
+      print('Error logging in user: $e');
+      return false;
     }
-    return false; // No matching user found
   }
 
   static Future<void> _saveLoggedInUser(Map<String, dynamic> user) async {
@@ -119,101 +148,116 @@ class Authentication {
   }
 
   static Future<String?> resetPassword(String username, String email) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/users'));
+      if (response.statusCode == 200) {
+        List<dynamic> users = json.decode(response.body);
 
-    // Load users from shared preferences
-    String? usersJson = prefs.getString('users');
-    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
+        for (var user in users) {
+          if (user['username'] == username && user['email'] == email) {
+            user['password'] = 'newpassword123';
 
-    // Find the user and reset password
-    for (var user in users) {
-      if (user['username'] == username && user['email'] == email) {
-        // Reset password logic (for example, setting a default password)
-        user['password'] = 'newpassword123';
+            final updateResponse = await http.put(
+              Uri.parse('$apiUrl/users/${user['userId']}'),
+              headers: {'Content-Type': 'application/json'},
+              body: json.encode(user),
+            );
 
-        // Save updated users list
-        prefs.setString('users', jsonEncode(users));
-        return null; // Success
+            if (updateResponse.statusCode == 200) {
+              return null; // Success
+            } else {
+              throw Exception('Failed to update user password');
+            }
+          }
+        }
       }
+      return 'User not found';
+    } catch (e) {
+      print('Error resetting password: $e');
+      return 'Error resetting password';
     }
-    return 'User not found';
   }
 
   static Future<bool> deleteAccount(String username) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/users'));
+      if (response.statusCode == 200) {
+        List<dynamic> users = json.decode(response.body);
 
-    // Load users from shared preferences
-    String? usersJson = prefs.getString('users');
-    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
+        var user = users.firstWhere((user) => user['username'] == username, orElse: () => null);
+        if (user != null) {
+          final deleteResponse = await http.delete(Uri.parse('$apiUrl/users/${user['userId']}'));
 
-    // Find and remove the user
-    users.removeWhere((user) => user['username'] == username);
-
-    // Save updated users list
-    prefs.setString('users', jsonEncode(users));
-    return true;
-  }
-
-  static Future<List<dynamic>> loadUsers() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? usersJson = prefs.getString('users');
-    return usersJson != null ? jsonDecode(usersJson) : [];
+          if (deleteResponse.statusCode == 200) {
+            return true;
+          } else {
+            throw Exception('Failed to delete user');
+          }
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error deleting user: $e');
+      return false;
+    }
   }
 
   static Future<List<Map<String, dynamic>>> getUserReservations() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final loggedInUser = await getLoggedInUser();
+  if (loggedInUser == null) {
+    return [];
+  }
 
-    // Load logged-in user info
-    String? userJson = prefs.getString('loggedInUser');
-    if (userJson == null) {
-      return [];
+  try {
+    final response = await http.get(Uri.parse('$apiUrl/reservations'));
+    if (response.statusCode == 200) {
+      List<dynamic> reservations = json.decode(response.body);
+      List<String> userReservationIds = List<String>.from(loggedInUser['reservations']);
+      List<Map<String, dynamic>> userReservations = reservations
+          .where((reservation) => userReservationIds.contains(reservation['reservationId'].toString()))
+          .map((reservation) => Map<String, dynamic>.from(reservation))
+          .toList();
+
+      print('User reservation IDs: $userReservationIds');
+      print('All reservations: $reservations');
+      print('User reservations: $userReservations');
+      return userReservations;
+    } else {
+      throw Exception('Failed to load reservations');
     }
-    Map<String, dynamic> loggedInUser = jsonDecode(userJson);
-
-    // Load reservations from JSON file or SharedPreferences
-    String reservationsJson =
-        await rootBundle.loadString('assets/data/reservations.json');
-    List<dynamic> reservations = jsonDecode(reservationsJson);
-
-    // Filter reservations for the logged-in user
-    List<int> userReservationIds = List<int>.from(loggedInUser['reservations']);
-    List<Map<String, dynamic>> userReservations = reservations
-        .where((reservation) => userReservationIds
-            .contains(int.parse(reservation['reservationId'])))
-        .map((reservation) => Map<String, dynamic>.from(reservation))
-        .toList();
-
-    print('User reservation IDs: \$userReservationIds');
-    print('All reservations: \$reservations');
-    print('User reservations: \$userReservations');
-    return userReservations;
+  } catch (e) {
+    print('Error loading reservations: $e');
+    return [];
   }
+}
 
-  static Future<void> loadFieldsAndReservations() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Load reservations data from JSON file or SharedPreferences
-    String reservationsJson =
-        await rootBundle.loadString('assets/data/reservations.json');
-    prefs.setString('reservations', reservationsJson);
-
-    // Load fields data from JSON file or SharedPreferences
-    String fieldsJson = await rootBundle.loadString('assets/data/fields.json');
-    prefs.setString('fields', fieldsJson);
+  static Future<Map<String, dynamic>> getFieldById(String fieldId) async {
+  try {
+    print('Loading field with ID: $fieldId');
+    final response = await http.get(Uri.parse('$apiUrl/fields/$fieldId'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else if (response.statusCode == 404) {
+      throw Exception('Field with ID $fieldId not found');
+    } else {
+      throw Exception('Failed to load field with status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error loading field: $e');
+    return {};
   }
+}
+
 
   static Future<List<Map<String, dynamic>>> getUserEvents() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await loadFieldsAndReservations();
 
-    // Load logged-in user info
-    String? userJson = prefs.getString('loggedInUser');
-    if (userJson == null) {
+    final loggedInUser = await getLoggedInUser();
+    if (loggedInUser == null) {
       return [];
     }
-    Map<String, dynamic> loggedInUser = jsonDecode(userJson);
 
-    // Load reservations from SharedPreferences
     String? reservationsJson = prefs.getString('reservations');
     List<dynamic> reservations =
         reservationsJson != null ? jsonDecode(reservationsJson) : [];
@@ -231,18 +275,6 @@ class Authentication {
     return userReservations;
   }
 
-  static Future<Map<String, dynamic>> getFieldById(int fieldId) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Load fields from SharedPreferences
-    String? fieldsJson = prefs.getString('fields');
-    List<dynamic> fields = fieldsJson != null ? jsonDecode(fieldsJson) : [];
-
-    print('All fields: \$fields');
-    return fields.firstWhere((field) => int.parse(field['fieldId']) == fieldId,
-        orElse: () => {});
-  }
-
   static Future<List<Map<String, dynamic>>> getFilteredEvents(
       List<String> selectedSports) async {
     List<Map<String, dynamic>> userEvents = await getUserEvents();
@@ -255,9 +287,9 @@ class Authentication {
   }
 
   static Future<Map<String, dynamic>?> getFieldForEvent(
-      Map<String, dynamic> event) async {
-    return await getFieldById(int.parse(event['fieldId']));
-  }
+    Map<String, dynamic> event) async {
+  return await getFieldById(event['fieldId'].toString());
+}
 
   static Future<List<Map<String, dynamic>>> getCompleteEventDetails(
       List<Map<String, dynamic>> events) async {
@@ -281,25 +313,54 @@ class Authentication {
   }
 
   static Future<void> initializeUsers() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? usersJson = prefs.getString('users');
-
-    // If users data does not exist, initialize it with static content
-    if (usersJson == null) {
-      String jsonString = await rootBundle.loadString('assets/data/users.json');
-      prefs.setString('users', jsonString);
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/users'));
+      if (response.statusCode == 200) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('users', response.body);
+      } else {
+        throw Exception('Failed to initialize users');
+      }
+    } catch (e) {
+      print('Error initializing users: $e');
     }
   }
 
   static Future<bool> isHostUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userJson = prefs.getString('loggedInUser');
-    if (userJson == null) {
-      return false;
-    }
-    Map<String, dynamic> loggedInUser = jsonDecode(userJson);
-    return loggedInUser['hostUser'];
+    final loggedInUser = await getLoggedInUser();
+    return loggedInUser?['hostUser'] ?? false;
   }
+  
+  static Future<void> loadFieldsAndReservations() async {
+  try {
+    // Load fields data
+    final fieldsResponse = await http.get(Uri.parse('$apiUrl/fields'));
+    if (fieldsResponse.statusCode == 200) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('fields', fieldsResponse.body);
+      print('Fields data loaded successfully.');
+    } else {
+      throw Exception('Failed to load fields');
+    }
+  } catch (e) {
+    print('Error loading fields: $e');
+  }
+
+  try {
+    // Load reservations data
+    final reservationsResponse = await http.get(Uri.parse('$apiUrl/reservations'));
+    if (reservationsResponse.statusCode == 200) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('reservations', reservationsResponse.body);
+      print('Reservations data loaded successfully.');
+    } else {
+      throw Exception('Failed to load reservations');
+    }
+  } catch (e) {
+    print('Error loading reservations: $e');
+  }
+}
+
 }
 
 void main() async {

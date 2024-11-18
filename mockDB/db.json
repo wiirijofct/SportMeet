@@ -1,0 +1,859 @@
+{
+  "users": [
+    {
+      "userId": 1,
+      "username": "wiirijo",
+      "firstName": "Yaroslav",
+      "lastName": "Hayduk",
+      "email": "wiirijo@gmail.com",
+      "password": "123456",
+      "phone": "911888555",
+      "birthDate": "31/10/2000",
+      "sports": [
+        "Tennis",
+        "Padel",
+        "Volleyball"
+      ],
+      "favFields": [
+        1,
+        2,
+        3
+      ],
+      "reservations": [
+        109,
+        110,
+        111
+      ],
+      "friends": [
+        2,
+        3,
+        4
+      ],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": false
+    },
+    {
+      "userId": 2,
+      "username": "joe",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "password": "password123",
+      "phone": "911888556",
+      "birthDate": "15/05/1995",
+      "sports": [
+        "Football",
+        "Basketball"
+      ],
+      "favFields": [
+        4,
+        5
+      ],
+      "reservations": [
+        112,
+        113
+      ],
+      "friends": [
+        1,
+        3
+      ],
+      "imagePath": "lib/images/m2.png",
+      "hostUser": true
+    },
+    {
+      "userId": 3,
+      "username": "jane_smith",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "password": "mypassword",
+      "phone": "911888557",
+      "birthDate": "22/08/1992",
+      "sports": [
+        "Swimming",
+        "Running"
+      ],
+      "favFields": [
+        6,
+        7
+      ],
+      "reservations": [
+        114,
+        115
+      ],
+      "friends": [
+        1,
+        2
+      ],
+      "imagePath": "lib/images/f3.png",
+      "hostUser": false
+    },
+    {
+      "id": "1c2b",
+      "userId": 1731948863466,
+      "username": "wiimole",
+      "firstName": "wii",
+      "lastName": "",
+      "email": "wiimole@gmail.com",
+      "password": ".Zaq12321",
+      "phone": "999325463",
+      "birthDate": "",
+      "sports": [],
+      "favFields": [],
+      "reservations": [],
+      "friends": [],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": false
+    }
+  ],
+  "fields": [
+    {
+      "id": "1",
+      "fieldId": "1",
+      "sport": "Basketball",
+      "name": "Clube Unidos do Estoril",
+      "location": "Avenida do Brasil",
+      "schedule": {
+        "open": "08:00",
+        "close": "22:00"
+      },
+      "pricing": "20€/hour",
+      "isPublic": false,
+      "contact": {
+        "email": "contact@clubunidos.com",
+        "phone": "+351 123 456 789"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "2",
+      "fieldId": "2",
+      "sport": "Swimming",
+      "name": "Piscinas Filo",
+      "location": "Rua Filo Lapa",
+      "schedule": {
+        "open": "09:00",
+        "close": "20:00"
+      },
+      "pricing": "Free",
+      "isPublic": true,
+      "contact": {
+        "email": "contact@filopool.com",
+        "phone": "+351 987 654 321"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "3",
+      "fieldId": "3",
+      "sport": "Football",
+      "name": "Clube Desunidos do Estoril",
+      "location": "Avenida Adamastor",
+      "schedule": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "pricing": "15€/hour",
+      "isPublic": false,
+      "contact": {
+        "email": "contact@clubdesunidos.com",
+        "phone": "+351 234 567 890"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "4",
+      "fieldId": "4",
+      "sport": "Football",
+      "name": "Campo Bartolomeu",
+      "location": "Avenida Conceição Lopes",
+      "schedule": {
+        "open": "06:00",
+        "close": "22:00"
+      },
+      "pricing": "10€/hour",
+      "isPublic": true,
+      "contact": {
+        "email": "contact@campobartolomeu.com",
+        "phone": "+351 345 678 901"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "5",
+      "fieldId": "5",
+      "sport": "Basketball",
+      "name": "Campo António Sérgio",
+      "location": "Avenida dos missionarios",
+      "schedule": {
+        "open": "08:00",
+        "close": "21:00"
+      },
+      "pricing": "20€/hour",
+      "isPublic": false,
+      "contact": {
+        "email": "contact@campoantoniosergio.com",
+        "phone": "+351 456 789 012"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "6",
+      "fieldId": "6",
+      "sport": "Basketball",
+      "name": "Escola Secundária Reitor Mor",
+      "location": "Rua Duarte Rei",
+      "schedule": {
+        "open": "09:00",
+        "close": "18:00"
+      },
+      "pricing": "Free",
+      "isPublic": true,
+      "contact": {
+        "email": "contact@esreitor.com",
+        "phone": "+351 567 890 123"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "7",
+      "fieldId": "7",
+      "sport": "Padel",
+      "name": "Campo De cima",
+      "location": "Avenida de baixo",
+      "schedule": {
+        "open": "10:00",
+        "close": "20:00"
+      },
+      "pricing": "25€/hour",
+      "isPublic": false,
+      "contact": {
+        "email": "contact@campodecima.com",
+        "phone": "+351 678 901 234"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "8",
+      "fieldId": "8",
+      "sport": "Padel",
+      "name": "Campo de baixo",
+      "location": "Avenida de cima",
+      "schedule": {
+        "open": "11:00",
+        "close": "19:00"
+      },
+      "pricing": "30€/hour",
+      "isPublic": false,
+      "contact": {
+        "email": "contact@campodebaixo.com",
+        "phone": "+351 789 012 345"
+      },
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    }
+  ],
+  "reservations": [
+    {
+      "id": "101",
+      "reservationId": "101",
+      "fieldId": "1",
+      "sport": "Basketball",
+      "date": "2024-10-22",
+      "time": "10:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "John Doe",
+      "creatorGender": "Male",
+      "creatorAge": 29,
+      "slotsAvailable": 3,
+      "maxSlots": 5,
+      "creatorImagePath": "lib/images/m1.png"
+    },
+    {
+      "id": "102",
+      "reservationId": "102",
+      "fieldId": "2",
+      "sport": "Swimming",
+      "date": "2024-11-01",
+      "time": "12:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Jane Smith",
+      "creatorGender": "Female",
+      "creatorAge": 25,
+      "slotsAvailable": 5,
+      "maxSlots": 5,
+      "creatorImagePath": "lib/images/f1.png"
+    },
+    {
+      "id": "103",
+      "reservationId": "103",
+      "fieldId": "3",
+      "sport": "Football",
+      "date": "2024-12-05",
+      "time": "15:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Robert Johnson",
+      "creatorGender": "Male",
+      "creatorAge": 34,
+      "slotsAvailable": 8,
+      "maxSlots": 10,
+      "creatorImagePath": "lib/images/m2.png"
+    },
+    {
+      "id": "104",
+      "reservationId": "104",
+      "fieldId": "4",
+      "sport": "Football",
+      "date": "2024-12-10",
+      "time": "16:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Emily Davis",
+      "creatorGender": "Female",
+      "creatorAge": 22,
+      "slotsAvailable": 10,
+      "maxSlots": 10,
+      "creatorImagePath": "lib/images/f2.png"
+    },
+    {
+      "id": "105",
+      "reservationId": "105",
+      "fieldId": "5",
+      "sport": "Basketball",
+      "date": "2024-12-15",
+      "time": "17:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Michael Brown",
+      "creatorGender": "Male",
+      "creatorAge": 28,
+      "slotsAvailable": 4,
+      "maxSlots": 6,
+      "creatorImagePath": "lib/images/m3.png"
+    },
+    {
+      "id": "106",
+      "reservationId": "106",
+      "fieldId": "6",
+      "sport": "Basketball",
+      "date": "2024-12-20",
+      "time": "18:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Laura Wilson",
+      "creatorGender": "Female",
+      "creatorAge": 30,
+      "slotsAvailable": 6,
+      "maxSlots": 6,
+      "creatorImagePath": "lib/images/f3.png"
+    },
+    {
+      "id": "107",
+      "reservationId": "107",
+      "fieldId": "7",
+      "sport": "Padel",
+      "date": "2024-12-25",
+      "time": "19:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Daniel Martinez",
+      "creatorGender": "Male",
+      "creatorAge": 27,
+      "slotsAvailable": 2,
+      "maxSlots": 4,
+      "creatorImagePath": "lib/images/m4.png"
+    },
+    {
+      "id": "108",
+      "reservationId": "108",
+      "fieldId": "8",
+      "sport": "Padel",
+      "date": "2024-12-30",
+      "time": "20:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Sophia Taylor",
+      "creatorGender": "Female",
+      "creatorAge": 24,
+      "slotsAvailable": 4,
+      "maxSlots": 4,
+      "creatorImagePath": "lib/images/f4.png"
+    },
+    {
+      "id": "109",
+      "reservationId": "109",
+      "fieldId": "1",
+      "sport": "Basketball",
+      "date": "2025-01-05",
+      "time": "09:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Alice Green",
+      "creatorGender": "Female",
+      "creatorAge": 26,
+      "slotsAvailable": 1,
+      "maxSlots": 2,
+      "creatorImagePath": "lib/images/f1.png"
+    },
+    {
+      "id": "110",
+      "reservationId": "110",
+      "fieldId": "2",
+      "sport": "Swimming",
+      "date": "2025-01-10",
+      "time": "11:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Chris White",
+      "creatorGender": "Male",
+      "creatorAge": 31,
+      "slotsAvailable": 6,
+      "maxSlots": 6,
+      "creatorImagePath": "lib/images/m2.png"
+    },
+    {
+      "id": "111",
+      "reservationId": "111",
+      "fieldId": "3",
+      "sport": "Football",
+      "date": "2025-01-15",
+      "time": "13:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "David Black",
+      "creatorGender": "Male",
+      "creatorAge": 29,
+      "slotsAvailable": 10,
+      "maxSlots": 11,
+      "creatorImagePath": "lib/images/m3.png"
+    },
+    {
+      "id": "112",
+      "reservationId": "112",
+      "fieldId": "4",
+      "sport": "Hockey",
+      "date": "2025-01-20",
+      "time": "14:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Eva Brown",
+      "creatorGender": "Female",
+      "creatorAge": 27,
+      "slotsAvailable": 8,
+      "maxSlots": 8,
+      "creatorImagePath": "lib/images/f2.png"
+    },
+    {
+      "id": "113",
+      "reservationId": "113",
+      "fieldId": "5",
+      "sport": "Rugby",
+      "date": "2025-01-25",
+      "time": "16:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Frank Blue",
+      "creatorGender": "Male",
+      "creatorAge": 32,
+      "slotsAvailable": 5,
+      "maxSlots": 7,
+      "creatorImagePath": "lib/images/m4.png"
+    },
+    {
+      "id": "114",
+      "reservationId": "114",
+      "fieldId": "6",
+      "sport": "Badminton",
+      "date": "2025-01-30",
+      "time": "17:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Grace Yellow",
+      "creatorGender": "Female",
+      "creatorAge": 24,
+      "slotsAvailable": 2,
+      "maxSlots": 2,
+      "creatorImagePath": "lib/images/f3.png"
+    },
+    {
+      "id": "115",
+      "reservationId": "115",
+      "fieldId": "7",
+      "sport": "Squash",
+      "date": "2025-02-05",
+      "time": "18:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Henry Purple",
+      "creatorGender": "Male",
+      "creatorAge": 28,
+      "slotsAvailable": 1,
+      "maxSlots": 2,
+      "creatorImagePath": "lib/images/m1.png"
+    },
+    {
+      "id": "116",
+      "reservationId": "116",
+      "fieldId": "8",
+      "sport": "Table Tennis",
+      "date": "2025-02-10",
+      "time": "19:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Isabella Pink",
+      "creatorGender": "Female",
+      "creatorAge": 30,
+      "slotsAvailable": 2,
+      "maxSlots": 2,
+      "creatorImagePath": "lib/images/f4.png"
+    },
+    {
+      "id": "117",
+      "reservationId": "117",
+      "fieldId": "1",
+      "sport": "Golf",
+      "date": "2025-02-15",
+      "time": "08:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Jack Green",
+      "creatorGender": "Male",
+      "creatorAge": 35,
+      "slotsAvailable": 3,
+      "maxSlots": 4,
+      "creatorImagePath": "lib/images/m2.png"
+    },
+    {
+      "id": "118",
+      "reservationId": "118",
+      "fieldId": "2",
+      "sport": "Baseball",
+      "date": "2025-02-20",
+      "time": "10:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Karen White",
+      "creatorGender": "Female",
+      "creatorAge": 29,
+      "slotsAvailable": 9,
+      "maxSlots": 9,
+      "creatorImagePath": "lib/images/f1.png"
+    },
+    {
+      "id": "119",
+      "reservationId": "119",
+      "fieldId": "3",
+      "sport": "Softball",
+      "date": "2025-02-25",
+      "time": "12:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Liam Black",
+      "creatorGender": "Male",
+      "creatorAge": 33,
+      "slotsAvailable": 7,
+      "maxSlots": 9,
+      "creatorImagePath": "lib/images/m3.png"
+    },
+    {
+      "id": "120",
+      "reservationId": "120",
+      "fieldId": "4",
+      "sport": "Archery",
+      "date": "2025-03-01",
+      "time": "14:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Mia Brown",
+      "creatorGender": "Female",
+      "creatorAge": 26,
+      "slotsAvailable": 5,
+      "maxSlots": 5,
+      "creatorImagePath": "lib/images/f2.png"
+    },
+    {
+      "id": "121",
+      "reservationId": "121",
+      "fieldId": "5",
+      "sport": "Karate",
+      "date": "2025-03-05",
+      "time": "16:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Noah Blue",
+      "creatorGender": "Male",
+      "creatorAge": 31,
+      "slotsAvailable": 4,
+      "maxSlots": 6,
+      "creatorImagePath": "lib/images/m4.png"
+    },
+    {
+      "id": "122",
+      "reservationId": "122",
+      "fieldId": "6",
+      "sport": "Judo",
+      "date": "2025-03-10",
+      "time": "18:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Olivia Yellow",
+      "creatorGender": "Female",
+      "creatorAge": 28,
+      "slotsAvailable": 2,
+      "maxSlots": 2,
+      "creatorImagePath": "lib/images/f3.png"
+    },
+    {
+      "id": "123",
+      "reservationId": "123",
+      "fieldId": "7",
+      "sport": "Fencing",
+      "date": "2025-03-15",
+      "time": "20:00",
+      "teamAvailability": "OPEN",
+      "creatorName": "Paul Purple",
+      "creatorGender": "Male",
+      "creatorAge": 27,
+      "slotsAvailable": 1,
+      "maxSlots": 2,
+      "creatorImagePath": "lib/images/m1.png"
+    },
+    {
+      "id": "124",
+      "reservationId": "124",
+      "fieldId": "8",
+      "sport": "Wrestling",
+      "date": "2025-03-20",
+      "time": "22:00",
+      "teamAvailability": "CLOSED",
+      "creatorName": "Quinn Pink",
+      "creatorGender": "Female",
+      "creatorAge": 32,
+      "slotsAvailable": 2,
+      "maxSlots": 2,
+      "creatorImagePath": "lib/images/f4.png"
+    }
+  ],
+  "sports": [
+    {
+      "id": 1,
+      "name": "Football"
+    },
+    {
+      "id": 2,
+      "name": "Basketball"
+    },
+    {
+      "id": 3,
+      "name": "Tennis"
+    },
+    {
+      "id": 4,
+      "name": "Padel"
+    },
+    {
+      "id": 5,
+      "name": "Volleyball"
+    },
+    {
+      "id": 6,
+      "name": "Golf"
+    },
+    {
+      "id": 7,
+      "name": "Rugby"
+    },
+    {
+      "id": 8,
+      "name": "Hockey"
+    },
+    {
+      "id": 9,
+      "name": "Baseball"
+    },
+    {
+      "id": 10,
+      "name": "Cricket"
+    },
+    {
+      "id": 11,
+      "name": "Table Tennis"
+    },
+    {
+      "id": 12,
+      "name": "Badminton"
+    },
+    {
+      "id": 13,
+      "name": "Squash"
+    },
+    {
+      "id": 14,
+      "name": "Bowling"
+    },
+    {
+      "id": 15,
+      "name": "Boxing"
+    },
+    {
+      "id": 16,
+      "name": "MMA"
+    },
+    {
+      "id": 17,
+      "name": "Karate"
+    },
+    {
+      "id": 18,
+      "name": "Judo"
+    },
+    {
+      "id": 19,
+      "name": "Taekwondo"
+    },
+    {
+      "id": 20,
+      "name": "Wrestling"
+    },
+    {
+      "id": 21,
+      "name": "Swimming"
+    },
+    {
+      "id": 22,
+      "name": "Diving"
+    },
+    {
+      "id": 23,
+      "name": "Water Polo"
+    },
+    {
+      "id": 24,
+      "name": "Surfing"
+    },
+    {
+      "id": 25,
+      "name": "Sailing"
+    },
+    {
+      "id": 26,
+      "name": "Rowing"
+    },
+    {
+      "id": 27,
+      "name": "Canoeing"
+    },
+    {
+      "id": 28,
+      "name": "Kayaking"
+    },
+    {
+      "id": 29,
+      "name": "Fishing"
+    },
+    {
+      "id": 30,
+      "name": "Hunting"
+    },
+    {
+      "id": 31,
+      "name": "Shooting"
+    },
+    {
+      "id": 32,
+      "name": "Archery"
+    },
+    {
+      "id": 33,
+      "name": "Cycling"
+    },
+    {
+      "id": 34,
+      "name": "Mountain Biking"
+    },
+    {
+      "id": 35,
+      "name": "BMX"
+    },
+    {
+      "id": 36,
+      "name": "Road Cycling"
+    },
+    {
+      "id": 37,
+      "name": "Track Cycling"
+    },
+    {
+      "id": 38,
+      "name": "Running"
+    },
+    {
+      "id": 39,
+      "name": "Marathon"
+    },
+    {
+      "id": 40,
+      "name": "Sprint"
+    },
+    {
+      "id": 41,
+      "name": "Middle Distance"
+    },
+    {
+      "id": 42,
+      "name": "Long Distance"
+    },
+    {
+      "id": 43,
+      "name": "Hurdles"
+    },
+    {
+      "id": 44,
+      "name": "Jumps"
+    },
+    {
+      "id": 45,
+      "name": "Throws"
+    },
+    {
+      "id": 46,
+      "name": "Decathlon"
+    },
+    {
+      "id": 47,
+      "name": "Heptathlon"
+    },
+    {
+      "id": 48,
+      "name": "Pentathlon"
+    },
+    {
+      "id": 49,
+      "name": "Triathlon"
+    },
+    {
+      "id": 50,
+      "name": "Duathlon"
+    },
+    {
+      "id": 51,
+      "name": "Aquathlon"
+    },
+    {
+      "id": 52,
+      "name": "Biathlon"
+    },
+    {
+      "id": 53,
+      "name": "Modern Pentathlon"
+    },
+    {
+      "id": 54,
+      "name": "Cross Country"
+    }
+  ]
+}

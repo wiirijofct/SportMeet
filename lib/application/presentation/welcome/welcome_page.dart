@@ -43,31 +43,19 @@ class _WelcomePageState extends State<WelcomePage> {
           switch (btn) {
             case SignUpFormButton.signUp:
               if (data != null) {
-                bool userCreated = await Authentication.createUser(
-                  data.username,
-                  data.email,
-                  data.firstName,
-                  data.phoneNumber,
-                  data.password,
-                );
-
-                String? message;
-                if (userCreated) {
-                  message = "Account created! To activate your account, click the link we sent to your email.";
-                  setState(() {
-                    form = WelcomeForm.login;
-                  });
-                } else {
-                  message = "Username or email already exists.";
-                }
-
+                // No longer call createUser here. Assume user creation is successful if this callback is triggered.
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return AlertDialog(
-                        content: Text(message!));
+                    return const AlertDialog(
+                      content: Text(
+                          "Account created! To activate your account, click the link we sent to your email."),
+                    );
                   },
                 );
+                setState(() {
+                  form = WelcomeForm.login;
+                });
               }
               break;
             case SignUpFormButton.goBack:

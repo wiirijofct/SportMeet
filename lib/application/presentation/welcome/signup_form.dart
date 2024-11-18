@@ -6,8 +6,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:validators/validators.dart';
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
-import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class SignUpFormData {
@@ -57,6 +56,7 @@ class SignUpForm extends StatefulWidget {
 
 class _SignUpFormState extends State<SignUpForm> {
   final formKey = GlobalKey<FormState>();
+  bool isSubmitting = false;
 
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -69,6 +69,7 @@ class _SignUpFormState extends State<SignUpForm> {
   List<String> selectedSports = [];
   List<String> availableSports = [];
   bool isHostUser = false;
+  static const String apiUrl = "http://localhost:3000";
 
   @override
   void initState() {
@@ -77,52 +78,79 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> _loadAvailableSports() async {
-    final String response = await rootBundle.loadString('assets/data/sports.json');
-    final List<dynamic> sportsList = json.decode(response);
-    setState(() {
-      availableSports = sportsList.cast<String>();
-    });
+  try {
+    final response = await http.get(Uri.parse('$apiUrl/sports'));
+    if (response.statusCode == 200) {
+      final List<dynamic> sportsList = json.decode(response.body);
+      setState(() {
+        availableSports = sportsList.map((sport) => sport['name'].toString()).toList();
+      });
+    } else {
+      throw Exception('Failed to load available sports');
+    }
+  } catch (e) {
+    print('Error loading available sports: $e');
   }
+}
+
 
   void submitForm() async {
-    if (formKey.currentState!.validate() && birthDate != null && selectedSports.isNotEmpty) {
-      final newUser = SignUpFormData(
-        username: usernameController.text,
-        email: emailController.text,
-        firstName: firstNameController.text,
-        lastName: lastNameController.text,
-        phoneNumber: phoneNumber.number,
-        countryCode: phoneNumber.countryCode,
-        password: passwordController.text,
-        birthDate: birthDate!,
-        sports: selectedSports,
-        hostUser: isHostUser,
-      );
+  if (isSubmitting) return; // Prevent duplicate submissions
 
-      // Save the new user using Authentication class method
-      bool userCreated = await Authentication.createUser(
-        newUser.username,
-        newUser.email,
-        newUser.firstName,
-        newUser.phoneNumber,
-        newUser.password,
-      );
+  if (formKey.currentState!.validate() && birthDate != null && selectedSports.isNotEmpty) {
+    setState(() {
+      isSubmitting = true; // Prevent further submissions during this one
+    });
 
-      if (userCreated) {
-        widget.onButton(SignUpFormButton.signUp, newUser);
-      } else {
-        // Show an error message if the user already exists
-        showDialog(
-          context: context,
-          builder: (context) {
-            return const AlertDialog(
-              content: Text("Username or email already exists."),
-            );
-          },
-        );
-      }
+    final newUser = SignUpFormData(
+      username: usernameController.text,
+      email: emailController.text,
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      phoneNumber: phoneNumber.number,
+      countryCode: phoneNumber.countryCode,
+      password: passwordController.text,
+      birthDate: birthDate!,
+      sports: selectedSports,
+      hostUser: isHostUser,
+    );
+
+    // Save the new user using Authentication class method
+    bool userCreated = await Authentication.createUser(
+      newUser.username,
+      newUser.email,
+      newUser.firstName,
+      newUser.phoneNumber,
+      newUser.password,
+    );
+
+    if (!mounted) {
+      setState(() {
+        isSubmitting = false; // Allow new submissions after completion
+      });
+      return;
+    }
+
+    setState(() {
+      isSubmitting = false; // Allow new submissions after completion
+    });
+
+    if (userCreated) {
+      widget.onButton(SignUpFormButton.signUp, newUser);
+    } else {
+      // Show an error message if the user already exists
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            content: Text("Username or email already exists."),
+          );
+        },
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +171,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       labelText: 'Username',
                     ),
                     controller: usernameController,
-                    onFieldSubmitted: (_) => submitForm(),
+                    onFieldSubmitted: (_) {},
                     validator: (value) =>
                         value!.isEmpty ? "The username cannot be empty" : null,
                   ),
@@ -153,7 +181,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       labelText: 'Email',
                     ),
                     controller: emailController,
-                    onFieldSubmitted: (_) => submitForm(),
+                    onFieldSubmitted: (_) {},
                     validator: (value) =>
                         isEmail(value!) ? null : "The email is not valid",
                   ),
@@ -164,7 +192,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       labelText: 'First Name',
                     ),
                     controller: firstNameController,
-                    onFieldSubmitted: (_) => submitForm(),
+                    onFieldSubmitted: (_) {},
                     validator: (value) =>
                         value!.isEmpty ? "The first name cannot be empty" : null,
                   ),
@@ -175,7 +203,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       labelText: 'Last Name',
                     ),
                     controller: lastNameController,
-                    onFieldSubmitted: (_) => submitForm(),
+                    onFieldSubmitted: (_) {},
                     validator: (value) =>
                         value!.isEmpty ? "The last name cannot be empty" : null,
                   ),
@@ -189,7 +217,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     onChanged: (value) {
                       phoneNumber = value;
                     },
-                    onSubmitted: (_) => submitForm(),
+                    onSubmitted: (_) {},
                     validator: (value) => isNumeric(value!.number)
                         ? null
                         : "The phone number is not valid",
@@ -230,7 +258,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   PasswordField(
                     labelText: 'Password',
                     controller: passwordController,
-                    onFieldSubmitted: (_) => submitForm(),
+                    onFieldSubmitted: (_) {},
                     validator: (value) => Authentication.isPasswordCompliant(value!)
                         ? null
                         : '''
@@ -245,7 +273,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   PasswordField(
                     labelText: 'Confirm Password',
                     controller: passwordController2,
-                    onFieldSubmitted: (_) => submitForm(),
+                    onFieldSubmitted: (_) {},
                     validator: (value) => value == passwordController.text
                         ? null
                         : "The password is not the same",
@@ -266,7 +294,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     runSpacing: 10,
                     children: [
                       ElevatedButton(
-                        onPressed: submitForm,
+                        onPressed: isSubmitting ? null : submitForm,
                         child: const Text("Sign up"),
                       ),
                       OutlinedButton(

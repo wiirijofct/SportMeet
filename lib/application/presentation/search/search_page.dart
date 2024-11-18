@@ -4,7 +4,7 @@ import 'package:sport_meet/application/presentation/field_page.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
 import 'package:sport_meet/application/presentation/widgets/field_card.dart';
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -14,7 +14,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football', 'Padel'];
   List<String> selectedSports = [];
   List<String> selectedTeamAvailability = ['OPEN', 'CLOSED'];
@@ -36,16 +35,23 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     selectedSports = List.from(sportsFilters); // Initially select all sports
-    //filteredEvent = List.from(eventCards); // Initialize filteredEvent with all event cards
-    loadFieldsData(); // Load the fields data from JSON
+    fetchFieldsData(); // Load the fields data from API
   }
 
-  Future<void> loadFieldsData() async {
-    final String response = await rootBundle.loadString('assets/data/fields.json');
-    setState(() {
-      fieldData = json.decode(response);
-      filteredFieldData = fieldData;
-    });
+  Future<void> fetchFieldsData() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:3000/fields'));
+      if (response.statusCode == 200) {
+        setState(() {
+          fieldData = json.decode(response.body);
+          filteredFieldData = fieldData;
+        });
+      } else {
+        throw Exception('Failed to load fields');
+      }
+    } catch (e) {
+      print('Error fetching fields data: $e');
+    }
   }
   
   @override
@@ -81,7 +87,7 @@ class _SearchPageState extends State<SearchPage> {
       selectedTime = null;
       selectedSortOption = ''; // Reset the sort option
       isPublicFilter = null; // Reset isPublic filter
-      loadFieldsData();
+      fetchFieldsData();
     });
   }
 

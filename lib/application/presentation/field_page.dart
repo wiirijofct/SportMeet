@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:sport_meet/application/presentation/widgets/reservation_card.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 
 class FieldPage extends StatelessWidget {
   final String fieldId;
@@ -26,15 +26,23 @@ class FieldPage extends StatelessWidget {
     required this.pricing,
   }) : super(key: key);
 
-  Future<List<Map<String, dynamic>>> _loadReservations() async {
-    final String response =
-        await rootBundle.loadString('assets/data/reservations.json');
-    final List<dynamic> data = json.decode(response);
-    return data
-        .where((reservation) => reservation['fieldId'] == fieldId)
-        .map<Map<String, dynamic>>(
-            (reservation) => reservation as Map<String, dynamic>)
-        .toList();
+  Future<List<Map<String, dynamic>>> _fetchReservations() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:3000/reservations'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data
+            .where((reservation) => reservation['fieldId'].toString() == fieldId)
+            .map<Map<String, dynamic>>(
+                (reservation) => reservation as Map<String, dynamic>)
+            .toList();
+      } else {
+        throw Exception('Failed to load reservations');
+      }
+    } catch (e) {
+      print('Error fetching reservations: $e');
+      return [];
+    }
   }
 
   @override
@@ -42,7 +50,7 @@ class FieldPage extends StatelessWidget {
     return Scaffold(
       appBar: _buildAppBar(),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _loadReservations(),
+        future: _fetchReservations(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

@@ -20,7 +20,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   @override
   void initState() {
     super.initState();
-    _loadMessages();
+    if (widget.chatCard['id'] != "null") _loadMessages();
     _getLoggedInUserId();
   }
 
@@ -48,30 +48,55 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.isEmpty || loggedInUserId == null) return;
+  if (_messageController.text.isEmpty || loggedInUserId == null) return;
 
-    final newMessage = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'sender': loggedInUserId,
-      'message': _messageController.text,
-      'timestamp': DateTime.now().toIso8601String(),
-    };
+  final newMessage = {
+    'id': DateTime.now().millisecondsSinceEpoch.toString(),
+    'sender': loggedInUserId,
+    'message': _messageController.text,
+    'timestamp': DateTime.now().toIso8601String(),
+  };
 
-    setState(() {
-      messages.add(newMessage);
-    });
+  setState(() {
+    messages.add(newMessage);
+  });
 
-    try {
+  try {
+    if (widget.chatCard['id'] == "null") {
+      // Create a new chat entry
+      final newChatId = '${loggedInUserId}+${widget.chatCard['userId']}';
+      final newChat = {
+        'id': newChatId,
+        'users': [loggedInUserId, widget.chatCard['userId']],
+        'messages': messages,
+      };
+
+      final response = await http.post(
+        Uri.parse('http://localhost:3000/chats'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(newChat),
+      );
+
+      if (response.statusCode == 201) {
+        setState(() {
+          widget.chatCard['id'] = newChatId;
+        });
+      } else {
+        throw Exception('Failed to create new chat');
+      }
+    } else {
+      // Update existing chat
       await http.patch(
         Uri.parse('http://localhost:3000/chats/${widget.chatCard['id']}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'messages': messages}),
       );
-      _messageController.clear();
-    } catch (e) {
-      print('Error sending message: $e');
     }
+    _messageController.clear();
+  } catch (e) {
+    print('Error sending message: $e');
   }
+}
 
   @override
   Widget build(BuildContext context) {

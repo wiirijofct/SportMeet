@@ -100,16 +100,18 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _navigateToChatDetail(Map<String, dynamic> chatCard) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatDetailPage(
-          chatCard: chatCard,
-        ),
+  void _navigateToChatDetail(Map<String, dynamic> chatCard) async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ChatDetailPage(
+        chatCard: chatCard,
       ),
-    );
-  }
+    ),
+  );
+  // Refresh the chat list when returning from ChatDetailPage
+  _loadChats();
+}
 
   @override
   Widget build(BuildContext context) {

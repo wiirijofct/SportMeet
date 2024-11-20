@@ -8,15 +8,44 @@
       "lastName": "Hayduk",
       "municipality": "Alcochete",
       "gender": "Male",
-      "availability": ["Monday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "availability": [
+        "Monday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
       "email": "wiirijo@gmail.com",
       "password": "123456",
       "phone": "911888555",
       "birthDate": "31/10/2000",
-      "sports": ["Football", "Basketball", "Swimming", "Tennis", "Padel", "Volleyball"],
-      "favFields": [1, 2, 3],
-      "reservations": [109, 110, 111, 109, 101, 119, 103],
-      "friends": [2, 3, 4],
+      "sports": [
+        "Football",
+        "Basketball",
+        "Swimming",
+        "Tennis",
+        "Padel",
+        "Volleyball"
+      ],
+      "favFields": [
+        "1",
+        "2",
+        "3"
+      ],
+      "reservations": [
+        "109",
+        "110",
+        "111",
+        "109",
+        "101",
+        "119",
+        "103"
+      ],
+      "friends": [
+        "2",
+        "3",
+        "4"
+      ],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
     },
@@ -28,15 +57,32 @@
       "lastName": "Doe",
       "municipality": "Lisbon",
       "gender": "Male",
-      "availability": ["Monday", "Wednesday", "Friday", "Sunday"],
+      "availability": [
+        "Monday",
+        "Wednesday",
+        "Friday",
+        "Sunday"
+      ],
       "email": "john.doe@example.com",
       "password": "password123",
       "phone": "911888556",
       "birthDate": "15/05/1995",
-      "sports": ["Football", "Basketball"],
-      "favFields": [4, 5],
-      "reservations": [112, 113],
-      "friends": [1, 3],
+      "sports": [
+        "Football",
+        "Basketball"
+      ],
+      "favFields": [
+        "4",
+        "5"
+      ],
+      "reservations": [
+        "112",
+        "113"
+      ],
+      "friends": [
+        "1",
+        "3"
+      ],
       "imagePath": "lib/images/m2.png",
       "hostUser": true
     },
@@ -48,15 +94,31 @@
       "lastName": "Smith",
       "municipality": "Cascais",
       "gender": "Female",
-      "availability": ["Tuesday", "Thursday", "Saturday"],
+      "availability": [
+        "Tuesday",
+        "Thursday",
+        "Saturday"
+      ],
       "email": "jane.smith@example.com",
       "password": "mypassword",
       "phone": "911888557",
       "birthDate": "22/08/1992",
-      "sports": ["Swimming", "Running"],
-      "favFields": [6, 7],
-      "reservations": [114, 115],
-      "friends": [1, 2],
+      "sports": [
+        "Swimming",
+        "Running"
+      ],
+      "favFields": [
+        "6",
+        "7"
+      ],
+      "reservations": [
+        "114",
+        "115"
+      ],
+      "friends": [
+        "1",
+        "2"
+      ],
       "imagePath": "lib/images/f3.png",
       "hostUser": false
     },
@@ -68,15 +130,33 @@
       "lastName": "",
       "municipality": "Porto",
       "gender": "Male",
-      "availability": ["Monday", "Wednesday", "Friday"],
+      "availability": [
+        "Monday",
+        "Wednesday",
+        "Friday"
+      ],
       "email": "wiimole@gmail.com",
       "password": ".Zaq12321",
       "phone": "999325463",
       "birthDate": "10/02/1990",
-      "sports": ["Tennis", "Padel"],
-      "favFields": [2, 5],
-      "reservations": [101, 106, 102, 107, 118],
-      "friends": [3],
+      "sports": [
+        "Tennis",
+        "Padel"
+      ],
+      "favFields": [
+        "2",
+        "5"
+      ],
+      "reservations": [
+        "101",
+        "106",
+        "102",
+        "107",
+        "118"
+      ],
+      "friends": [
+        "3"
+      ],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
     },
@@ -88,15 +168,40 @@
       "lastName": "User",
       "municipality": "Braga",
       "gender": "Female",
-      "availability": ["Tuesday", "Thursday", "Saturday"],
+      "availability": [
+        "Tuesday",
+        "Thursday",
+        "Saturday"
+      ],
       "email": "test1@gmail.com",
       "password": "123",
       "phone": "953624362",
       "birthDate": "15/03/1993",
-      "sports": ["Basketball", "Football", "Swimming", "Tennis", "Padel"],
-      "favFields": [1, 3],
-      "reservations": [101, 102, 101, 109, 103, 117, 110, 118],
-      "friends": [1, 4],
+      "sports": [
+        "Basketball",
+        "Football",
+        "Swimming",
+        "Tennis",
+        "Padel"
+      ],
+      "favFields": [
+        "1",
+        "3"
+      ],
+      "reservations": [
+        "101",
+        "102",
+        "101",
+        "109",
+        "103",
+        "117",
+        "110",
+        "118"
+      ],
+      "friends": [
+        "1",
+        "4"
+      ],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
     },
@@ -108,15 +213,35 @@
       "lastName": "Inês Silva",
       "municipality": "Amadora",
       "gender": "Female",
-      "availability": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "availability": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
       "email": "maria.silva@gmail.com",
       "password": "123456",
       "phone": "912345678",
       "birthDate": "12/04/1995",
-      "sports": ["Basketball", "Tennis"],
-      "favFields": [1, 3],
-      "reservations": [101, 102],
-      "friends": [2, 3],
+      "sports": [
+        "Basketball",
+        "Tennis"
+      ],
+      "favFields": [
+        "1",
+        "3"
+      ],
+      "reservations": [
+        "101",
+        "102"
+      ],
+      "friends": [
+        "2",
+        "3"
+      ],
       "imagePath": "lib/images/f1.png",
       "hostUser": false
     },
@@ -128,15 +253,37 @@
       "lastName": "Coelho",
       "municipality": "Porto",
       "gender": "Female",
-      "availability": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "availability": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
       "email": "mariana.coelho@gmail.com",
       "password": "123456",
       "phone": "913456789",
       "birthDate": "05/07/1997",
-      "sports": ["Football", "Tennis", "Volleyball", "Handball"],
-      "favFields": [2, 4],
-      "reservations": [103, 104],
-      "friends": [1, 3],
+      "sports": [
+        "Football",
+        "Tennis",
+        "Volleyball",
+        "Handball"
+      ],
+      "favFields": [
+        "2",
+        "4"
+      ],
+      "reservations": [
+        "103",
+        "104"
+      ],
+      "friends": [
+        "1",
+        "3"
+      ],
       "imagePath": "lib/images/f2.png",
       "hostUser": false
     },
@@ -148,15 +295,25 @@
       "lastName": "Santos",
       "municipality": "Sintra",
       "gender": "Male",
-      "availability": ["Saturday", "Sunday"],
+      "availability": [
+        "Saturday",
+        "Sunday"
+      ],
       "email": "rafael.santos@gmail.com",
       "password": "123456",
       "phone": "914567890",
       "birthDate": "21/09/1994",
-      "sports": ["Boxing"],
-      "favFields": [3],
+      "sports": [
+        "Boxing"
+      ],
+      "favFields": [
+        "3"
+      ],
       "reservations": [],
-      "friends": [1, 2],
+      "friends": [
+        "1",
+        "2"
+      ],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
     },
@@ -168,15 +325,27 @@
       "lastName": "Canelas",
       "municipality": "Sintra",
       "gender": "Male",
-      "availability": ["Wednesday", "Friday"],
+      "availability": [
+        "Wednesday",
+        "Friday"
+      ],
       "email": "hugo.canelas@gmail.com",
       "password": "123456",
       "phone": "915678901",
       "birthDate": "30/11/1992",
-      "sports": ["Basketball"],
-      "favFields": [1],
-      "reservations": [105],
-      "friends": [2, 3],
+      "sports": [
+        "Basketball"
+      ],
+      "favFields": [
+        "1"
+      ],
+      "reservations": [
+        "105"
+      ],
+      "friends": [
+        "2",
+        "3"
+      ],
       "imagePath": "lib/images/m2.png",
       "hostUser": false
     },
@@ -188,15 +357,22 @@
       "lastName": "Gonçalves",
       "municipality": "Faro",
       "gender": "Female",
-      "availability": ["Tuesday"],
+      "availability": [
+        "Tuesday"
+      ],
       "email": "joana.goncalves@gmail.com",
       "password": "123456",
       "phone": "916789012",
       "birthDate": "14/02/1998",
-      "sports": ["Tennis"],
+      "sports": [
+        "Tennis"
+      ],
       "favFields": [],
       "reservations": [],
-      "friends": [1, 4],
+      "friends": [
+        "1",
+        "4"
+      ],
       "imagePath": "lib/images/f3.png",
       "hostUser": false
     },
@@ -208,15 +384,35 @@
       "lastName": "Pequeno",
       "municipality": "Setúbal",
       "gender": "Male",
-      "availability": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "availability": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
       "email": "pedro.pequeno@gmail.com",
       "password": "123456",
       "phone": "917890123",
       "birthDate": "25/05/1993",
-      "sports": ["Handball", "Football"],
-      "favFields": [2, 3],
-      "reservations": [106],
-      "friends": [1, 3, 5],
+      "sports": [
+        "Handball",
+        "Football"
+      ],
+      "favFields": [
+        "2",
+        "3"
+      ],
+      "reservations": [
+        "106"
+      ],
+      "friends": [
+        "1",
+        "3",
+        "5"
+      ],
       "imagePath": "lib/images/m3.png",
       "hostUser": false
     },
@@ -228,15 +424,25 @@
       "lastName": "Marques",
       "municipality": "Setúbal",
       "gender": "Male",
-      "availability": ["Tuesday", "Friday"],
+      "availability": [
+        "Tuesday",
+        "Friday"
+      ],
       "email": "goncalo.marques@gmail.com",
       "password": "123456",
       "phone": "918901234",
       "birthDate": "03/08/1996",
-      "sports": ["Football"],
-      "favFields": [4],
+      "sports": [
+        "Football"
+      ],
+      "favFields": [
+        "4"
+      ],
       "reservations": [],
-      "friends": [2, 6],
+      "friends": [
+        "2",
+        "6"
+      ],
       "imagePath": "lib/images/m4.png",
       "hostUser": false
     },
@@ -248,16 +454,54 @@
       "lastName": "Bartolo",
       "municipality": "Sintra",
       "gender": "Female",
-      "availability": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "availability": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
       "email": "ines.bartolo@gmail.com",
       "password": "123456",
       "phone": "919012345",
       "birthDate": "09/01/1999",
-      "sports": ["Basketball"],
-      "favFields": [1, 2],
+      "sports": [
+        "Basketball"
+      ],
+      "favFields": [
+        "1",
+        "2"
+      ],
       "reservations": [],
-      "friends": [1, 5],
+      "friends": [
+        "1",
+        "5"
+      ],
       "imagePath": "lib/images/f4.png",
+      "hostUser": false
+    },
+    {
+      "id": "e469",
+      "userId": 1732014962972,
+      "username": "testeuser2",
+      "firstName": "teste",
+      "lastName": "",
+      "email": "teste@gmail.com",
+      "password": "123",
+      "phone": "951523612",
+      "birthDate": "",
+      "sports": [
+        "Basketball"
+      ],
+      "favFields": [],
+      "reservations": [
+        "117",
+        "101"
+      ],
+      "friends": [],
+      "imagePath": "lib/images/m1.png",
       "hostUser": false
     }
   ],
@@ -443,7 +687,7 @@
       "creatorName": "John Doe",
       "creatorGender": "Male",
       "creatorAge": 29,
-      "slotsAvailable": 3,
+      "slotsAvailable": 4,
       "maxSlots": 5,
       "creatorImagePath": "lib/images/m1.png"
     },
@@ -683,7 +927,7 @@
       "creatorName": "Jack Green",
       "creatorGender": "Male",
       "creatorAge": 35,
-      "slotsAvailable": 5,
+      "slotsAvailable": 6,
       "maxSlots": 15,
       "creatorImagePath": "lib/images/m2.png"
     },
@@ -791,6 +1035,53 @@
       "slotsAvailable": 2,
       "maxSlots": 2,
       "creatorImagePath": "lib/images/f4.png"
+    }
+  ],
+  "chats": [
+    {
+      "id": "1+2",
+      "users": [
+        "1",
+        "2"
+      ],
+      "messages": [
+        {
+          "id": "1",
+          "sender": "1",
+          "message": "Hello, how are you?",
+          "timestamp": "2024-10-22T10:00:00"
+        },
+        {
+          "id": "2",
+          "sender": "2",
+          "message": "I'm fine, thank you. And you?",
+          "timestamp": "2024-10-22T10:01:00"
+        },
+        {
+          "id": "3",
+          "sender": "1",
+          "message": "I'm fine too. Do you want to play basketball this weekend?",
+          "timestamp": "2024-10-22T10:02:00"
+        },
+        {
+          "id": "4",
+          "sender": "2",
+          "message": "Sure, I'm available on Saturday. What time?",
+          "timestamp": "2024-10-22T10:03:00"
+        },
+        {
+          "id": "5",
+          "sender": "1",
+          "message": "At 10:00. I'll make the reservation.",
+          "timestamp": "2024-10-22T10:04:00"
+        },
+        {
+          "id": "1732113451098",
+          "sender": "1",
+          "message": "bro error check",
+          "timestamp": "2024-11-20T14:37:31.098"
+        }
+      ]
     }
   ],
   "sports": [

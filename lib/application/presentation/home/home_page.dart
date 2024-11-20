@@ -15,6 +15,7 @@ import 'package:sport_meet/application/presentation/search/search_page.dart';
 import 'package:sport_meet/profile/profileSportMeet.dart';
 import 'package:sport_meet/application/presentation/manage_field_page.dart';
 import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
+import 'package:sport_meet/application/presentation/chat_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -272,7 +273,16 @@ class _HomePageState extends State<HomePage> {
                   builder: (context) => const SearchPage(),
                 ),
               );
-            } else if (index == 3) {
+            }
+              else if (index == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChatPage(),
+                ),
+              );
+            }
+             else if (index == 3) {
               if (isHostUser) {
                 Navigator.push(
                   context,

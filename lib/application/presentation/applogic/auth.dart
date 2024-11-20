@@ -276,10 +276,10 @@ class Authentication {
     List<dynamic> reservations =
         reservationsJson != null ? jsonDecode(reservationsJson) : [];
 
-    List<int> userReservationIds = List<int>.from(loggedInUser['reservations']);
+    List<String> userReservationIds = List<String>.from(loggedInUser['reservations']);
     List<Map<String, dynamic>> userReservations = reservations
         .where((reservation) => userReservationIds
-            .contains(int.parse(reservation['reservationId'])))
+            .contains(reservation['reservationId']))
         .map((reservation) => Map<String, dynamic>.from(reservation))
         .toList();
 

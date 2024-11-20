@@ -79,9 +79,24 @@ class _MeetPageBodyState extends State<MeetPageBody> {
       builder: (_) {
         return PersonDetailsDialog(
           person: person,
-          onAddFriend: () {
+          onAddFriend: () async {
             Navigator.pop(context);
-            // Implement "Add Friend" logic here
+            try {
+              final friendId = person['id'];
+              if (friendId != null) {
+                await _userService.addFriend(friendId);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Friend added successfully')),
+                );
+              } else {
+                throw Exception('Invalid friend ID');
+              }
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to add friend: $e')),
+              );
+              print('Failed to add friend: $e');
+            }
           },
           onSendMessage: () {
             Navigator.pop(context);

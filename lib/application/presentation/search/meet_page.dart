@@ -98,6 +98,12 @@ class _MeetPageBodyState extends State<MeetPageBody> {
   );
 }
 
+  void _navigateToSearchPage() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const SearchPage(),
+    ));
+  }
+
   void _showPersonDetails(BuildContext context, Map<String, dynamic> person) {
     showDialog(
       context: context,
@@ -146,10 +152,7 @@ Widget build(BuildContext context) {
   final appState = Provider.of<AppState>(context);
 
   return Scaffold(
-    appBar: AppBar(
-      title: const Text('Meet'),
-      backgroundColor: Colors.red,
-    ),
+    appBar: _buildAppBar(),
     body: Column(
       children: [
         Padding(
@@ -210,4 +213,46 @@ Widget build(BuildContext context) {
     ),
   );
 }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      toolbarHeight: 70,
+      centerTitle: true,
+      backgroundColor: Colors.red,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Highlight the active button with different colors
+          ElevatedButton(
+            onPressed: _navigateToSearchPage,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade300,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+            ),
+            child: const Text('SEARCH'),
+          ),
+          const SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: () {
+              // Stay on SearchPage
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+            ),
+            child: const Text('MEET'),
+          ),
+        ],
+      ),
+    );
+  }
 }

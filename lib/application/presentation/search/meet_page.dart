@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sport_meet/application/presentation/applogic/user_service.dart';
-import 'package:sport_meet/application/presentation/applogic/app_state.dart';
+import 'package:sport_meet/application/presentation/applogic/app_state_meet.dart';
 import 'package:sport_meet/application/presentation/widgets/filter_dialog.dart';
 import 'package:sport_meet/application/presentation/widgets/person_details_dialog.dart';
 import 'package:sport_meet/application/presentation/widgets/chat_dialog.dart';
@@ -30,6 +30,7 @@ class MeetPageBody extends StatefulWidget {
 
 class _MeetPageBodyState extends State<MeetPageBody> {
   final UserService _userService = UserService();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -37,41 +38,65 @@ class _MeetPageBodyState extends State<MeetPageBody> {
     _loadUsers();
   }
 
-  Future<void> _loadUsers() async {
-    final appState = Provider.of<AppState>(context, listen: false);
-    try {
-      final users = await _userService.fetchUsers();
-      appState.setMeetPeople(users);
-    } catch (e) {
-      print('Error loading users: $e');
-    }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
+
+  Future<void> _loadUsers() async {
+  final appState = Provider.of<AppState>(context, listen: false);
+  try {
+    final users = await _userService.fetchUsers();
+    appState.setMeetPeople(users);
+  } catch (e) {
+    print('Error loading users: $e');
+  }
+}
 
   void _showFilterDialog(BuildContext context) {
-    final appState = Provider.of<AppState>(context, listen: false);
+  final appState = Provider.of<AppState>(context, listen: false);
 
-    showDialog(
-      context: context,
-      builder: (_) {
-        return FilterDialog(
-          sportsOptions: appState.sportsFilters,
-          availabilityOptions: appState.selectedAvailability,
-          municipalities: appState.selectedMunicipality,
-          genderOptions: ['Male', 'Female'], // Customize as needed
-          selectedSports: appState.selectedSports,
-          selectedAvailability: appState.selectedAvailability,
-          selectedMunicipality: appState.selectedMunicipality,
-          selectedGender: appState.selectedGender,
-          onSportsChanged: (values) => appState.selectedSports = values,
-          onAvailabilityChanged: (values) => appState.selectedAvailability = values,
-          onMunicipalityChanged: (values) => appState.selectedMunicipality = values,
-          onGenderChanged: (value) => appState.selectedGender = value ?? '',
-          onClearFilters: appState.resetFilters,
-          onApplyFilters: appState.applyFilters,
-        );
-      },
-    );
-  }
+  showDialog(
+    context: context,
+    builder: (_) {
+      return FilterDialog(
+        sportsOptions: appState.sportsFilters,
+        availabilityOptions: appState.availabilityFilters,
+        municipalities: appState.municipalityFilters,
+        genderOptions: ['Male', 'Female', 'Other'], // Customize as needed
+        selectedSports: appState.selectedSports,
+        selectedAvailability: appState.selectedAvailability,
+        selectedMunicipality: appState.selectedMunicipality,
+        selectedGender: appState.selectedGender,
+        onSportsChanged: (values) {
+          appState.selectedSports = values;
+          appState.notifyListeners();
+        },
+        onAvailabilityChanged: (values) {
+          appState.selectedAvailability = values;
+          appState.notifyListeners();
+        },
+        onMunicipalityChanged: (values) {
+          appState.selectedMunicipality = values;
+          appState.notifyListeners();
+        },
+        onGenderChanged: (value) {
+          appState.selectedGender = value ?? '';
+          appState.notifyListeners();
+        },
+        onClearFilters: () {
+          appState.resetFilters();
+          Navigator.of(context).pop();
+        },
+        onApplyFilters: () {
+          appState.applyFilters();
+          Navigator.of(context).pop();
+        },
+      );
+    },
+  );
+}
 
   void _showPersonDetails(BuildContext context, Map<String, dynamic> person) {
     showDialog(
@@ -117,72 +142,72 @@ class _MeetPageBodyState extends State<MeetPageBody> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
+Widget build(BuildContext context) {
+  final appState = Provider.of<AppState>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meet'),
-        backgroundColor: Colors.red,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: TextEditingController(),
-                    onChanged: (value) {
-                      setState(() {
-                        appState.filteredEvent = appState.meetPeople
-                            .where((person) => person['title']!
-                                .toLowerCase()
-                                .contains(value.toLowerCase()))
-                            .toList();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search),
-                      hintText: 'Search',
-                      filled: true,
-                      fillColor: Colors.grey.shade200,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Meet'),
+      backgroundColor: Colors.red,
+    ),
+    body: Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      appState.filteredEvent = appState.meetPeople
+                          .where((person) => person['title']!
+                              .toLowerCase()
+                              .contains(value.toLowerCase()))
+                          .toList();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: 'Search',
+                    filled: true,
+                    fillColor: Colors.grey.shade200,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () => _showFilterDialog(context),
+              ),
+              IconButton(
+                icon: const Icon(Icons.filter_list),
+                onPressed: () => _showFilterDialog(context),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: appState.filteredEvent.length,
+            itemBuilder: (context, index) {
+              final person = appState.filteredEvent[index];
+              return GestureDetector(
+                onTap: () => _showPersonDetails(context, person),
+                child: PersonCard(
+                  title: person['title']!,
+                  address: person['address']!,
+                  availability: person['availabilityDisplay']!,
+                  sports: person['sportsDisplay']!,
+                  imagePath: person['imagePath']!,
+                  gender: person['genderDisplay']!,
                 ),
-              ],
-            ),
+              );
+            },
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: appState.filteredEvent.length,
-              itemBuilder: (context, index) {
-                final person = appState.filteredEvent[index];
-                return GestureDetector(
-                  onTap: () => _showPersonDetails(context, person),
-                  child: PersonCard(
-                    title: person['title']!,
-                    address: person['address']!,
-                    availability: person['availability']!,
-                    sports: person['sports']!,
-                    imagePath: person['imagePath']!,
-                    gender: person['gender']!,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

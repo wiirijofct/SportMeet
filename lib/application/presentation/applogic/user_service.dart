@@ -18,24 +18,30 @@ class UserService {
   }
 
   Future<List<Map<String, dynamic>>> fetchUsers() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/users'));
-    if (response.statusCode == 200) {
-      List<dynamic> users = json.decode(response.body);
-      return users.where((user) => user['id'] != id).map((user) {
-        return {
-          'id': user['id'],
-          'title': '${user['firstName']} ${user['lastName']}',
-          'address': 'Municipality: ${user['municipality']}',
-          'availability': user['availability'] != null ? 'Availability: ${user['availability'].join(', ')}' : 'Availability: N/A',
-          'sports': user['sports'] != null ? 'Favorite Sports: ${user['sports'].join(', ')}' : 'Favorite Sports: N/A',
-          'gender': 'Gender: ${user['gender']}',
-          'imagePath': user['imagePath'],
-        };
-      }).toList();
-    } else {
-      throw Exception('Failed to load users');
-    }
+  final response = await http.get(Uri.parse('http://localhost:3000/users'));
+  if (response.statusCode == 200) {
+    List<dynamic> users = json.decode(response.body);
+    return users.where((user) => user['id'] != id).map((user) {
+      return {
+        'id': user['id'],
+        'firstName': user['firstName'],
+        'lastName': user['lastName'],
+        'municipality': user['municipality'],
+        'availability': List<String>.from(user['availability'] ?? []),
+        'sports': List<String>.from(user['sports'] ?? []),
+        'gender': user['gender'],
+        'imagePath': user['imagePath'],
+        'title': '${user['firstName']} ${user['lastName']}',
+        'address': 'Municipality: ${user['municipality']}',
+        'availabilityDisplay': user['availability'] != null ? 'Availability: ${List<String>.from(user['availability']).join(', ')}' : 'Availability: N/A',
+        'sportsDisplay': user['sports'] != null ? 'Favorite Sports: ${List<String>.from(user['sports']).join(', ')}' : 'Favorite Sports: N/A',
+        'genderDisplay': 'Gender: ${user['gender']}',
+      };
+    }).toList();
+  } else {
+    throw Exception('Failed to load users');
   }
+}
 
   Future<void> addFriend(String friendId) async {
     print('Logged-in user ID: $id');

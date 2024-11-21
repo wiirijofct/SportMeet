@@ -5,6 +5,12 @@ import 'package:sport_meet/application/presentation/home/home_page.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
 import 'package:sport_meet/application/presentation/widgets/field_card.dart';
 import 'dart:convert';
+import 'package:sport_meet/application/presentation/manage_fields_page.dart';
+import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
+import 'package:sport_meet/application/presentation/chat_page.dart';
+import 'package:sport_meet/profile/profile_screen.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:http/http.dart' as http;
 
 class SearchPage extends StatefulWidget {
@@ -15,11 +21,13 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  late Future<Map<String, dynamic>> userInfo;
   List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football', 'Padel'];
   List<String> selectedSports = [];
   List<String> selectedTeamAvailability = ['OPEN', 'CLOSED'];
   bool isFree = false;
   bool showOpenTeam = false;
+  bool isHostUser = false;
 
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
@@ -35,8 +43,18 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
-    selectedSports = List.from(sportsFilters); // Initially select all sports
-    fetchFieldsData(); // Load the fields data from API
+    Authentication.getUserSports().then((value) {
+      setState(() {
+        //sportsFilters = value;
+        selectedSports =
+          List.from(sportsFilters); // Initially select all sports
+        fetchUserData(); // Fetch user data after setting sports filters
+        fetchFieldsData(); // Load the fields data from API
+      });
+    });
+    //selectedSports = List.from(sportsFilters); // Initially select all sports
+    //fetchFieldsData(); // Load the fields data from API
+    //fetchUserData();
   }
 
   Future<void> fetchFieldsData() async {
@@ -55,6 +73,16 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
   
+  void fetchUserData() {
+    userInfo = User.getInfo();
+    userInfo.then((value) {
+      setState(() {
+        isHostUser = value['hostUser'] ?? false;
+      });
+    });
+    //userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
+  }
+
   @override
   void dispose() {
     // Dispose of the controller when the widget is removed
@@ -421,7 +449,6 @@ class _SearchPageState extends State<SearchPage> {
                     sport: field['sport'],
                     name: field['name'],
                     location: field['location'],
-                    // schedule: '${field['schedule']['open']} - ${field['schedule']['close']}',
                     openTime: field['schedule']['open'],
                     closeTime: field['schedule']['close'],
                     isPublic: field['isPublic'],
@@ -434,7 +461,7 @@ class _SearchPageState extends State<SearchPage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Ionicons.search),
             label: 'Search',
@@ -448,8 +475,8 @@ class _SearchPageState extends State<SearchPage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Ionicons.heart_outline),
-            label: 'Favorites',
+            icon: Icon(isHostUser ? Ionicons.add : Ionicons.heart_outline),
+            label: isHostUser ? 'Field' : 'Favorites',
           ),
           BottomNavigationBarItem(
             icon: Icon(Ionicons.person_outline),
@@ -465,6 +492,39 @@ class _SearchPageState extends State<SearchPage> {
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
           }
+              else if (index == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChatPage(),
+                ),
+              );
+            }
+            
+             else if (index == 3) {
+              if (isHostUser) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManageFieldsPage(),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FavoriteFieldsPage(),
+                  ),
+                );
+              }
+            } else if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(),
+                ),
+              );
+            }
         },
       ),
     );

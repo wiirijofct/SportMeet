@@ -65,7 +65,7 @@
         "Sunday"
       ],
       "email": "john.doe@example.com",
-      "password": "password123",
+      "password": "123",
       "phone": "911888556",
       "birthDate": "15/05/1995",
       "sports": [
@@ -510,6 +510,7 @@
     {
       "id": "1",
       "fieldId": "1",
+      "ownerId": "2",
       "sport": "Basketball",
       "name": "Clube Unidos do Estoril",
       "location": "Avenida do Brasil",
@@ -531,6 +532,7 @@
     {
       "id": "2",
       "fieldId": "2",
+      "ownerId": "2",
       "sport": "Swimming",
       "name": "Piscinas Filo",
       "location": "Rua Filo Lapa",

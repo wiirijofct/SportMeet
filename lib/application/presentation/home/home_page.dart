@@ -13,7 +13,7 @@ import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/search_page.dart';
 import 'package:sport_meet/profile/profileSportMeet.dart';
-import 'package:sport_meet/application/presentation/manage_field_page.dart';
+import 'package:sport_meet/application/presentation/manage_fields_page.dart';
 import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
 import 'package:sport_meet/application/presentation/chat_page.dart';
 
@@ -287,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ManageFieldPage(),
+                    builder: (context) => const ManageFieldsPage(),
                   ),
                 );
               } else {
@@ -302,7 +302,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileSportMeet(),
+                  builder: (context) => ProfileScreen(),
                 ),
               );
             }

@@ -66,7 +66,7 @@ class _FieldPageState extends State<FieldPage> {
   }
 
   // Check if the user has already joined the reservation
-  if (user['reservations'].contains(int.parse(reservation['reservationId'].toString()))) {
+  if (user['reservations'].contains(reservation['reservationId'].toString())) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('You have already joined this reservation.')),
     );
@@ -84,7 +84,7 @@ class _FieldPageState extends State<FieldPage> {
     );
 
     if (response.statusCode == 200) {
-      user['reservations'].add(int.parse(reservation['reservationId'].toString()));
+      user['reservations'].add(reservation['reservationId'].toString());
       final userResponse = await http.put(
         Uri.parse('http://localhost:3000/users/${user['id']}'),
         headers: {'Content-Type': 'application/json'},

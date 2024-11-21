@@ -4,20 +4,19 @@ ThemeData lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     brightness: Brightness.light,
     primary: Color.fromARGB(255, 181, 2, 2),
-    surface: Color.fromARGB(239, 206, 0, 0),
+    surface: Color.fromARGB(238, 226, 224, 224),
     tertiary: Color.fromARGB(235, 195, 49, 49),
     onPrimary: Color.fromARGB(162, 255, 255, 255),
-
     onSecondary: Color.fromARGB(255, 31, 31, 31),
     onTertiary: Colors.black,
     inversePrimary: Colors.black,
     primaryContainer: Color.fromARGB(239, 156, 170, 167),
-    onSecondaryContainer:Colors.white,
+    onSecondaryContainer: Colors.white,
     onTertiaryContainer: Color.fromARGB(255, 68, 2, 2),
     onSurfaceVariant: Colors.white,
-   
-
-    //Color.fromARGB(255, 85, 85, 85),
+  ),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color.fromARGB(255, 181, 2, 2),
   ),
   textTheme: const TextTheme(
     titleLarge: TextStyle(
@@ -45,7 +44,6 @@ ThemeData lightTheme = ThemeData(
       fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
-
     bodyLarge: TextStyle(
       fontSize: 24,
       color: Colors.black,
@@ -79,27 +77,21 @@ ThemeData lightTheme = ThemeData(
       color: Colors.black,
       fontFamily: "FredokaRegular",
     ),
-
     displaySmall: TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.bold,
       color: Colors.black,
       fontFamily: "FredokaRegular",
-
-    ) ,
+    ),
     displayMedium: TextStyle(
       fontSize: 17,
       color: Colors.black,
       fontFamily: "FredokaRegular",
-
-    ) ,
-     displayLarge: TextStyle(
-      color:    Color.fromARGB(255, 255, 0, 17),
+    ),
+    displayLarge: TextStyle(
+      color: Color.fromARGB(255, 255, 0, 17),
       fontSize: 12,
       fontFamily: "FredokaRegular",
     ),
-
-    
   ),
 );
-//Color.fromARGB(255, 85, 85, 85)

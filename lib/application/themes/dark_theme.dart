@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 ThemeData darkTheme = ThemeData(
-  
   colorScheme: const ColorScheme.dark(
     brightness: Brightness.dark,
     primary: Color.fromARGB(255, 180, 50, 50),
@@ -13,8 +12,11 @@ ThemeData darkTheme = ThemeData(
     inversePrimary: Color.fromARGB(255, 206, 206, 206),
     primaryContainer: Color.fromARGB(238, 170, 156, 156),
     onSecondaryContainer: Color.fromARGB(255, 219, 219, 219),
-     onTertiaryContainer:Color.fromARGB(239, 206, 0, 0),
-      onSurfaceVariant: Color.fromARGB(255, 55, 3, 3),
+    onTertiaryContainer: Color.fromARGB(239, 206, 0, 0),
+    onSurfaceVariant: Color.fromARGB(255, 55, 3, 3),
+  ),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color.fromARGB(255, 180, 50, 50),
   ),
   textTheme: const TextTheme(
     titleLarge: TextStyle(
@@ -94,4 +96,3 @@ ThemeData darkTheme = ThemeData(
     ),
   ),
 );
-//Color.fromARGB(255, 85, 85, 85)

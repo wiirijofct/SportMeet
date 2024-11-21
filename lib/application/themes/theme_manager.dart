@@ -1,7 +1,7 @@
-import 'package:sport_meet/application/themes/dark_theme.dart';
-import 'package:sport_meet/application/themes/light_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sport_meet/application/themes/dark_theme.dart';
+import 'package:sport_meet/application/themes/light_theme.dart';
 
 class ThemeManager with ChangeNotifier {
   ThemeData _themeData = darkTheme;
@@ -38,7 +38,7 @@ class ThemeManager with ChangeNotifier {
     prefs.setBool('isDarkTheme', _themeData == darkTheme);
   }
 
-   ThemeData getThemeMode() {
+  ThemeData getThemeMode() {
     notifyListeners();
     return _themeData;
   }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:sport_meet/application/presentation/field_page.dart';
+import 'package:sport_meet/application/presentation/fields/field_page.dart';
 import 'package:sport_meet/application/presentation/home/home_page.dart';
 import 'package:sport_meet/application/presentation/search/meet_page.dart';
 import 'package:sport_meet/application/presentation/widgets/field_card.dart';
 import 'dart:convert';
-import 'package:sport_meet/application/presentation/manage_fields_page.dart';
-import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
+import 'package:sport_meet/application/presentation/fields/manage_fields_page.dart';
+import 'package:sport_meet/application/presentation/fields/favorite_fields_page.dart';
 import 'package:sport_meet/application/presentation/chat_page.dart';
 import 'package:sport_meet/profile/profile_screen.dart';
 import 'package:sport_meet/application/presentation/applogic/auth.dart';

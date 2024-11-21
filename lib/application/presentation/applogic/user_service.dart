@@ -27,6 +27,7 @@ class UserService {
         'firstName': user['firstName'],
         'lastName': user['lastName'],
         'municipality': user['municipality'],
+        'birthDate': user['birthDate'],
         'availability': List<String>.from(user['availability'] ?? []),
         'sports': List<String>.from(user['sports'] ?? []),
         'gender': user['gender'],

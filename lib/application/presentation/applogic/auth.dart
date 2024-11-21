@@ -340,6 +340,20 @@ class Authentication {
     }
   }
 
+  static Future<void> initializeFields() async {
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/fields'));
+      if (response.statusCode == 200) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('fields', response.body);
+      } else {
+        throw Exception('Failed to initialize fields');
+      }
+    } catch (e) {
+      print('Error initializing fields: $e');
+    }
+  }
+
   static Future<bool> isHostUser() async {
     final loggedInUser = await getLoggedInUser();
     return loggedInUser?['hostUser'] ?? false;
@@ -380,4 +394,5 @@ class Authentication {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Authentication.initializeUsers();
+  await Authentication.initializeFields();
 }

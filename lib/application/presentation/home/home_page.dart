@@ -1,39 +1,20 @@
-import 'package:sport_meet/profile/profile_screen.dart';
-import 'package:sport_meet/application/presentation/notifications/notifications_screen.dart';
-import 'package:sport_meet/application/presentation/settings_page.dart';
-import 'package:sport_meet/application/presentation/welcome/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import 'package:sport_meet/application/themes/light_theme.dart';
 import 'package:sport_meet/application/themes/theme_manager.dart';
-import 'package:sport_meet/application/themes/dark_theme.dart';
 import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/search_page.dart';
-import 'package:sport_meet/application/presentation/manage_fields_page.dart';
-import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
+import 'package:sport_meet/application/presentation/fields/profileSportMeet.dart';
+import 'package:sport_meet/application/presentation/fields/favorite_fields_page.dart';
 import 'package:sport_meet/application/presentation/chat_page.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const HomePage(),
-    );
-  }
-}
+import 'package:sport_meet/profile/profile_screen.dart';
+import 'package:sport_meet/application/presentation/notifications/notifications_screen.dart';
+import 'package:sport_meet/application/presentation/settings_page.dart';
+import 'package:sport_meet/application/presentation/welcome/welcome_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -49,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   List<String> sportsFilters = [];
   List<String> selectedSports = [];
   bool isHostUser = false;
+  bool themeUpdated = false;
 
   @override
   void initState() {
@@ -56,9 +38,8 @@ class _HomePageState extends State<HomePage> {
     Authentication.getUserSports().then((value) {
       setState(() {
         sportsFilters = value;
-        selectedSports =
-            List.from(sportsFilters); // Initially select all sports
-        fetchUserData(); // Fetch user data after setting sports filters
+        selectedSports = List.from(sportsFilters);
+        fetchUserData();
       });
     });
   }
@@ -66,7 +47,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    fetchUserData();
+    if (!themeUpdated) {
+      fetchUserData();
+    }
   }
 
   void fetchUserData() {
@@ -74,11 +57,32 @@ class _HomePageState extends State<HomePage> {
     userInfo.then((value) {
       setState(() {
         isHostUser = value['hostUser'] ?? false;
+        // Update the theme based on the user's role
+        if (!themeUpdated) {
+          if (isHostUser) {
+            Provider.of<ThemeManager>(context, listen: false).themeData = lightTheme.copyWith(
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.blue,
+              ),
+              colorScheme: lightTheme.colorScheme.copyWith(
+                secondary: Colors.blue,
+                tertiary: Colors.blue.shade100,
+              ),
+            );
+          } else {
+            Provider.of<ThemeManager>(context, listen: false).themeData = lightTheme.copyWith(
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          themeUpdated = true; // Set the flag to true after updating the theme
+        }
       });
     });
     userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
   }
-
+  
   void profileButtonPressed() {
     Navigator.push(
       context,
@@ -272,21 +276,20 @@ class _HomePageState extends State<HomePage> {
                   builder: (context) => const SearchPage(),
                 ),
               );
-            }
-              else if (index == 1) {
+            } else if (index == 1) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const ChatPage(),
                 ),
               );
-            }
-             else if (index == 3) {
+            } else if (index == 3) {
               if (isHostUser) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ManageFieldsPage(),
+                    builder: (context) => ProfileSportMeet(),
+                    // builder: (context) => const ManageFieldsPage(),
                   ),
                 );
               } else {
@@ -312,22 +315,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   AppBar _buildAppBar() {
-    var themeManager = Provider.of<ThemeManager>(context);
-    bool isDarkTheme = themeManager.themeData == darkTheme;
-
     return AppBar(
       toolbarHeight: 70,
       centerTitle: true,
-      backgroundColor: isDarkTheme
-          ? Colors.black.withOpacity(0.1)
-          : Colors.white.withOpacity(0.15),
       leading: IconButton(
         icon: Icon(Ionicons.menu_outline,
             color: Theme.of(context).colorScheme.onTertiary, size: 40),
         onPressed: toggleMenu,
       ),
       title: Image.asset(
-        isDarkTheme ? 'lib/images/Logo2.png' : 'lib/images/Logo.png',
+        'lib/images/Logo.png',
         fit: BoxFit.contain,
         height: 60,
       ),

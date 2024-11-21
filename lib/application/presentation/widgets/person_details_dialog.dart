@@ -11,6 +11,22 @@ class PersonDetailsDialog extends StatelessWidget {
     required this.onSendMessage,
   });
 
+  int calculateAge(String birthDate) {
+    final birthDateParts = birthDate.split('/');
+    final birthDay = int.parse(birthDateParts[0]);
+    final birthMonth = int.parse(birthDateParts[1]);
+    final birthYear = int.parse(birthDateParts[2]);
+
+    final today = DateTime.now();
+    int age = today.year - birthYear;
+
+    if (today.month < birthMonth || (today.month == birthMonth && today.day < birthDay)) {
+      age--;
+    }
+
+    return age;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -36,7 +52,39 @@ class PersonDetailsDialog extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            person['sports']!,
+            'Gender: ${person['gender']}',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Municipality: ${person['municipality']}',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Availability: ${(person['availability'] as List<String>).join(', ')}',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Age: ${calculateAge(person['birthDate'])}',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Favorite Sports: ${(person['sports'] as List<String>).join(', ')}',
             style: TextStyle(
               fontSize: 12,
               color: Colors.black,

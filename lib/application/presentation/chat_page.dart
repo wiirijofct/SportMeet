@@ -5,7 +5,7 @@ import 'package:sport_meet/application/presentation/search/search_page.dart';
 import 'package:sport_meet/application/presentation/widgets/chat_card.dart';
 import 'package:sport_meet/application/presentation/widgets/chat_details_page.dart';
 import 'package:sport_meet/application/presentation/applogic/auth.dart';
-import 'package:sport_meet/application/presentation/manage_fields_page.dart';
+import 'package:sport_meet/application/presentation/fields/manage_fields_page.dart';
 import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
 import 'package:sport_meet/profile/profile_screen.dart';
 import 'package:sport_meet/application/presentation/home/home_page.dart';

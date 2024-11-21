@@ -45,7 +45,8 @@
         "2",
         "3",
         "4",
-        "e469"
+        "e469",
+        "6"
       ],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
@@ -504,6 +505,68 @@
       "friends": [],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
+    },
+    {
+      "id": "lolidk",
+      "userId": 1732014962972,
+      "username": "t1",
+      "firstName": "teste",
+      "lastName": "normal",
+      "email": "testen@gmail.com",
+      "password": "123",
+      "phone": "951523612",
+      "birthDate": "31/10/2000",
+      "municipality": "Sintra",
+      "gender": "Female",
+      "availability": [
+        "Monday",
+        "Friday"
+      ],
+      "sports": [
+        "Basketball"
+      ],
+      "favFields": [],
+      "reservations": [
+        "101",
+        "109",
+        "106"
+      ],
+      "friends": [
+        "1"
+      ],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": false
+    },
+    {
+      "id": "lolidk",
+      "userId": 1732014962972,
+      "username": "t2",
+      "firstName": "teste",
+      "lastName": "normal",
+      "email": "testen@gmail.com",
+      "password": "123",
+      "phone": "951523612",
+      "birthDate": "31/10/2000",
+      "municipality": "Sintra",
+      "gender": "Female",
+      "availability": [
+        "Monday",
+        "Friday"
+      ],
+      "sports": [
+        "Basketball"
+      ],
+      "favFields": [],
+      "reservations": [
+        "101",
+        "109",
+        "106"
+      ],
+      "friends": [
+        "1"
+      ],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": true
     }
   ],
   "fields": [
@@ -690,7 +753,7 @@
       "creatorName": "John Doe",
       "creatorGender": "Male",
       "creatorAge": 29,
-      "slotsAvailable": 4,
+      "slotsAvailable": 5,
       "maxSlots": 5,
       "creatorImagePath": "lib/images/m1.png"
     },
@@ -765,7 +828,7 @@
       "creatorName": "Laura Wilson",
       "creatorGender": "Female",
       "creatorAge": 30,
-      "slotsAvailable": 3,
+      "slotsAvailable": 4,
       "maxSlots": 6,
       "creatorImagePath": "lib/images/f3.png"
     },
@@ -810,7 +873,7 @@
       "creatorName": "Alice Green",
       "creatorGender": "Female",
       "creatorAge": 26,
-      "slotsAvailable": 3,
+      "slotsAvailable": 4,
       "maxSlots": 5,
       "creatorImagePath": "lib/images/f1.png"
     },
@@ -1134,6 +1197,21 @@
           "sender": "e469",
           "message": "boas zé",
           "timestamp": "2024-11-20T19:02:14.718"
+        }
+      ]
+    },
+    {
+      "id": "lolidk+1",
+      "users": [
+        "lolidk",
+        "1"
+      ],
+      "messages": [
+        {
+          "id": "1732211882722",
+          "sender": "lolidk",
+          "message": "boas",
+          "timestamp": "2024-11-21T17:58:02.722"
         }
       ]
     }

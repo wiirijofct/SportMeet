@@ -141,8 +141,10 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Chats'),
         backgroundColor: Colors.red,
+        centerTitle: true,
       ),
       body: ListView.builder(
         itemCount: chatCards.length,

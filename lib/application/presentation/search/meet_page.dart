@@ -8,6 +8,13 @@ import 'package:sport_meet/application/presentation/widgets/chat_dialog.dart';
 import 'package:ionicons/ionicons.dart';
 import 'search_page.dart';
 import 'package:sport_meet/application/presentation/widgets/person_card.dart';
+import 'package:sport_meet/application/presentation/manage_fields_page.dart';
+import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
+import 'package:sport_meet/application/presentation/chat_page.dart';
+import 'package:sport_meet/profile/profile_screen.dart';
+import 'package:sport_meet/application/presentation/home/home_page.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
 
 class MeetPage extends StatelessWidget {
   const MeetPage({super.key});
@@ -29,12 +36,19 @@ class MeetPageBody extends StatefulWidget {
 }
 
 class _MeetPageBodyState extends State<MeetPageBody> {
+  late Future<Map<String, dynamic>> userInfo;
   final UserService _userService = UserService();
   final TextEditingController _searchController = TextEditingController();
+  bool isHostUser = false;
 
   @override
   void initState() {
     super.initState();
+    Authentication.getUserSports().then((value) {
+      setState(() {
+        fetchUserData(); // Fetch user data after setting sports filters
+      });
+    });
     _loadUsers();
   }
 
@@ -42,6 +56,16 @@ class _MeetPageBodyState extends State<MeetPageBody> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void fetchUserData() {
+    userInfo = User.getInfo();
+    userInfo.then((value) {
+      setState(() {
+        isHostUser = value['hostUser'] ?? false;
+      });
+    });
+    //userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
   }
 
   Future<void> _loadUsers() async {
@@ -211,6 +235,74 @@ Widget build(BuildContext context) {
         ),
       ],
     ),
+    
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.chatbubble_ellipses_outline),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(isHostUser ? Ionicons.add : Ionicons.heart_outline),
+            label: isHostUser ? 'Field' : 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.person_outline),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: 0,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 2) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          }
+              else if (index == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChatPage(),
+                ),
+              );
+            }
+            
+             else if (index == 3) {
+              if (isHostUser) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManageFieldsPage(),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FavoriteFieldsPage(),
+                  ),
+                );
+              }
+            } else if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(),
+                ),
+              );
+            }
+        },
+      ),
   );
 }
 

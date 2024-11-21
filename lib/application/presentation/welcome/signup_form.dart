@@ -120,8 +120,12 @@ class _SignUpFormState extends State<SignUpForm> {
       newUser.username,
       newUser.email,
       newUser.firstName,
+      newUser.lastName,
       newUser.phoneNumber,
+      newUser.birthDate,
+      newUser.sports,
       newUser.password,
+      newUser.hostUser,
     );
 
     if (!mounted) {
@@ -253,6 +257,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       });
                     },
                     initialValue: selectedSports,
+                    chipDisplay: MultiSelectChipDisplay.none(),
                   ),
                   const SizedBox(height: 15),
                   PasswordField(

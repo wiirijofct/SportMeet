@@ -36,8 +36,8 @@ class Authentication {
     return hasAt && hasMinLength && hasDomain;
   }
 
-  static Future<bool> createUser(String username, String email, String name,
-      String phone, String password) async {
+  static Future<bool> createUser(String username, String email, String name, String lastName,
+      String phone, String birthDate, List<String> sports, String password, bool hostUser) async {
     if (_isCreatingUser) {
       return false; // If a user is already being created, return false
     }
@@ -64,18 +64,18 @@ class Authentication {
       final newUser = {
         "userId": DateTime.now().millisecondsSinceEpoch, // Generate a unique ID
         "username": username,
-        "firstName": name.split(' ').first,
-        "lastName": name.split(' ').skip(1).join(' '),
+        "firstName": name,
+        "lastName": lastName,
         "email": email,
         "password": password,
         "phone": phone,
-        "birthDate": "", // Can be filled during signup
-        "sports": [],
+        "birthDate": birthDate,
+        "sports": sports,
         "favFields": [],
         "reservations": [],
         "friends": [],
         "imagePath": "lib/images/m1.png",
-        "hostUser": false,
+        "hostUser": hostUser,
       };
 
       final createResponse = await http.post(

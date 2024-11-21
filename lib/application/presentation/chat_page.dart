@@ -1,9 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sport_meet/application/presentation/search/search_page.dart';
 import 'package:sport_meet/application/presentation/widgets/chat_card.dart';
 import 'package:sport_meet/application/presentation/widgets/chat_details_page.dart';
 import 'package:sport_meet/application/presentation/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/manage_fields_page.dart';
+import 'package:sport_meet/application/presentation/favorite_fields_page.dart';
+import 'package:sport_meet/profile/profile_screen.dart';
+import 'package:sport_meet/application/presentation/home/home_page.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -13,16 +20,33 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  late Future<Map<String, dynamic>> userInfo;
   List<Map<String, dynamic>> chats = [];
   List<Map<String, dynamic>> friends = [];
   List<Map<String, dynamic>> chatCards = [];
   String? loggedInUserId;
   List<String> loggedInUserFriends = [];
+  bool isHostUser = false;
 
   @override
   void initState() {
     super.initState();
+    Authentication.getUserSports().then((value) {
+      setState(() {
+        fetchUserData(); // Fetch user data after setting sports filters
+      });
+    });
     _loadChats();
+  }
+
+  void fetchUserData() {
+    userInfo = User.getInfo();
+    userInfo.then((value) {
+      setState(() {
+        isHostUser = value['hostUser'] ?? false;
+      });
+    });
+    //userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
   }
 
   Future<void> _loadChats() async {
@@ -132,6 +156,74 @@ class _ChatPageState extends State<ChatPage> {
             timestamp: chatCard['timestamp'],
             onTap: () => _navigateToChatDetail(chatCard),
           );
+        },
+      ),
+    
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.chatbubble_ellipses_outline),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(isHostUser ? Ionicons.add : Ionicons.heart_outline),
+            label: isHostUser ? 'Field' : 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.person_outline),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: 1,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 2) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          }
+              else if (index == 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchPage(),
+                ),
+              );
+            }
+            
+             else if (index == 3) {
+              if (isHostUser) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManageFieldsPage(),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FavoriteFieldsPage(),
+                  ),
+                );
+              }
+            } else if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(),
+                ),
+              );
+            }
         },
       ),
     );

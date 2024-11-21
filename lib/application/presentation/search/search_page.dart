@@ -22,7 +22,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   late Future<Map<String, dynamic>> userInfo;
-  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football', 'Padel'];
+  List<String> sportsFilters = [];
   List<String> selectedSports = [];
   List<String> selectedTeamAvailability = ['OPEN', 'CLOSED'];
   bool isFree = false;
@@ -45,7 +45,7 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     Authentication.getUserSports().then((value) {
       setState(() {
-        //sportsFilters = value;
+        sportsFilters = value;
         selectedSports =
           List.from(sportsFilters); // Initially select all sports
         fetchUserData(); // Fetch user data after setting sports filters

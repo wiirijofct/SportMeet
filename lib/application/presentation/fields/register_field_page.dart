@@ -125,7 +125,8 @@ class _RegisterFieldPageState extends State<RegisterFieldPage> {
         'phone': _phoneController.text,
       },
       'description': _descriptionController.text,
-      'images': [], // Add logic to handle images
+      'images': ["lib/images/Gecko.png",
+        "lib/images/Gecko.png"], // Add logic to handle images
     };
 
     try {

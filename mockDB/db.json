@@ -571,7 +571,7 @@
     {
       "id": "1732275170321",
       "userId": "1732275170321",
-      "username": "johnpork",
+      "username": "john",
       "firstName": "John",
       "lastName": "Pork",
       "email": "joe@gmail.com",
@@ -585,7 +585,11 @@
         "Golf"
       ],
       "favFields": [],
-      "reservations": [],
+      "reservations": [
+        "125",
+        "126",
+        "127"
+      ],
       "friends": [],
       "imagePath": "lib/images/m1.png",
       "hostUser": false,
@@ -1461,6 +1465,48 @@
       "slotsAvailable": 2,
       "maxSlots": 2,
       "creatorImagePath": "lib/images/f4.png"
+    },
+    {
+      "id": "125",
+      "reservationId": "125",
+      "fieldId": "1732235337678",
+      "sport": "Basketball",
+      "date": "25/11/2024",
+      "time": "4:30 PM",
+      "creatorName": "John Pork",
+      "creatorGender": "Male",
+      "creatorAge": 25,
+      "slotsAvailable": 5,
+      "maxSlots": 5,
+      "creatorImagePath": "lib/images/m1.png"
+    },
+    {
+      "id": "126",
+      "reservationId": "126",
+      "fieldId": "1732235337680",
+      "sport": "Football",
+      "date": "23/11/2024",
+      "time": "12:55 PM",
+      "creatorName": "John Pork",
+      "creatorGender": "Male",
+      "creatorAge": 25,
+      "slotsAvailable": 5,
+      "maxSlots": 5,
+      "creatorImagePath": "lib/images/m1.png"
+    },
+    {
+      "id": "127",
+      "reservationId": "127",
+      "fieldId": "1732235337678",
+      "sport": "Basketball",
+      "date": "23/11/2024",
+      "time": "6:50 PM",
+      "creatorName": "John Pork",
+      "creatorGender": "Male",
+      "creatorAge": 25,
+      "slotsAvailable": 4,
+      "maxSlots": 5,
+      "creatorImagePath": "lib/images/m1.png"
     }
   ],
   "chats": [

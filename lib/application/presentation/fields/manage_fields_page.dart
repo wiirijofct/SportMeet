@@ -179,7 +179,8 @@ class _ManageFieldsPageState extends State<ManageFieldsPage> {
                               : '',
                           pricing: field['isPublic'] == true
                               ? 'Free'
-                              : field['pricing'] ?? '',
+                              : field['pricing'] ?? '', 
+                          sport: field['sport'] ?? '',
                         ),
                       ),
                     );

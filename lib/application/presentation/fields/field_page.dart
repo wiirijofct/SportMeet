@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:sport_meet/application/presentation/fields/eventCreationPage.dart';
 import 'package:sport_meet/application/presentation/widgets/reservation_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:sport_meet/application/presentation/applogic/auth.dart';
@@ -10,6 +11,7 @@ class FieldPage extends StatefulWidget {
   final String fieldName;
   final String location;
   final String imagePath;
+  final String sport;
   final Map<String, dynamic> schedule;
   final String contactEmail;
   final String contactPhone;
@@ -20,11 +22,12 @@ class FieldPage extends StatefulWidget {
     required this.fieldId,
     required this.fieldName,
     required this.location,
+    required this.sport,
     required this.imagePath,
     required this.schedule,
     required this.contactEmail,
     required this.contactPhone,
-    required this.pricing,
+    required this.pricing, 
   }) : super(key: key);
 
   @override
@@ -73,8 +76,8 @@ class _FieldPageState extends State<FieldPage> {
       return;
     }
 
-    if (reservation['maxSlots'] > reservation['slotsAvailable']) {
-      final int newSlotsAvailable = reservation['slotsAvailable'] + 1;
+    if (reservation['slotsAvailable'] > 0) { // Correção na condição
+      final int newSlotsAvailable = reservation['slotsAvailable'] - 1; // Reduzir slots disponíveis
 
       reservation['slotsAvailable'] = newSlotsAvailable;
       final response = await http.put(
@@ -167,127 +170,160 @@ class _FieldPageState extends State<FieldPage> {
     return formattedSchedule.trim();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    print('FieldPage data: ${widget.fieldId}, ${widget.fieldName}, ${widget.location}, ${widget.imagePath}, ${widget.schedule}, ${widget.contactEmail}, ${widget.contactPhone}, ${widget.pricing}');
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              widget.imagePath,
-              width: double.infinity,
-              height: 200,
-              fit: BoxFit.cover,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.fieldName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Ionicons.location_outline),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          widget.location,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.time_outline,
-                    title: 'Schedule',
-                    detail: _formatSchedule(widget.schedule),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.mail_outline,
-                    title: 'Email',
-                    detail: widget.contactEmail,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.call_outline,
-                    title: 'Phone',
-                    detail: widget.contactPhone,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.cash_outline,
-                    title: 'Pricing per hour',
-                    detail: widget.pricing,
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Upcoming Reservations',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  FutureBuilder<List<Map<String, dynamic>>>(
-                    future: _reservationsFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return const Center(child: Text('Error loading reservations'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No upcoming reservations'));
-                      }
-
-                      final reservations = snapshot.data!;
-
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: reservations.length,
-                        itemBuilder: (context, index) {
-                          final reservation = reservations[index];
-                          return GestureDetector(
-                            onTap: () {
-                              _showJoinDialog(context, reservation);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: ReservationCard(
-                                creatorName: reservation['creatorName'] ?? 'Unknown',
-                                creatorGender: reservation['creatorGender'] ?? 'Unknown',
-                                creatorAge: reservation['creatorAge'] ?? 0,
-                                reservationDate: reservation['date'] ?? 'N/A',
-                                reservationTime: reservation['time'] ?? 'N/A',
-                                slotsAvailable: reservation['slotsAvailable'] ?? 0,
-                                maxSlots: reservation['maxSlots'] ?? 1,
-                                creatorImagePath: reservation['creatorImagePath'] ?? 'assets/images/default.png',
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+    Future<void> _navigateToEventCreationPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventCreationPage(
+          fieldId: widget.fieldId,
+          sport: widget.sport,
+          fieldName: widget.fieldName,
+          location: widget.location,
+          imagePath: widget.imagePath,
+          schedule: widget.schedule,
+          contactEmail: widget.contactEmail,
+          contactPhone: widget.contactPhone,
+          pricing: widget.pricing,
         ),
       ),
     );
+
+    if (result == true) {
+      // Recarregar a lista de reservas
+      setState(() {
+        _reservationsFuture = _fetchReservations();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('FieldPage data: ${widget.fieldId}, ${widget.fieldName}, ${widget.location}, ${widget.imagePath}, ${widget.schedule}, ${widget.contactEmail}, ${widget.contactPhone}, ${widget.pricing}');
+    
+        return Scaffold(
+          appBar: _buildAppBar(),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset(
+                  widget.imagePath,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.fieldName,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Ionicons.location_outline),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              widget.location,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildFieldDetailRow(
+                        icon: Ionicons.time_outline,
+                        title: 'Schedule',
+                        detail: _formatSchedule(widget.schedule),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildFieldDetailRow(
+                        icon: Ionicons.mail_outline,
+                        title: 'Email',
+                        detail: widget.contactEmail,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildFieldDetailRow(
+                        icon: Ionicons.call_outline,
+                        title: 'Phone',
+                        detail: widget.contactPhone,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildFieldDetailRow(
+                        icon: Ionicons.cash_outline,
+                        title: 'Pricing per hour',
+                        detail: widget.pricing,
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Upcoming Reservations',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: _reservationsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return const Center(child: Text('Error loading reservations'));
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return const Center(child: Text('No upcoming reservations'));
+                          }
+    
+                          final reservations = snapshot.data!;
+    
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: reservations.length,
+                            itemBuilder: (context, index) {
+                              final reservation = reservations[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  _showJoinDialog(context, reservation);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: ReservationCard(
+                                    creatorName: reservation['creatorName'] ?? 'Unknown',
+                                    creatorGender: reservation['creatorGender'] ?? 'Unknown',
+                                    creatorAge: reservation['creatorAge'] ?? 0,
+                                    reservationDate: reservation['date'] ?? 'N/A',
+                                    reservationTime: reservation['time'] ?? 'N/A',
+                                    slotsAvailable: reservation['slotsAvailable'] ?? 0,
+                                    maxSlots: reservation['maxSlots'] ?? 1,
+                                    creatorImagePath: reservation['creatorImagePath'] ?? 'assets/images/default.png',
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _navigateToEventCreationPage,
+            child: const Icon(Ionicons.add),
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+        );
+      }
   }
 
   AppBar _buildAppBar() {
@@ -323,4 +359,3 @@ class _FieldPageState extends State<FieldPage> {
       ],
     );
   }
-}

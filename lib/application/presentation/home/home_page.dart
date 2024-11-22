@@ -231,7 +231,6 @@ class _HomePageState extends State<HomePage> {
                         date: event['date'],
                         address: event['location'],
                         field: event['name'],
-                        availability: event['teamAvailability'],
                         imagePath: event['images'][0],
                         time: event['time'],
                       );

@@ -36,42 +36,42 @@ class ReservationCard extends StatelessWidget {
             ),
             const SizedBox(width: 8.0),
             Expanded(
-              child: Column(
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    creatorName,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0,
-                        ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Gender: $creatorGender',
-                    style: TextStyle(fontSize: 14.0),
-                  ),
-                  Text(
-                    'Age: $creatorAge',
-                    style: TextStyle(fontSize: 14.0),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Reservation Date: $reservationDate',
-                    style: TextStyle(fontSize: 14.0),
-                  ),
-                  Text(
-                    'Reservation Time: $reservationTime',
-                    style: TextStyle(fontSize: 14.0),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Slots: $slotsAvailable/$maxSlots',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: slotsAvailable < maxSlots ? Colors.green : Colors.red,
+                  creatorName,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
                     ),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                  'Gender: $creatorGender',
+                  style: TextStyle(fontSize: 14.0),
+                  ),
+                  Text(
+                  'Age: $creatorAge',
+                  style: TextStyle(fontSize: 14.0),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                  'Reservation Date: $reservationDate',
+                  style: TextStyle(fontSize: 14.0),
+                  ),
+                  Text(
+                  'Reservation Time: $reservationTime',
+                  style: TextStyle(fontSize: 14.0),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                  'Slots: ${maxSlots - slotsAvailable}/$maxSlots',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: slotsAvailable < maxSlots ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                   ),
                 ],
               ),

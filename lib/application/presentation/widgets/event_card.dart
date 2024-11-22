@@ -7,7 +7,6 @@ class EventCard extends StatelessWidget {
   final String date;
   final String address;
   final String field;
-  final String availability;
   final String imagePath;
   final String? time;
 
@@ -19,7 +18,6 @@ class EventCard extends StatelessWidget {
     required this.date,
     required this.address,
     required this.field,
-    required this.availability,
     required this.imagePath,
     this.time,
   }) : super(key: key);
@@ -67,16 +65,6 @@ class EventCard extends StatelessWidget {
                   Text(
                     'Field: $field',
                     style: TextStyle(fontSize: 14.0), // Reduced font size
-                  ),
-                  Text(
-                    'Team Availability: $availability',
-                    style: TextStyle(
-                      fontSize: 14.0, // Reduced font size
-                      color: availability.contains('OPEN')
-                          ? Colors.green
-                          : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                 ],
               ),

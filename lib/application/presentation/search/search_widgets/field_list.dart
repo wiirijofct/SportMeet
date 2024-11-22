@@ -27,7 +27,8 @@ class FieldList extends StatelessWidget {
         schedule: field['schedule'] ?? {},
         contactEmail: field['contact'] != null ? field['contact']['email'] ?? '' : '',
         contactPhone: field['contact'] != null ? field['contact']['phone'] ?? '' : '',
-        pricing: field['isPublic'] == true ? 'Free' : field['pricing'] ?? '',
+        pricing: field['isPublic'] == true ? 'Free' : field['pricing'] ?? '', 
+        sport: field['sport'] ?? '',
       );
     },
   ),

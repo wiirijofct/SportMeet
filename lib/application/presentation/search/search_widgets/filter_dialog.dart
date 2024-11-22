@@ -40,14 +40,19 @@ class _FilterDialogState extends State<FilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Filter Options'),
+      title: const Text('Filter Options',
+        style: TextStyle(
+          fontSize: 24.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Sort By',
+              'Filter By',
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
@@ -111,8 +116,22 @@ class _FilterDialogState extends State<FilterDialog> {
               ],
               onChanged: widget.onPublicFilterChanged,
               value: widget.isPublicFilter,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.grey.shade200, // Mesma cor do Sports
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10), // Bordas arredondadas
+                  borderSide: BorderSide(
+                    color: Colors.grey, // Mesma cor do Sports
+                    width: 1,
+                  ),
+                ),
+              ),
+              dropdownColor: Colors.grey.shade200, // Fundo do dropdown alinhado
+              style: const TextStyle(
+                fontSize: 16.0,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16.0),
@@ -147,7 +166,10 @@ class _FilterDialogState extends State<FilterDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: widget.onClear,
+          onPressed: () {
+            widget.onClear();
+            Navigator.of(context).pop();
+          },
           child: const Text('Clear Filters'),
         ),
         TextButton(

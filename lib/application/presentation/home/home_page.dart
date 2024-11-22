@@ -345,18 +345,6 @@ class _HomePageState extends State<HomePage> {
         fit: BoxFit.contain,
         height: 60,
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Ionicons.notifications_circle_outline,
-              color: Theme.of(context).colorScheme.onTertiary, size: 40),
-          onPressed: notificationsButtonPressed,
-        ),
-        IconButton(
-          icon: Icon(Ionicons.person_circle_outline,
-              color: Theme.of(context).colorScheme.onTertiary, size: 40),
-          onPressed: profileButtonPressed,
-        ),
-      ],
     );
   }
 

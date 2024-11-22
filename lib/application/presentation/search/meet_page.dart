@@ -196,10 +196,23 @@ Widget build(BuildContext context) {
                     });
                   },
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search,
+                    color: Colors.black),
                     hintText: 'Search',
+                    hintStyle: const TextStyle(
+                      color: Colors.black, // Sets the hint text color
+                    ),
                     filled: true,
                     fillColor: Colors.grey.shade200,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Ionicons.close_circle, color: Colors.red),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear(); // Limpa o texto
+                          appState.filteredEvent = appState.meetPeople; // Reseta a lista
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
@@ -208,7 +221,8 @@ Widget build(BuildContext context) {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.filter_list),
+                icon: const Icon(Icons.filter_list,
+                color: Colors.black),
                 onPressed: () => _showFilterDialog(context),
               ),
             ],

@@ -137,11 +137,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     controller: _messageController,
                     decoration: const InputDecoration(
                       hintText: 'Type a message',
+                      hintStyle: const TextStyle(
+                        color: Colors.black, // Sets the hint text color
+                      ),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: const Icon(Icons.send,
+                  color: Colors.black),
                   onPressed: _sendMessage,
                 ),
               ],

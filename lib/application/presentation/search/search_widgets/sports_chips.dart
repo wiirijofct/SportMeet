@@ -33,7 +33,7 @@ class SportsChips extends StatelessWidget {
               onSelected: (selected) {
                 onToggleSport(sport);
               },
-              selectedColor: Colors.red,
+              selectedColor: Colors.brown,
               backgroundColor: Colors.grey.shade200,
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : Colors.black,

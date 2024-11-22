@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
               gifWidth: 592,
               gifHeight: 948,
               nextScreen: isLogged ? const HomePage() : const WelcomePage(),
-              duration: const Duration(milliseconds: 4000),
+              duration: const Duration(milliseconds: 3500),
             ),
           ),
         ],

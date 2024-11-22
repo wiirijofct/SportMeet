@@ -732,15 +732,6 @@ If you have any questions about this Privacy Policy, You can contact us:
                         onTap: privacyButtonPressed,
                       ),
                     ]),
-                const SizedBox(height: 24),
-                buildSettingsSection(context, title: 'App Settings', settings: [
-                  buildSettingsTile(
-                    context,
-                    icon: Ionicons.color_palette_outline,
-                    title: 'Theme',
-                    onTap: themeButtonPressed,
-                  ),
-                ]),
                 const SizedBox(
                   height: 30,
                 ),

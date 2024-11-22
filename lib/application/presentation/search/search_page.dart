@@ -129,7 +129,8 @@ class _SearchPageState extends State<SearchPage> {
                       Stack(
                         children: [
                           IconButton(
-                            icon: const Icon(Ionicons.filter_outline),
+                            icon: const Icon(Ionicons.filter_outline,
+          color: Colors.black, ),
                             onPressed: () => _showFilterDialog(context),
                           ),
                           if (searchPageState.countActiveFilters() > 0)
@@ -138,7 +139,7 @@ class _SearchPageState extends State<SearchPage> {
                               child: Container(
                                 padding: const EdgeInsets.all(4.0),
                                 decoration: BoxDecoration(
-                                  color: Colors.red,
+                                  color: Colors.brown,
                                   shape: BoxShape.circle,
                                 ),
                                 constraints: const BoxConstraints(

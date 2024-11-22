@@ -143,7 +143,6 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Chats'),
-        backgroundColor: Colors.red,
         centerTitle: true,
       ),
       body: ListView.builder(

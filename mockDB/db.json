@@ -380,6 +380,70 @@
         "Sunday"
       ],
       "municipality": "Samouco"
+    },
+    {
+      "id": "1732302533764",
+      "userId": "1732302533764",
+      "username": "hostu",
+      "firstName": "Host",
+      "lastName": "User",
+      "email": "host@gmail.com",
+      "password": "123",
+      "phone": "912535664",
+      "birthDate": "22/11/1999",
+      "sports": [
+        "Baseball",
+        "Rugby",
+        "Golf"
+      ],
+      "favFields": [],
+      "reservations": [],
+      "friends": [],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": true,
+      "gender": "Male",
+      "availability": [
+        "Sunday",
+        "Saturday",
+        "Friday"
+      ],
+      "municipality": "Almada"
+    },
+    {
+      "id": "1732302829270",
+      "userId": "1732302829270",
+      "username": "normalu",
+      "firstName": "normal",
+      "lastName": "user",
+      "email": "normalu@gmail.com",
+      "password": "123",
+      "phone": "952135634",
+      "birthDate": "15/11/2000",
+      "sports": [
+        "Volleyball",
+        "Basketball",
+        "Football",
+        "Rugby",
+        "Kickboxing"
+      ],
+      "favFields": [],
+      "reservations": [
+        "1732302977783",
+        "1732303008685",
+        "1732296654839"
+      ],
+      "friends": [
+        "1"
+      ],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": false,
+      "gender": "Male",
+      "availability": [
+        "Sunday",
+        "Saturday",
+        "Friday"
+      ],
+      "municipality": "Almada"
     }
   ],
   "fields": [
@@ -882,6 +946,52 @@
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
+    },
+    {
+      "id": "1732302736847",
+      "fieldId": "1732302736847",
+      "ownerId": "1732302533764",
+      "sport": "Rugby",
+      "name": "Campo de Rugby",
+      "street": "Rua Pedro Leitão Matosa 2, 2825-091 Caparica, Setúbal, Portugal",
+      "location": "Rua Pedro Leitão Matosa 2",
+      "coordinates": {
+        "lat": 38.66012070221668,
+        "lon": -9.199394382665798
+      },
+      "schedule": {
+        "Monday": {
+          "Opens": "01:00",
+          "Closes": "09:00"
+        },
+        "Tuesday": {
+          "Opens": "01:00",
+          "Closes": "10:00"
+        },
+        "Wednesday": false,
+        "Thursday": false,
+        "Friday": false,
+        "Saturday": false,
+        "Sunday": false
+      },
+      "unavailability": [
+        "25/11/2024",
+        "26/11/2024",
+        "27/11/2024",
+        "28/11/2024",
+        "29/11/2024"
+      ],
+      "isPublic": false,
+      "pricing": "30€/hour",
+      "contact": {
+        "email": "rugby@gmail.com",
+        "phone": "9124235326"
+      },
+      "description": "Campo de rugby",
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
     }
   ],
   "reservations": [
@@ -935,13 +1045,42 @@
       "creatorId": "3",
       "joinedIds": [
         "3",
-        "1"
+        "1",
+        "1732302829270"
       ],
       "sport": "Kickboxing",
       "date": "29/11/2024",
       "time": "3:00 PM",
-      "slotsAvailable": 3,
+      "slotsAvailable": 2,
       "maxSlots": 5
+    },
+    {
+      "id": "1732302977783",
+      "reservationId": "1732302977783",
+      "fieldId": "1732235337681",
+      "creatorId": "1732302829270",
+      "joinedIds": [
+        "1732302829270"
+      ],
+      "sport": "Football",
+      "date": "24/11/2024",
+      "time": "6:00 PM",
+      "slotsAvailable": 9,
+      "maxSlots": 10
+    },
+    {
+      "id": "1732303008685",
+      "reservationId": "1732303008685",
+      "fieldId": "1732302736847",
+      "creatorId": "1732302829270",
+      "joinedIds": [
+        "1732302829270"
+      ],
+      "sport": "Rugby",
+      "date": "26/11/2024",
+      "time": "6:00 PM",
+      "slotsAvailable": 11,
+      "maxSlots": 12
     }
   ],
   "chats": [
@@ -1053,6 +1192,21 @@
           "sender": "lolidk",
           "message": "boas",
           "timestamp": "2024-11-21T17:58:02.722"
+        }
+      ]
+    },
+    {
+      "id": "1732302829270+1",
+      "users": [
+        "1732302829270",
+        "1"
+      ],
+      "messages": [
+        {
+          "id": "1732303135723",
+          "sender": "1732302829270",
+          "message": "mekie",
+          "timestamp": "2024-11-22T19:18:55.723"
         }
       ]
     }

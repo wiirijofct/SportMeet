@@ -11,7 +11,6 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       toolbarHeight: 70,
       centerTitle: true,
-      backgroundColor: Colors.red,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

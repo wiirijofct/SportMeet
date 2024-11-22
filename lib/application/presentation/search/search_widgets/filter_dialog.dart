@@ -40,41 +40,51 @@ class FilterDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             const Text("Sports", style: TextStyle(fontSize: 18.0)),
-            ...sportsFilters.map((sport) {
-              return CheckboxListTile(
-                title: Text(sport),
-                value: selectedSports.contains(sport),
-                onChanged: (bool? selected) {
-                  if (selected == true) {
-                    selectedSports.add(sport);
-                  } else {
-                    selectedSports.remove(sport);
-                  }
-                },
-              );
-            }).toList(),
+            DropdownButtonFormField<String>(
+              items: sportsFilters.map((sport) {
+                return DropdownMenuItem<String>(
+                  value: sport,
+                  child: Text(sport),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  selectedSports.clear();
+                  selectedSports.add(value);
+                }
+              },
+              value: selectedSports.isNotEmpty ? selectedSports.first : null,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),
             const Text(
               'Field Privacy',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            RadioListTile<bool?>(
-              title: const Text('Public'),
-              value: true,
-              groupValue: isPublicFilter,
+            DropdownButtonFormField<bool?>(
+              items: [
+                DropdownMenuItem<bool?>(
+                  value: true,
+                  child: const Text('Public'),
+                ),
+                DropdownMenuItem<bool?>(
+                  value: false,
+                  child: const Text('Private'),
+                ),
+                DropdownMenuItem<bool?>(
+                  value: null,
+                  child: const Text('No Preference'),
+                ),
+              ],
               onChanged: onPublicFilterChanged,
+              value: isPublicFilter,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
             ),
-            RadioListTile<bool?>(
-              title: const Text('Private'),
-              value: false,
-              groupValue: isPublicFilter,
-              onChanged: onPublicFilterChanged,
-            ),
-            RadioListTile<bool?>(
-              title: const Text('No Preference'),
-              value: null,
-              groupValue: isPublicFilter,
-              onChanged: onPublicFilterChanged,
-            ),
+            const SizedBox(height: 16.0),
             const Text(
               'Time Filter',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

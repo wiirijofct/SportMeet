@@ -36,6 +36,7 @@ class _EventCreationPageState extends State<EventCreationPage> {
   final _formKey = GlobalKey<FormState>();
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  TextEditingController maxSlotsController = TextEditingController();
 
   bool _isSubmitting = false;
 
@@ -89,43 +90,17 @@ class _EventCreationPageState extends State<EventCreationPage> {
 
     try {
       final userInfo = await User.getInfo();
-      if (userInfo == null) {
-        throw Exception('User not authenticated.');
-      }
 
       final userId = userInfo['id'].toString();
-      final creatorName = "${userInfo['firstName']} ${userInfo['lastName']}";
-      final creatorGender = userInfo['gender'];
-      final birthDate = userInfo['birthDate'];
-      final creatorAge = _calculateAge(birthDate);
-      final creatorImagePath = userInfo['imagePath'];
-
       final reservationsResponse =
           await http.get(Uri.parse('$apiUrl/reservations'));
       if (reservationsResponse.statusCode != 200) {
         throw Exception('Failed to fetch reservations.');
       }
 
-      final List<dynamic> reservationsData =
-          json.decode(utf8.decode(reservationsResponse.bodyBytes));
-      int lastReservationId = 100;
-      if (reservationsData.isNotEmpty) {
-        lastReservationId = reservationsData
-            .map((res) => int.parse(res['reservationId']))
-            .reduce((a, b) => a > b ? a : b);
-      }
-      final newReservationId = (lastReservationId + 1).toString();
+      final newReservationId = DateTime.now().millisecondsSinceEpoch.toString();
 
-      final int maxSlots = 5;
-      final fieldReservations = reservationsData
-          .where((res) => res['fieldId'].toString() == widget.fieldId)
-          .toList();
-
-      final usersResponse = await http.get(Uri.parse('$apiUrl/users'));
-      if (usersResponse.statusCode != 200) {
-        throw Exception('Failed to fetch users.');
-      }
-      
+      final int maxSlots = int.parse(maxSlotsController.text);
       final slotsAvailable = maxSlots - 1;
 
       final formattedDate = _formatDate(_selectedDate!);
@@ -135,15 +110,13 @@ class _EventCreationPageState extends State<EventCreationPage> {
         "id": newReservationId,
         "reservationId": newReservationId,
         "fieldId": widget.fieldId,
+        "creatorId": userId,
+        "joinedIds": [userId],
         "sport": widget.sport,
         "date": formattedDate,
         "time": formattedTime,
-        "creatorName": creatorName,
-        "creatorGender": creatorGender,
-        "creatorAge": creatorAge,
         "slotsAvailable": slotsAvailable,
         "maxSlots": maxSlots,
-        "creatorImagePath": creatorImagePath,
       };
 
       final addReservationResponse = await http.post(
@@ -284,6 +257,27 @@ class _EventCreationPageState extends State<EventCreationPage> {
                           ),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Max Slots',
+                        hintText: 'Enter the maximum number of slots',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      controller: maxSlotsController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the maximum number of slots.';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Please enter a valid number.';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 32.0),
                     ElevatedButton(

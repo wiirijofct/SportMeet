@@ -48,10 +48,16 @@ class _FieldPageState extends State<FieldPage> {
       final response = await http.get(Uri.parse('http://localhost:3000/reservations'));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+        if (data == null || data.isEmpty) {
+          return [];
+        }
         return data
             .where((reservation) => reservation['fieldId'].toString() == widget.fieldId)
-            .map<Map<String, dynamic>>(
-                (reservation) => reservation as Map<String, dynamic>)
+            .map<Map<String, dynamic>>((reservation) {
+              final Map<String, dynamic> res = reservation as Map<String, dynamic>;
+              res['joinedIds'] = List<String>.from(res['joinedIds'] ?? []);
+              return res;
+            })
             .toList();
       } else {
         throw Exception('Failed to load reservations');
@@ -296,14 +302,12 @@ class _FieldPageState extends State<FieldPage> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
                                   child: ReservationCard(
-                                    creatorName: reservation['creatorName'] ?? 'Unknown',
-                                    creatorGender: reservation['creatorGender'] ?? 'Unknown',
-                                    creatorAge: reservation['creatorAge'] ?? 0,
                                     reservationDate: reservation['date'] ?? 'N/A',
                                     reservationTime: reservation['time'] ?? 'N/A',
                                     slotsAvailable: reservation['slotsAvailable'] ?? 0,
-                                    maxSlots: reservation['maxSlots'] ?? 1,
-                                    creatorImagePath: reservation['creatorImagePath'] ?? 'assets/images/default.png',
+                                    maxSlots: reservation['maxSlots'] ?? 1, 
+                                    creatorId: reservation['creatorId'] ?? 'N/A',
+                                    joinedIds: List<String>.from(reservation['joinedIds'] ?? []),
                                   ),
                                 ),
                               );

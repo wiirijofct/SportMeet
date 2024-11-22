@@ -14,19 +14,27 @@ class SportsChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Create a new list where selected sports are at the start
+    List<String> orderedSportsFilters = [
+      ...selectedSports,
+      ...sportsFilters.where((sport) => !selectedSports.contains(sport)),
+    ];
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: sportsFilters.map((sport) {
+        children: orderedSportsFilters.map((sport) {
           final isSelected = selectedSports.contains(sport);
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: ChoiceChip(
               label: Text(sport),
               selected: isSelected,
-              onSelected: (_) => onToggleSport(sport),
-              selectedColor: Colors.brown,
-              backgroundColor: Colors.grey.shade300,
+              onSelected: (selected) {
+                onToggleSport(sport);
+              },
+              selectedColor: Colors.red,
+              backgroundColor: Colors.grey.shade200,
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : Colors.black,
               ),

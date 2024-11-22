@@ -69,6 +69,24 @@ class _ReservationPageState extends State<ReservationPage> {
     return users;
   }
 
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label: ',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
+          ),
+          Expanded(
+            child: Text(value, style: const TextStyle(fontSize: 16, color: Colors.black54)),
+          ),
+        ],
+      ),
+    );
+  }
+
   int _calculateAge(String birthDate) {
     final parts = birthDate.split('/');
     final day = int.tryParse(parts[0]) ?? 1;
@@ -123,82 +141,161 @@ class _ReservationPageState extends State<ReservationPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Field and Reservation Info
-                  Text(
-                    'Field: ${field['name']}',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Field: ${field['name'] ?? 'N/A'}',
+                            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
+                          ),
+                          const SizedBox(height: 16),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image.network(
+                              field['images']?[0] ?? '',
+                              height: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 200,
+                                  color: Colors.grey,
+                                  child: const Center(child: Text('No Image Available', style: TextStyle(color: Colors.white)))
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Divider(color: Colors.grey[400]),
+                          const SizedBox(height: 16),
+                          _buildDetailRow('Location', field['location'] ?? 'N/A'),
+                          _buildDetailRow('Sport', reservation['sport'] ?? 'N/A'),
+                          _buildDetailRow('Date', reservation['date'] ?? 'N/A'),
+                          _buildDetailRow('Time', reservation['time'] ?? 'N/A'),
+                          _buildDetailRow('Slots Available', '${reservation['slotsAvailable'] ?? 'N/A'}'),
+                          _buildDetailRow('Max Slots', '${reservation['maxSlots'] ?? 'N/A'}'),
+                          Row(
+                            children: [
+                              Expanded(child: _buildDetailRow('Contact Email', field['contact']?['email'] ?? 'N/A')),
+                              IconButton(
+                                icon: const Icon(Icons.email, color: Colors.redAccent),
+                                onPressed: () {
+                                  // Implement email action
+                                },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(child: _buildDetailRow('Contact Phone', field['contact']?['phone'] ?? 'N/A')),
+                              IconButton(
+                                icon: const Icon(Icons.phone, color: Colors.redAccent),
+                                onPressed: () {
+                                  // Implement phone call action
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  Image.network(field['images'][0], height: 200, fit: BoxFit.cover),
-                  const SizedBox(height: 16),
-                  Text('Location: ${field['location']}'),
-                  const SizedBox(height: 16),
-                  Text('Sport: ${reservation['sport']}'),
-                  const SizedBox(height: 16),
-                  Text('Date: ${reservation['date']}'),
-                  const SizedBox(height: 16),
-                  Text('Time: ${reservation['time']}'),
-                  const SizedBox(height: 16),
-                  Text('Slots Available: ${reservation['slotsAvailable']}'),
-                  const SizedBox(height: 16),
-                  Text('Max Slots: ${reservation['maxSlots']}'),
-                  const SizedBox(height: 16),
-                  Text('Contact Email: ${field['contact']['email']}'),
-                  const SizedBox(height: 16),
-                  Text('Contact Phone: ${field['contact']['phone']}'),
                   const SizedBox(height: 32),
 
                   // Event Owner Info
-                  Text(
-                    'Event Owner',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(creator['imagePath']),
-                        radius: 40,
-                      ),
-                      const SizedBox(width: 16),
-                      Column(
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Name: ${creator['firstName']} ${creator['lastName']}'),
-                          const SizedBox(height: 8),
-                          Text('Gender: ${creator['gender']}'),
-                          const SizedBox(height: 8),
-                          Text('Age: ${_calculateAge(creator['birthDate'])}'),
-                          const SizedBox(height: 8),
-                          Text('Municipality: ${creator['municipality']}'),
-                          const SizedBox(height: 8),
-                          Text('Favorite Sports: ${creator['sports'].join(', ')}'),
+                          Text(
+                            'Event Owner',
+                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(creator['imagePath'] ?? ''),
+                                radius: 40,
+                                onBackgroundImageError: (_, __) {
+                                  // Handle the error
+                                },
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Name: ${creator['firstName'] ?? 'N/A'} ${creator['lastName'] ?? 'N/A'}', style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 8),
+                                    Text('Gender: ${creator['gender'] ?? 'N/A'}', style: const TextStyle(fontSize: 16, color: Colors.black54)),
+                                    const SizedBox(height: 8),
+                                    Text('Age: ${_calculateAge(creator['birthDate'] ?? '01/01/2000')}', style: const TextStyle(fontSize: 16, color: Colors.black54)),
+                                    const SizedBox(height: 8),
+                                    Text('Municipality: ${creator['municipality'] ?? 'N/A'}', style: const TextStyle(fontSize: 16, color: Colors.black54)),
+                                    const SizedBox(height: 8),
+                                    Text('Favorite Sports: ${creator['sports']?.join(', ') ?? 'N/A'}', style: const TextStyle(fontSize: 16, color: Colors.black54)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 32),
 
                   // People Signed Up
-                  Text(
-                    'People Signed Up',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: joinedUsers.length,
-                    itemBuilder: (context, index) {
-                      final user = joinedUsers[index];
-                      return PersonCard(
-                        title: '${user['firstName']} ${user['lastName']}',
-                        address: user['municipality'],
-                        availability: 'Age: ${_calculateAge(user['birthDate'])}',
-                        sports: 'Sports: ${user['sports'].join(', ')}',
-                        imagePath: user['imagePath'],
-                        gender: 'Gender: ${user['gender']}',
-                      );
-                    },
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'People Signed Up',
+                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                          ),
+                          const SizedBox(height: 16),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: joinedUsers.length,
+                            itemBuilder: (context, index) {
+                              final user = joinedUsers[index];
+                              return Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: PersonCard(
+                                    title: '${user['firstName'] ?? 'N/A'} ${user['lastName'] ?? 'N/A'}',
+                                    address: user['municipality'] ?? 'N/A',
+                                    availability: 'Age: ${_calculateAge(user['birthDate'] ?? '01/01/2000')}',
+                                    sports: 'Sports: ${user['sports']?.join(', ') ?? 'N/A'}',
+                                    imagePath: user['imagePath'] ?? '',
+                                    gender: 'Gender: ${user['gender'] ?? 'N/A'}',
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

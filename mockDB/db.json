@@ -571,170 +571,500 @@
   ],
   "fields": [
     {
-      "id": "1",
-      "fieldId": "1",
+      "id": "1732235337678",
+      "fieldId": "1732235337678",
       "ownerId": "2",
       "sport": "Basketball",
       "name": "Clube Unidos do Estoril",
-      "location": "Avenida do Brasil",
-      "schedule": {
-        "open": "08:00",
-        "close": "22:00"
+      "street": "Avenida do Brasil 45, 2765-190, Estoril",
+      "location": "Avenida do Brasil 45",
+      "coordinates": {
+        "lat": 38.705,
+        "lon": -9.397
       },
-      "pricing": "20€/hour",
+      "schedule": {
+        "Monday": {
+          "Opens": "03:00",
+          "Closes": "05:00"
+        },
+        "Tuesday": {
+          "Opens": "01:00",
+          "Closes": "03:00"
+        },
+        "Wednesday": false,
+        "Thursday": false,
+        "Friday": false,
+        "Saturday": false,
+        "Sunday": false
+      },
+      "unavailability": [
+        "22/10/24",
+        "23/10/24",
+        "27/10/24"
+      ],
       "isPublic": false,
+      "pricing": "20€/hour",
       "contact": {
         "email": "contact@clubunidos.com",
         "phone": "+351 123 456 789"
       },
+      "description": "Clube Unidos do Estoril is a sports club located in Estoril, Portugal. It has a basketball court available for rent.",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
     },
     {
-      "id": "2",
-      "fieldId": "2",
+      "id": "1732235337679",
+      "fieldId": "1732235337679",
       "ownerId": "2",
       "sport": "Swimming",
       "name": "Piscinas Filo",
+      "street": "Rua Filo Lapa, 1234-567, Lisbon",
       "location": "Rua Filo Lapa",
-      "schedule": {
-        "open": "09:00",
-        "close": "20:00"
+      "coordinates": {
+        "lat": 38.716,
+        "lon": -9.139
       },
-      "pricing": "Free",
+      "schedule": {
+        "Monday": {
+          "Opens": "09:00",
+          "Closes": "20:00"
+        },
+        "Tuesday": {
+          "Opens": "09:00",
+          "Closes": "20:00"
+        },
+        "Wednesday": {
+          "Opens": "09:00",
+          "Closes": "20:00"
+        },
+        "Thursday": {
+          "Opens": "09:00",
+          "Closes": "20:00"
+        },
+        "Friday": {
+          "Opens": "09:00",
+          "Closes": "20:00"
+        },
+        "Saturday": {
+          "Opens": "09:00",
+          "Closes": "20:00"
+        },
+        "Sunday": {
+          "Opens": "09:00",
+          "Closes": "20:00"
+        }
+      },
+      "unavailability": [
+        "24/12/24",
+        "25/12/24"
+      ],
       "isPublic": true,
+      "pricing": "Free",
       "contact": {
         "email": "contact@filopool.com",
         "phone": "+351 987 654 321"
       },
+      "description": "Piscinas Filo is a public swimming pool located in Lisbon, Portugal.",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
     },
     {
-      "id": "3",
-      "fieldId": "3",
+      "id": "1732235337680",
+      "fieldId": "1732235337680",
+      "ownerId": "3",
       "sport": "Football",
       "name": "Clube Desunidos do Estoril",
+      "street": "Avenida Adamastor, 2765-190, Estoril",
       "location": "Avenida Adamastor",
-      "schedule": {
-        "open": "07:00",
-        "close": "23:00"
+      "coordinates": {
+        "lat": 38.707,
+        "lon": -9.399
       },
-      "pricing": "15€/hour",
+      "schedule": {
+        "Monday": {
+          "Opens": "07:00",
+          "Closes": "23:00"
+        },
+        "Tuesday": {
+          "Opens": "07:00",
+          "Closes": "23:00"
+        },
+        "Wednesday": {
+          "Opens": "07:00",
+          "Closes": "23:00"
+        },
+        "Thursday": {
+          "Opens": "07:00",
+          "Closes": "23:00"
+        },
+        "Friday": {
+          "Opens": "07:00",
+          "Closes": "23:00"
+        },
+        "Saturday": {
+          "Opens": "07:00",
+          "Closes": "23:00"
+        },
+        "Sunday": {
+          "Opens": "07:00",
+          "Closes": "23:00"
+        }
+      },
+      "unavailability": [
+        "01/11/24",
+        "02/11/24"
+      ],
       "isPublic": false,
+      "pricing": "15€/hour",
       "contact": {
         "email": "contact@clubdesunidos.com",
         "phone": "+351 234 567 890"
       },
+      "description": "Clube Desunidos do Estoril is a football club located in Estoril, Portugal.",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
     },
     {
-      "id": "4",
-      "fieldId": "4",
+      "id": "1732235337681",
+      "fieldId": "1732235337681",
+      "ownerId": "4",
       "sport": "Football",
       "name": "Campo Bartolomeu",
+      "street": "Avenida Conceição Lopes, 2765-190, Estoril",
       "location": "Avenida Conceição Lopes",
-      "schedule": {
-        "open": "06:00",
-        "close": "22:00"
+      "coordinates": {
+        "lat": 38.708,
+        "lon": -9.400
       },
-      "pricing": "10€/hour",
+      "schedule": {
+        "Monday": {
+          "Opens": "06:00",
+          "Closes": "22:00"
+        },
+        "Tuesday": {
+          "Opens": "06:00",
+          "Closes": "22:00"
+        },
+        "Wednesday": {
+          "Opens": "06:00",
+          "Closes": "22:00"
+        },
+        "Thursday": {
+          "Opens": "06:00",
+          "Closes": "22:00"
+        },
+        "Friday": {
+          "Opens": "06:00",
+          "Closes": "22:00"
+        },
+        "Saturday": {
+          "Opens": "06:00",
+          "Closes": "22:00"
+        },
+        "Sunday": {
+          "Opens": "06:00",
+          "Closes": "22:00"
+        }
+      },
+      "unavailability": [
+        "01/12/24",
+        "02/12/24"
+      ],
       "isPublic": true,
+      "pricing": "Free",
       "contact": {
         "email": "contact@campobartolomeu.com",
         "phone": "+351 345 678 901"
       },
+      "description": "Campo Bartolomeu is a public football field located in Estoril, Portugal.",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
     },
     {
-      "id": "5",
-      "fieldId": "5",
+      "id": "1732235337682",
+      "fieldId": "1732235337682",
+      "ownerId": "5",
       "sport": "Basketball",
       "name": "Campo António Sérgio",
-      "location": "Avenida dos missionarios",
-      "schedule": {
-        "open": "08:00",
-        "close": "21:00"
+      "street": "Avenida dos Missionarios, 2765-190, Estoril",
+      "location": "Avenida dos Missionarios",
+      "coordinates": {
+        "lat": 38.709,
+        "lon": -9.401
       },
-      "pricing": "20€/hour",
+      "schedule": {
+        "Monday": {
+          "Opens": "08:00",
+          "Closes": "21:00"
+        },
+        "Tuesday": {
+          "Opens": "08:00",
+          "Closes": "21:00"
+        },
+        "Wednesday": {
+          "Opens": "08:00",
+          "Closes": "21:00"
+        },
+        "Thursday": {
+          "Opens": "08:00",
+          "Closes": "21:00"
+        },
+        "Friday": {
+          "Opens": "08:00",
+          "Closes": "21:00"
+        },
+        "Saturday": {
+          "Opens": "08:00",
+          "Closes": "21:00"
+        },
+        "Sunday": {
+          "Opens": "08:00",
+          "Closes": "21:00"
+        }
+      },
+      "unavailability": [
+        "15/11/24",
+        "16/11/24"
+      ],
       "isPublic": false,
+      "pricing": "20€/hour",
       "contact": {
         "email": "contact@campoantoniosergio.com",
         "phone": "+351 456 789 012"
       },
+      "description": "Campo António Sérgio is a basketball court located in Estoril, Portugal.",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
     },
     {
-      "id": "6",
-      "fieldId": "6",
+      "id": "1732235337683",
+      "fieldId": "1732235337683",
+      "ownerId": "6",
       "sport": "Basketball",
       "name": "Escola Secundária Reitor Mor",
+      "street": "Rua Duarte Rei, 2765-190, Estoril",
       "location": "Rua Duarte Rei",
-      "schedule": {
-        "open": "09:00",
-        "close": "18:00"
+      "coordinates": {
+        "lat": 38.710,
+        "lon": -9.402
       },
-      "pricing": "Free",
+      "schedule": {
+        "Monday": {
+          "Opens": "09:00",
+          "Closes": "18:00"
+        },
+        "Tuesday": {
+          "Opens": "09:00",
+          "Closes": "18:00"
+        },
+        "Wednesday": {
+          "Opens": "09:00",
+          "Closes": "18:00"
+        },
+        "Thursday": {
+          "Opens": "09:00",
+          "Closes": "18:00"
+        },
+        "Friday": {
+          "Opens": "09:00",
+          "Closes": "18:00"
+        },
+        "Saturday": {
+          "Opens": "09:00",
+          "Closes": "18:00"
+        },
+        "Sunday": {
+          "Opens": "09:00",
+          "Closes": "18:00"
+        }
+      },
+      "unavailability": [
+        "10/12/24",
+        "11/12/24"
+      ],
       "isPublic": true,
+      "pricing": "Free",
       "contact": {
         "email": "contact@esreitor.com",
         "phone": "+351 567 890 123"
       },
+      "description": "Escola Secundária Reitor Mor is a public basketball court located in Estoril, Portugal.",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
     },
     {
-      "id": "7",
-      "fieldId": "7",
+      "id": "1732235337684",
+      "fieldId": "1732235337684",
+      "ownerId": "7",
       "sport": "Padel",
       "name": "Campo De cima",
+      "street": "Avenida de baixo, 2765-190, Estoril",
       "location": "Avenida de baixo",
-      "schedule": {
-        "open": "10:00",
-        "close": "20:00"
+      "coordinates": {
+        "lat": 38.711,
+        "lon": -9.403
       },
-      "pricing": "25€/hour",
+      "schedule": {
+        "Monday": {
+          "Opens": "10:00",
+          "Closes": "20:00"
+        },
+        "Tuesday": {
+          "Opens": "10:00",
+          "Closes": "20:00"
+        },
+        "Wednesday": {
+          "Opens": "10:00",
+          "Closes": "20:00"
+        },
+        "Thursday": {
+          "Opens": "10:00",
+          "Closes": "20:00"
+        },
+        "Friday": {
+          "Opens": "10:00",
+          "Closes": "20:00"
+        },
+        "Saturday": {
+          "Opens": "10:00",
+          "Closes": "20:00"
+        },
+        "Sunday": {
+          "Opens": "10:00",
+          "Closes": "20:00"
+        }
+      },
+      "unavailability": [
+        "20/11/24",
+        "21/11/24"
+      ],
       "isPublic": false,
+      "pricing": "25€/hour",
       "contact": {
         "email": "contact@campodecima.com",
         "phone": "+351 678 901 234"
       },
+      "description": "Campo De cima is a padel court located in Estoril, Portugal.",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
     },
     {
-      "id": "8",
-      "fieldId": "8",
+      "id": "1732235337685",
+      "fieldId": "1732235337685",
+      "ownerId": "8",
       "sport": "Padel",
       "name": "Campo de baixo",
+      "street": "Avenida de cima, 2765-190, Estoril",
       "location": "Avenida de cima",
-      "schedule": {
-        "open": "11:00",
-        "close": "19:00"
+      "coordinates": {
+        "lat": 38.712,
+        "lon": -9.404
       },
-      "pricing": "30€/hour",
+      "schedule": {
+        "Monday": {
+          "Opens": "11:00",
+          "Closes": "19:00"
+        },
+        "Tuesday": {
+          "Opens": "11:00",
+          "Closes": "19:00"
+        },
+        "Wednesday": {
+          "Opens": "11:00",
+          "Closes": "19:00"
+        },
+        "Thursday": {
+          "Opens": "11:00",
+          "Closes": "19:00"
+        },
+        "Friday": {
+          "Opens": "11:00",
+          "Closes": "19:00"
+        },
+        "Saturday": {
+          "Opens": "11:00",
+          "Closes": "19:00"
+        },
+        "Sunday": {
+          "Opens": "11:00",
+          "Closes": "19:00"
+        }
+      },
+      "unavailability": [
+        "15/12/24",
+        "16/12/24"
+      ],
       "isPublic": false,
+      "pricing": "30€/hour",
       "contact": {
         "email": "contact@campodebaixo.com",
         "phone": "+351 789 012 345"
       },
+      "description": "Campo de baixo is a padel court located in Estoril, Portugal.",
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "f1bb",
+      "fieldId": "1732235337677",
+      "ownerId": "2",
+      "sport": "Basketball",
+      "name": "Campo atoa",
+      "street": "Rua General Humberto Delgado 6, 2825-086 Caparica, Setúbal, Portugal",
+      "location": "Rua General Humberto Delgado 6",
+      "coordinates": {
+        "lat": 38.65979048749063,
+        "lon": -9.198903431819183
+      },
+      "schedule": {
+        "Monday": {
+          "Opens": "01:00",
+          "Closes": "11:00"
+        },
+        "Tuesday": {
+          "Opens": "02:00",
+          "Closes": "07:00"
+        },
+        "Wednesday": {
+          "Opens": "01:00",
+          "Closes": "02:00"
+        },
+        "Thursday": {
+          "Opens": "02:00",
+          "Closes": "03:00"
+        },
+        "Friday": false,
+        "Saturday": false,
+        "Sunday": false
+      },
+      "unavailability": [
+        "24/12/2024",
+        "25/12/2024",
+        "26/12/2024"
+      ],
+      "isPublic": false,
+      "pricing": "30€/hour",
+      "contact": {
+        "email": "campo@gmail.com",
+        "phone": "999999999"
+      },
+      "description": "god pls work",
       "images": [
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"

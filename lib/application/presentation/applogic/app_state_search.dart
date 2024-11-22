@@ -1,23 +1,62 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
+import 'package:sport_meet/application/presentation/applogic/user.dart';
 
-class AppState extends ChangeNotifier {
+class SearchPageState extends ChangeNotifier {
+  List<String> sportsFilters = [];
+  List<String> selectedSports = [];
+  List<String> selectedTeamAvailability = ['OPEN', 'CLOSED'];
   bool isFree = false;
   bool showOpenTeam = false;
-  List<String> sportsFilters = ['Basketball', 'Tennis', 'Swimming', 'Football'];
-  List<String> selectedSports = [];
-  List<String> selectedAvailability = [];
-  List<String> selectedMunicipality = [];
-  String selectedGender = '';
+  bool isHostUser = false;
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
+  TimeOfDay? selectedTime;
   String selectedSortOption = '';
-  List<Map<String, dynamic>> filteredEvent = [];
-  List<Map<String, dynamic>> meetPeople = [];
+  List<dynamic> fieldData = [];
+  List<dynamic> filteredFieldData = [];
+  bool? isPublicFilter;
 
-  void setMeetPeople(List<Map<String, dynamic>> users) {
-    meetPeople = users;
-    filteredEvent = List.from(meetPeople);
+  SearchPageState() {
+    _initializeState();
+  }
+
+  Future<void> _initializeState() async {
+    await _fetchUserSports();
+    await fetchFieldsData();
+    fetchUserData();
+  }
+
+  Future<void> _fetchUserSports() async {
+    // Replace with actual method to fetch user sports
+    sportsFilters = await Authentication.getUserSports();
+    selectedSports = List.from(sportsFilters);
     notifyListeners();
+  }
+
+  Future<void> fetchFieldsData() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:3000/fields'));
+      if (response.statusCode == 200) {
+        fieldData = json.decode(response.body);
+        filteredFieldData = fieldData;
+        notifyListeners();
+      } else {
+        throw Exception('Failed to load fields');
+      }
+    } catch (e) {
+      print('Error fetching fields data: $e');
+    }
+  }
+
+  void fetchUserData() {
+    // Replace with actual method to fetch user data
+    User.getInfo().then((value) {
+      isHostUser = value['hostUser'] ?? false;
+      notifyListeners();
+    });
   }
 
   void toggleSportFilter(String sport) {
@@ -30,43 +69,41 @@ class AppState extends ChangeNotifier {
   }
 
   void resetFilters() {
-    selectedSports = [];
-    selectedAvailability = [];
-    selectedMunicipality = [];
-    selectedGender = '';
+    selectedSports = List.from(sportsFilters);
     isFree = false;
     showOpenTeam = false;
     selectedStartDate = null;
     selectedEndDate = null;
+    selectedTime = null;
     selectedSortOption = '';
-    filteredEvent = List.from(meetPeople);
+    isPublicFilter = null;
+    filteredFieldData = fieldData;
     notifyListeners();
   }
 
   void applyFilters() {
-    Set<String> expandedAvailability = selectedAvailability.toSet();
-    if (selectedAvailability.contains('Weekends')) {
-      expandedAvailability.add('All days');
-    }
-    if (selectedAvailability.any((day) => ['Saturdays', 'Sundays'].contains(day))) {
-      expandedAvailability.add('Weekends');
-    }
-    if (selectedAvailability.any((day) => 
-        ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays'].contains(day))) {
-      expandedAvailability.add('All days');
-    }
+    filteredFieldData = fieldData.where((field) {
+      final sportsMatch = selectedSports.isEmpty ||
+          selectedSports.any((sport) =>
+              field['sport'].toString().toLowerCase().contains(sport));
 
-    filteredEvent = meetPeople.where((person) {
-      final sportsMatch = selectedSports.isEmpty || selectedSports.any((sport) => person['sports']!.contains(sport));
-      final availabilityMatch = expandedAvailability.isEmpty || 
-          expandedAvailability.any((day) => person['availability']!.contains(day));
-      final municipalityMatch = selectedMunicipality.isEmpty || 
-          selectedMunicipality.contains(person['address']!.split(': ')[1]);
-      final genderMatch = selectedGender.isEmpty || 
-          person['gender']!.contains(selectedGender);
+      final isPublicMatch = isPublicFilter == null ||
+          (field['isPublic'] != null && field['isPublic'] == isPublicFilter);
 
-      return sportsMatch && availabilityMatch && municipalityMatch && genderMatch;
+      final fieldOpenTime = _parseTime(field['schedule']['open']);
+      final fieldCloseTime = _parseTime(field['schedule']['close']);
+
+      final timeMatch = selectedTime == null ||
+          (selectedTime!.hour >= fieldOpenTime.hour &&
+              selectedTime!.hour < fieldCloseTime.hour);
+
+      return sportsMatch && isPublicMatch && timeMatch;
     }).toList();
     notifyListeners();
+  }
+
+  TimeOfDay _parseTime(String time) {
+    final parts = time.split(':');
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 }

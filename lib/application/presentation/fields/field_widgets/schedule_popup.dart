@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SchedulePopup extends StatefulWidget {
-  final Map<String, Map<String, String>> schedule;
+  final Map<String, dynamic> schedule;
 
   SchedulePopup({required this.schedule});
 

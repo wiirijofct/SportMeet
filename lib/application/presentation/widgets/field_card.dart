@@ -4,8 +4,7 @@ class FieldCard extends StatelessWidget {
   final String sport;
   final String name;
   final String location;
-  final String openTime;
-  final String closeTime;
+  final Map<String, dynamic> schedule;
   final bool isPublic;
   final String imagePath;
 
@@ -14,11 +13,34 @@ class FieldCard extends StatelessWidget {
     required this.sport,
     required this.name,
     required this.location,
-    required this.openTime,
-    required this.closeTime,
+    required this.schedule,
     required this.isPublic,
     required this.imagePath,
   }) : super(key: key);
+
+  String getCurrentDaySchedule() {
+    final now = DateTime.now();
+    final daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+    final currentDay = daysOfWeek[now.weekday - 1];
+
+    if (schedule.containsKey(currentDay)) {
+      final daySchedule = schedule[currentDay];
+      if (daySchedule is Map<String, String>) {
+        return '${daySchedule['Opens']} - ${daySchedule['Closes']}';
+      } else if (daySchedule is bool && !daySchedule) {
+        return 'Closed';
+      }
+    }
+    return 'No schedule available';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +78,7 @@ class FieldCard extends StatelessWidget {
                     style: TextStyle(fontSize: 14.0),
                   ),
                   Text(
-                    'Schedule: $openTime - $closeTime',
+                    'Schedule: ${getCurrentDaySchedule()}',
                     style: TextStyle(fontSize: 14.0),
                   ),
                   Text(

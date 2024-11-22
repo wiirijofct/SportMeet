@@ -10,7 +10,7 @@ class FieldPage extends StatefulWidget {
   final String fieldName;
   final String location;
   final String imagePath;
-  final String schedule;
+  final Map<String, dynamic> schedule;
   final String contactEmail;
   final String contactPhone;
   final String pricing;
@@ -60,61 +60,60 @@ class _FieldPageState extends State<FieldPage> {
   }
 
   Future<void> _handleJoinReservation(BuildContext context, Map<String, dynamic> reservation) async {
-  final user = await Authentication.getLoggedInUser();
-  if (user == null) {
-    return;
-  }
+    final user = await Authentication.getLoggedInUser();
+    if (user == null) {
+      return;
+    }
 
-  // Check if the user has already joined the reservation
-  if (user['reservations'].contains(reservation['reservationId'].toString())) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('You have already joined this reservation.')),
-    );
-    return;
-  }
-
-  if (reservation['maxSlots'] > reservation['slotsAvailable']) {
-    final int newSlotsAvailable = reservation['slotsAvailable'] + 1;
-
-    reservation['slotsAvailable'] = newSlotsAvailable;
-    final response = await http.put(
-      Uri.parse('http://localhost:3000/reservations/${reservation['reservationId']}'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(reservation),
-    );
-
-    if (response.statusCode == 200) {
-      user['reservations'].add(reservation['reservationId'].toString());
-      final userResponse = await http.put(
-        Uri.parse('http://localhost:3000/users/${user['id']}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(user),
+    // Check if the user has already joined the reservation
+    if (user['reservations'].contains(reservation['reservationId'].toString())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You have already joined this reservation.')),
       );
-      await Authentication.saveLoggedInUser(user);
-      if (userResponse.statusCode != 200) {
+      return;
+    }
+
+    if (reservation['maxSlots'] > reservation['slotsAvailable']) {
+      final int newSlotsAvailable = reservation['slotsAvailable'] + 1;
+
+      reservation['slotsAvailable'] = newSlotsAvailable;
+      final response = await http.put(
+        Uri.parse('http://localhost:3000/reservations/${reservation['reservationId']}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(reservation),
+      );
+
+      if (response.statusCode == 200) {
+        user['reservations'].add(reservation['reservationId'].toString());
+        final userResponse = await http.put(
+          Uri.parse('http://localhost:3000/users/${user['id']}'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(user),
+        );
+        await Authentication.saveLoggedInUser(user);
+        if (userResponse.statusCode != 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to join reservation. Please try again.')),
+          );
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('You have successfully joined the reservation!')),
+        );
+        setState(() {
+          _reservationsFuture = _fetchReservations();
+        });
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to join reservation. Please try again.')),
         );
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('You have successfully joined the reservation!')),
-      );
-      setState(() {
-        _reservationsFuture = _fetchReservations();
-      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to join reservation. Please try again.')),
+        SnackBar(content: Text('No slots available for this reservation.')),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('No slots available for this reservation.')),
-    );
   }
-}
-
 
   void _showJoinDialog(BuildContext context, Map<String, dynamic> reservation) {
     showDialog(
@@ -143,92 +142,118 @@ class _FieldPageState extends State<FieldPage> {
     );
   }
 
+  String _formatSchedule(Map<String, dynamic> schedule) {
+    final daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+    String formattedSchedule = '';
+    for (var day in daysOfWeek) {
+      if (schedule.containsKey(day)) {
+        final daySchedule = schedule[day];
+        if (daySchedule is Map<String, String>) {
+          formattedSchedule +=
+              '$day: ${daySchedule['Opens']} - ${daySchedule['Closes']}\n';
+        } else if (daySchedule is bool && !daySchedule) {
+          formattedSchedule += '$day: Closed\n';
+        }
+      }
+    }
+    return formattedSchedule.trim();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('FieldPage data: ${widget.fieldId}, ${widget.fieldName}, ${widget.location}, ${widget.imagePath}, ${widget.schedule}, ${widget.contactEmail}, ${widget.contactPhone}, ${widget.pricing}');
     return Scaffold(
       appBar: _buildAppBar(),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _reservationsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Error loading reservations'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No upcoming reservations'));
-          }
-
-          final reservations = snapshot.data!;
-
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset(
-                  widget.imagePath,
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset(
+              widget.imagePath,
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.fieldName,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
                     children: [
-                      Text(
-                        widget.fieldName,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      const Icon(Ionicons.location_outline),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          widget.location,
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Ionicons.location_outline),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              widget.location,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildFieldDetailRow(
-                        icon: Ionicons.time_outline,
-                        title: 'Schedule',
-                        detail: widget.schedule,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildFieldDetailRow(
-                        icon: Ionicons.mail_outline,
-                        title: 'Email',
-                        detail: widget.contactEmail,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildFieldDetailRow(
-                        icon: Ionicons.call_outline,
-                        title: 'Phone',
-                        detail: widget.contactPhone,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildFieldDetailRow(
-                        icon: Ionicons.cash_outline,
-                        title: 'Pricing per hour',
-                        detail: widget.pricing,
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Upcoming Reservations',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ListView.builder(
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildFieldDetailRow(
+                    icon: Ionicons.time_outline,
+                    title: 'Schedule',
+                    detail: _formatSchedule(widget.schedule),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildFieldDetailRow(
+                    icon: Ionicons.mail_outline,
+                    title: 'Email',
+                    detail: widget.contactEmail,
+                  ),
+                  const SizedBox(height: 8),
+                  _buildFieldDetailRow(
+                    icon: Ionicons.call_outline,
+                    title: 'Phone',
+                    detail: widget.contactPhone,
+                  ),
+                  const SizedBox(height: 8),
+                  _buildFieldDetailRow(
+                    icon: Ionicons.cash_outline,
+                    title: 'Pricing per hour',
+                    detail: widget.pricing,
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Upcoming Reservations',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: _reservationsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return const Center(child: Text('Error loading reservations'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(child: Text('No upcoming reservations'));
+                      }
+
+                      final reservations = snapshot.data!;
+
+                      return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: reservations.length,
@@ -253,14 +278,14 @@ class _FieldPageState extends State<FieldPage> {
                             ),
                           );
                         },
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

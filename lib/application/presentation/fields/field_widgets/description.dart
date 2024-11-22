@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'input_label.dart';
-import 'text_field.dart';
 
 class Description extends StatelessWidget {
+  final TextEditingController controller;
+
+  const Description({Key? key, required this.controller}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -16,7 +19,19 @@ class Description extends StatelessWidget {
           children: [
             InputLabel("Description"),
             SizedBox(height: 10),
-            CustomTextField(hint: "Enter a description", isMultiline: true),
+            TextField(
+              controller: controller,
+              maxLines: 5,
+              decoration: InputDecoration(
+                hintText: "Enter a description",
+                filled: true,
+                fillColor: Colors.grey.shade200,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
           ],
         ),
       ),

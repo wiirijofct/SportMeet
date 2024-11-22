@@ -3,8 +3,9 @@ import 'package:table_calendar/table_calendar.dart';
 
 class UnavailabilityPopup extends StatefulWidget {
   final TextEditingController reasonController;
+  final Function(List<DateTime>) onDatesSelected;
 
-  UnavailabilityPopup({required this.reasonController});
+  UnavailabilityPopup({required this.reasonController, required this.onDatesSelected});
 
   @override
   _UnavailabilityPopupState createState() => _UnavailabilityPopupState();
@@ -137,6 +138,7 @@ class _UnavailabilityPopupState extends State<UnavailabilityPopup> {
                           for (var date in selectedDates) {
                             unavailabilityReasons[date] = widget.reasonController.text;
                           }
+                          widget.onDatesSelected(selectedDates);
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

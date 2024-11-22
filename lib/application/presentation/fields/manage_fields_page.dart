@@ -49,8 +49,7 @@ class _ManageFieldsPageState extends State<ManageFieldsPage> {
   Future<List<Map<String, dynamic>>> _getUserOwnedFields(String userId) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? fieldsJson = prefs.getString('fields');
-    List<dynamic> fields =
-        fieldsJson != null ? jsonDecode(fieldsJson) : [];
+    List<dynamic> fields = fieldsJson != null ? jsonDecode(fieldsJson) : [];
 
     return fields
         .where((field) => field['ownerId'].toString() == userId)
@@ -58,8 +57,7 @@ class _ManageFieldsPageState extends State<ManageFieldsPage> {
         .toList();
   }
 
-  Future<String?> _fetchStreetName(
-      double latitude, double longitude) async {
+  Future<String?> _fetchStreetName(double latitude, double longitude) async {
     final String url =
         'https://api.mapbox.com/geocoding/v5/mapbox.places/$longitude,$latitude.json?access_token=$_mapboxAccessToken';
 
@@ -87,7 +85,8 @@ class _ManageFieldsPageState extends State<ManageFieldsPage> {
       selectedLocation = position;
     });
 
-    final street = await _fetchStreetName(position.latitude, position.longitude);
+    final street =
+        await _fetchStreetName(position.latitude, position.longitude);
     setState(() {
       streetName = street ?? 'Unnamed Street';
     });
@@ -102,14 +101,18 @@ class _ManageFieldsPageState extends State<ManageFieldsPage> {
           Expanded(
             flex: 1,
             child: Container(
-              margin: const EdgeInsets.all(10.0), // Gap/offset relative to the sides of the screen
+              margin: const EdgeInsets.all(
+                  10.0), // Gap/offset relative to the sides of the screen
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.blueAccent, width: 2.0), // Border color and width
+                border: Border.all(
+                    color: Colors.blueAccent,
+                    width: 2.0), // Border color and width
                 borderRadius: BorderRadius.circular(10.0), // Rounded corners
               ),
               child: FlutterMap(
                 options: MapOptions(
-                  initialCenter: latlong.LatLng(38.660913206, -9.20339502), // Default location
+                  initialCenter: latlong.LatLng(
+                      38.660913206, -9.20339502), // Default location
                   initialZoom: 16.0,
                   onTap: (tapPosition, point) {
                     _onMapTapped(point);
@@ -149,63 +152,75 @@ class _ManageFieldsPageState extends State<ManageFieldsPage> {
                 textAlign: TextAlign.center,
               ),
             ),
-        const SizedBox(height: 10),
-        Expanded(
-          child: ListView.builder(
-            itemCount: ownedFields.length,
-            itemBuilder: (context, index) {
-              final field = ownedFields[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => FieldPage(
-                        fieldId: field['fieldId'],
-                        fieldName: field['name'],
-                        location: field['location'],
-                        imagePath: field['images'][0],
-                        schedule: '${field['schedule']['open']} - ${field['schedule']['close']}',
-                        contactEmail: field['contact']['email'],
-                        contactPhone: field['contact']['phone'],
-                        pricing: field['isPublic'] ? 'Free' : field['pricing'],
+          const SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              itemCount: ownedFields.length,
+              itemBuilder: (context, index) {
+                final field = ownedFields[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => FieldPage(
+                          fieldId: field['fieldId'] ?? '',
+                          fieldName: field['name'] ?? '',
+                          location: field['location'] ?? '',
+                          imagePath: field['images'] != null &&
+                                  field['images'].isNotEmpty
+                              ? field['images'][0]
+                              : '',
+                          schedule: field['schedule'] ?? {},
+                          contactEmail: field['contact'] != null
+                              ? field['contact']['email'] ?? ''
+                              : '',
+                          contactPhone: field['contact'] != null
+                              ? field['contact']['phone'] ?? ''
+                              : '',
+                          pricing: field['isPublic'] == true
+                              ? 'Free'
+                              : field['pricing'] ?? '',
+                        ),
                       ),
-                    ),
-                  );
-                },
-                child: FieldCard(
-                  sport: field['sport'],
-                  name: field['name'],
-                  location: field['location'],
-                  openTime: field['schedule']['open'],
-                  closeTime: field['schedule']['close'],
-                  isPublic: field['isPublic'],
-                  imagePath: field['images'][0],
-                ),
-              );
-            },
+                    );
+                  },
+                  child: FieldCard(
+                    sport: field['sport'] ?? '',
+                    name: field['name'] ?? '',
+                    location: field['location'] ?? '',
+                    schedule: field['schedule'] ?? {},
+                    isPublic: field['isPublic'] ?? false,
+                    imagePath:
+                        field['images'] != null && field['images'].isNotEmpty
+                            ? field['images'][0]
+                            : '',
+                  ),
+                );
+              },
+            ),
           ),
-        ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 20.0), // Offset relative to the bottom of the screen
+            padding: const EdgeInsets.only(
+                bottom: 20.0), // Offset relative to the bottom of the screen
             child: ElevatedButton(
               onPressed: () {
-          if (selectedLocation != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (BuildContext context) {
-                return RegisterFieldPage(
-            coordinates: selectedLocation!,
-            streetName: streetName,
-                );
-              }),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Please select a location on the map.'),
-              ),
-            );
-          }
+                if (selectedLocation != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                      return RegisterFieldPage(
+                        coordinates: selectedLocation!,
+                        streetName: streetName,
+                      );
+                    }),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please select a location on the map.'),
+                    ),
+                  );
+                }
               },
               child: const Text('Register New Field'),
             ),

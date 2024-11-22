@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sport_meet/application/presentation/applogic/fields_service.dart';
 import 'dart:convert';
 import 'package:sport_meet/application/presentation/widgets/person_card.dart';
+import 'package:sport_meet/application/presentation/applogic/auth.dart';
 
 class ReservationPage extends StatefulWidget {
   final String reservationId;
@@ -99,6 +101,83 @@ class _ReservationPageState extends State<ReservationPage> {
       age--;
     }
     return age;
+  }
+
+  Future<void> _abandonReservation(BuildContext context, Map<String, dynamic> reservation) async {
+  final user = await Authentication.getLoggedInUser();
+  if (user == null) {
+    return;
+  }
+
+  // Remove the reservation from the user's reservations
+  user['reservations'].remove(reservation['reservationId'].toString());
+
+  // Remove the user from the reservation's joinedIds
+  reservation['joinedIds'].remove(user['id']);
+
+  // Increment the available slots
+  reservation['slotsAvailable'] += 1;
+
+  try {
+    // Update the reservation
+    await FieldsService().updateReservation(
+      reservation['reservationId'],
+      reservation,
+    );
+
+    // Update the user data
+    final userResponse = await Authentication.updateUser(
+      user['id'],
+      reservations: List<String>.from(user['reservations']),
+    );
+
+    if (!userResponse) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to abandon reservation. Please try again.')),
+      );
+    } else {
+      // Update local user data
+      await Authentication.saveLoggedInUser(user);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You have successfully abandoned the reservation.')),
+      );
+
+      // Pop the context to return to the previous page with a result
+      Navigator.of(context).pop(true);
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to abandon reservation. Please try again.')),
+    );
+  }
+}
+
+  void _showAbandonDialog(BuildContext context, Map<String, dynamic> reservation) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Abandon Reservation'),
+          content: const Text('Are you sure you want to abandon this reservation?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _abandonReservation(context, reservation);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -294,6 +373,23 @@ class _ReservationPageState extends State<ReservationPage> {
                             },
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Abandon Reservation Button
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () => _showAbandonDialog(context, reservation),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: const Text(
+                        'Abandon Reservation',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

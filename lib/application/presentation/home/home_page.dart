@@ -221,34 +221,40 @@ class _HomePageState extends State<HomePage> {
                   final events = snapshot.data!;
 
                   return ListView.builder(
-  itemCount: events.length,
-  itemBuilder: (context, index) {
-    final event = events[index];
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ReservationPage(
-              reservationId: event['reservationId'],
-              fieldId: event['fieldId'],
-            ),
-          ),
-        );
-      },
-      child: EventCard(
-        reservationId: int.parse(event['reservationId']),
-        fieldId: int.parse(event['fieldId']),
-        sport: event['sport'],
-        date: event['date'],
-        address: event['location'],
-        field: event['name'],
-        imagePath: event['images'][0],
-        time: event['time'],
-      ),
-    );
-  },
-);
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return GestureDetector(
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReservationPage(
+                                reservationId: event['reservationId'],
+                                fieldId: event['fieldId'],
+                              ),
+                            ),
+                          );
+                          if (result == true) {
+                            // Reload the user events
+                            setState(() {
+                              userEvents = Authentication.getUserFilteredCompleteEvents(selectedSports);
+                            });
+                          }
+                        },
+                        child: EventCard(
+                          reservationId: int.parse(event['reservationId']),
+                          fieldId: int.parse(event['fieldId']),
+                          sport: event['sport'],
+                          date: event['date'],
+                          address: event['location'],
+                          field: event['name'],
+                          imagePath: event['images'][0],
+                          time: event['time'],
+                        ),
+                      );
+                    },
+                  );
                 },
               ),
             ),

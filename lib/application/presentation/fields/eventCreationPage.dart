@@ -55,7 +55,7 @@ class _EventCreationPageState extends State<EventCreationPage> {
       });
     }
   }
-   
+
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
@@ -133,18 +133,25 @@ class _EventCreationPageState extends State<EventCreationPage> {
           List<String>.from(userInfo['reservations']);
       updatedUserReservations.add(newReservationId);
 
+      // Update user sports if the reservation sport is not already in the user's sports list
+      List<String> userSports = List<String>.from(userInfo['sports']);
+      if (!userSports.contains(widget.sport)) {
+        userSports.add(widget.sport);
+      }
+
       final updatedUser = {
         ...userInfo,
         "reservations": updatedUserReservations,
+        "sports": userSports,
       };
 
-      final updateUserResponse = await http.put(
-        Uri.parse('$apiUrl/users/$userId'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(updatedUser),
+      final updateUserResponse = await Authentication.updateUser(
+        userId,
+        reservations: updatedUserReservations,
+        sports: userSports,
       );
 
-      if (updateUserResponse.statusCode != 200) {
+      if (!updateUserResponse) {
         throw Exception('Failed to update user reservations.');
       }
 
@@ -224,10 +231,9 @@ class _EventCreationPageState extends State<EventCreationPage> {
                             return null;
                           },
                           controller: TextEditingController(
-                            text: _selectedDate == null
-                                ? ''
-                                : _formatDate(_selectedDate!)
-                          ),
+                              text: _selectedDate == null
+                                  ? ''
+                                  : _formatDate(_selectedDate!)),
                         ),
                       ),
                     ),

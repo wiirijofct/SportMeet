@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sport_meet/application/presentation/applogic/user.dart';
+import 'package:intl/intl.dart';
 
 class FieldsService {
   late Future<Map<String, dynamic>> userInfo;
@@ -56,7 +58,8 @@ class FieldsService {
     }
   }
 
-  Future<void> updateField(String fieldId, Map<String, dynamic> fieldData) async {
+  Future<void> updateField(
+      String fieldId, Map<String, dynamic> fieldData) async {
     final response = await http.put(
       Uri.parse('http://localhost:3000/fields/$fieldId'),
       headers: {'Content-Type': 'application/json'},
@@ -65,6 +68,19 @@ class FieldsService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update field');
+    }
+  }
+
+  Future<void> updateReservation(
+    String reservationId, Map<String, dynamic> reservationData) async {
+    final response = await http.put(
+      Uri.parse('http://localhost:3000/reservations/$reservationId'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(reservationData),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update reservation');
     }
   }
 
@@ -82,7 +98,8 @@ class FieldsService {
     try {
       final response = await http.get(Uri.parse('$apiUrl/sports'));
       if (response.statusCode == 200) {
-        final List<dynamic> sportsList = json.decode(utf8.decode(response.bodyBytes));
+        final List<dynamic> sportsList =
+            json.decode(utf8.decode(response.bodyBytes));
         return sportsList.map((sport) => sport['name']).toList();
       } else {
         throw Exception('Failed to load available sports');
@@ -101,5 +118,49 @@ class FieldsService {
         .toList();
     sports.sort();
     return sports;
+  }
+
+  Future<List<dynamic>> fetchReservations() async {
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/reservations'));
+      if (response.statusCode == 200) {
+        final List<dynamic> reservations =
+            json.decode(utf8.decode(response.bodyBytes));
+        return reservations;
+      } else {
+        throw Exception('Failed to load reservations');
+      }
+    } catch (e) {
+      print('Error loading reservations: $e');
+      throw Exception('Failed to load reservations');
+    }
+  }
+
+  List<dynamic> getFieldsByReservations(List<dynamic> fields,
+      List<dynamic> reservations, TimeOfDay selectedTime) {
+    // Format the selected time to a string
+    final selectedTimeString = DateFormat.jm()
+        .format(DateTime(0, 1, 1, selectedTime.hour, selectedTime.minute));
+
+    // Normalize the formatted time string to remove non-breaking spaces
+    final normalizedSelectedTimeString =
+        selectedTimeString.replaceAll('\u202F', ' ').trim();
+
+    // Find reservations that match the selected time
+    final matchingReservations = reservations.where((reservation) {
+      final reservationTime =
+          reservation['time'].replaceAll('\u202F', ' ').trim();
+      return reservationTime == normalizedSelectedTimeString;
+    }).toList();
+
+    // Get the field IDs of the matching reservations
+    final matchingFieldIds = matchingReservations
+        .map((reservation) => reservation['fieldId'])
+        .toSet();
+
+    // Filter fields that have matching field IDs
+    return fields
+        .where((field) => matchingFieldIds.contains(field['id']))
+        .toList();
   }
 }

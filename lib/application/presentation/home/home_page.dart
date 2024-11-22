@@ -15,6 +15,7 @@ import 'package:sport_meet/profile/profile_screen.dart';
 import 'package:sport_meet/application/presentation/notifications/notifications_screen.dart';
 import 'package:sport_meet/application/presentation/settings_page.dart';
 import 'package:sport_meet/application/presentation/welcome/welcome_page.dart';
+import 'package:sport_meet/application/presentation/reservation_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -218,24 +219,36 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   final events = snapshot.data!;
-                  print('Loaded events: $events');
 
                   return ListView.builder(
-                    itemCount: events.length,
-                    itemBuilder: (context, index) {
-                      final event = events[index];
-                      return EventCard(
-                        reservationId: int.parse(event['reservationId']),
-                        fieldId: int.parse(event['fieldId']),
-                        sport: event['sport'],
-                        date: event['date'],
-                        address: event['location'],
-                        field: event['name'],
-                        imagePath: event['images'][0],
-                        time: event['time'],
-                      );
-                    },
-                  );
+  itemCount: events.length,
+  itemBuilder: (context, index) {
+    final event = events[index];
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReservationPage(
+              reservationId: event['reservationId'],
+              fieldId: event['fieldId'],
+            ),
+          ),
+        );
+      },
+      child: EventCard(
+        reservationId: int.parse(event['reservationId']),
+        fieldId: int.parse(event['fieldId']),
+        sport: event['sport'],
+        date: event['date'],
+        address: event['location'],
+        field: event['name'],
+        imagePath: event['images'][0],
+        time: event['time'],
+      ),
+    );
+  },
+);
                 },
               ),
             ),

@@ -69,41 +69,39 @@ class SearchPageState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void applyFilters() {
-    filteredFieldData = fieldData.where((field) {
-      final sportsMatch = selectedSports.isEmpty ||
-          selectedSports.any((sport) =>
-              field['sport'].toString().toLowerCase() == sport.toLowerCase());
-
-      final isPublicMatch = isPublicFilter == null ||
-          (field['isPublic'] != null && field['isPublic'] == isPublicFilter);
-
-      final fieldOpenTime = _parseTime(field['schedule']['open'] ?? '00:00');
-      final fieldCloseTime = _parseTime(field['schedule']['close'] ?? '23:59');
-
-      final timeMatch = selectedTime == null ||
-          (selectedTime!.hour >= fieldOpenTime.hour &&
-              selectedTime!.hour < fieldCloseTime.hour);
-
-      final searchTextMatch = searchText.isEmpty ||
-          field['sport'].toString().toLowerCase().contains(searchText.toLowerCase()) ||
-          field['name'].toString().toLowerCase().contains(searchText.toLowerCase()) ||
-          field['location'].toString().toLowerCase().contains(searchText.toLowerCase());
-
-      return sportsMatch && isPublicMatch && timeMatch && searchTextMatch;
-    }).toList();
-    notifyListeners();
+  Future<void> applyFilters() async {
+  List<dynamic> reservations = [];
+  if (selectedTime != null) {
+    reservations = await _fieldsService.fetchReservations();
   }
+
+  filteredFieldData = fieldData.where((field) {
+    final sportsMatch = selectedSports.isEmpty ||
+        selectedSports.any((sport) =>
+            field['sport'].toString().toLowerCase() == sport.toLowerCase());
+
+    final isPublicMatch = isPublicFilter == null ||
+        (field['isPublic'] != null && field['isPublic'] == isPublicFilter);
+
+
+    final timeMatch = selectedTime == null ||
+        _fieldsService.getFieldsByReservations([field], reservations, selectedTime!).isNotEmpty;
+
+    final searchTextMatch = searchText.isEmpty ||
+        field['sport'].toString().toLowerCase().contains(searchText.toLowerCase()) ||
+        field['name'].toString().toLowerCase().contains(searchText.toLowerCase()) ||
+        field['location'].toString().toLowerCase().contains(searchText.toLowerCase());
+
+    return sportsMatch && isPublicMatch && timeMatch && searchTextMatch;
+  }).toList();
+  notifyListeners();
+}
 
   void updateSearchText(String text) {
     searchText = text;
     applyFilters();
   }
 
-  TimeOfDay _parseTime(String time) {
-    final parts = time.split(':');
-    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-  }
 
   int countActiveFilters() {
     int count = 0;
@@ -115,6 +113,10 @@ class SearchPageState extends ChangeNotifier {
     }
 
     if (selectedTime != null) {
+      count += 1;
+    }
+
+    if (isPublicFilter != null) {
       count += 1;
     }
 

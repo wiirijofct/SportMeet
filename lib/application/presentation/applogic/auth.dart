@@ -36,85 +36,151 @@ class Authentication {
     return hasAt && hasMinLength && hasDomain;
   }
 
- static Future<bool> createUser(
-  String username,
-  String email,
-  String name,
-  String lastName,
-  String phone,
-  String birthDate,
-  List<String> sports,
-  String password,
-  bool hostUser,
-  String gender,
-  List<String> availability,
-  String municipality,
-) async {
-  if (_isCreatingUser) {
-    return false; // If a user is already being created, return false
+  static Future<bool> createUser(
+    String username,
+    String email,
+    String name,
+    String lastName,
+    String phone,
+    String birthDate,
+    List<String> sports,
+    String password,
+    bool hostUser,
+    String gender,
+    List<String> availability,
+    String municipality,
+  ) async {
+    if (_isCreatingUser) {
+      return false; // If a user is already being created, return false
+    }
+
+    _isCreatingUser = true; // Set flag to indicate user creation in progress
+
+    try {
+      // Check if username or email already exists
+      final response = await http.get(Uri.parse('$apiUrl/users'));
+      if (response.statusCode == 200) {
+        List<dynamic> users = json.decode(utf8.decode(response.bodyBytes));
+        for (var user in users) {
+          if (user['username'] == username || user['email'] == email) {
+            print('User already exists: $user');
+            _isCreatingUser = false; // Reset flag before returning
+            return false; // User already exists
+          }
+        }
+      } else {
+        throw Exception('Failed to load users');
+      }
+
+      String id = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Add new user
+      final newUser = {
+        "id": id,
+        "userId": id,
+        "username": username,
+        "firstName": name,
+        "lastName": lastName,
+        "email": email,
+        "password": password,
+        "phone": phone,
+        "birthDate": birthDate,
+        "sports": sports,
+        "favFields": [],
+        "reservations": [],
+        "friends": [],
+        "imagePath": "lib/images/m1.png",
+        "hostUser": hostUser,
+        "gender": gender,
+        "availability": availability,
+        "municipality": municipality,
+      };
+
+      final createResponse = await http.post(
+        Uri.parse('$apiUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(newUser),
+      );
+
+      if (createResponse.statusCode == 201) {
+        print('User created: $newUser');
+        return true;
+      } else {
+        throw Exception('Failed to create user');
+      }
+    } catch (e) {
+      print('Error creating user: $e');
+      return false;
+    } finally {
+      _isCreatingUser = false; // Reset flag after user creation is complete
+    }
   }
 
-  _isCreatingUser = true; // Set flag to indicate user creation in progress
+  static Future<bool> updateUser(
+    String userId, {
+    String? username,
+    String? email,
+    String? name,
+    String? lastName,
+    String? phone,
+    String? birthDate,
+    List<String>? sports,
+    String? password,
+    bool? hostUser,
+    String? gender,
+    List<String>? availability,
+    String? municipality,
+    List<String>? reservations,
+  }) async {
+    try {
+      // Fetch the current user data
+      final response = await http.get(Uri.parse('$apiUrl/users/$userId'));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load user');
+      }
 
-  try {
-    // Check if username or email already exists
-    final response = await http.get(Uri.parse('$apiUrl/users'));
-    if (response.statusCode == 200) {
-      List<dynamic> users = json.decode(utf8.decode(response.bodyBytes));
-      for (var user in users) {
-        if (user['username'] == username || user['email'] == email) {
-          print('User already exists: $user');
-          _isCreatingUser = false; // Reset flag before returning
-          return false; // User already exists
+      Map<String, dynamic> user = json.decode(utf8.decode(response.bodyBytes));
+
+      // Update user fields if new values are provided
+      if (username != null) user['username'] = username;
+      if (email != null) user['email'] = email;
+      if (name != null) user['firstName'] = name;
+      if (lastName != null) user['lastName'] = lastName;
+      if (phone != null) user['phone'] = phone;
+      if (birthDate != null) user['birthDate'] = birthDate;
+      if (sports != null) {
+        user['sports'] = List<String>.from(user['sports']);
+        for (String sport in sports) {
+          if (!user['sports'].contains(sport)) {
+            user['sports'].add(sport);
+          }
         }
       }
-    } else {
-      throw Exception('Failed to load users');
+      if (password != null) user['password'] = password;
+      if (hostUser != null) user['hostUser'] = hostUser;
+      if (gender != null) user['gender'] = gender;
+      if (availability != null) user['availability'] = availability;
+      if (municipality != null) user['municipality'] = municipality;
+      if (reservations != null) user['reservations'] = reservations;
+
+      // Send the updated user data to the server
+      final updateResponse = await http.put(
+        Uri.parse('$apiUrl/users/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(user),
+      );
+
+      if (updateResponse.statusCode == 200) {
+        print('User updated: $user');
+        return true;
+      } else {
+        throw Exception('Failed to update user');
+      }
+    } catch (e) {
+      print('Error updating user: $e');
+      return false;
     }
-
-    String id = DateTime.now().millisecondsSinceEpoch.toString();
-
-    // Add new user
-    final newUser = {
-      "id": id,
-      "userId": id,
-      "username": username,
-      "firstName": name,
-      "lastName": lastName,
-      "email": email,
-      "password": password,
-      "phone": phone,
-      "birthDate": birthDate,
-      "sports": sports,
-      "favFields": [],
-      "reservations": [],
-      "friends": [],
-      "imagePath": "lib/images/m1.png",
-      "hostUser": hostUser,
-      "gender": gender,
-      "availability": availability,
-      "municipality": municipality,
-    };
-
-    final createResponse = await http.post(
-      Uri.parse('$apiUrl/users'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(newUser),
-    );
-
-    if (createResponse.statusCode == 201) {
-      print('User created: $newUser');
-      return true;
-    } else {
-      throw Exception('Failed to create user');
-    }
-  } catch (e) {
-    print('Error creating user: $e');
-    return false;
-  } finally {
-    _isCreatingUser = false; // Reset flag after user creation is complete
   }
-}
 
   static Future<bool> loginUser(
       String username, String password, bool isPermanent) async {
@@ -241,7 +307,8 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/reservations'));
       if (response.statusCode == 200) {
-        List<dynamic> reservations = json.decode(utf8.decode(response.bodyBytes));
+        List<dynamic> reservations =
+            json.decode(utf8.decode(response.bodyBytes));
         List<String> userReservationIds =
             List<String>.from(loggedInUser['reservations']);
         List<Map<String, dynamic>> userReservations = reservations
@@ -250,9 +317,6 @@ class Authentication {
             .map((reservation) => Map<String, dynamic>.from(reservation))
             .toList();
 
-        print('User reservation IDs: $userReservationIds');
-        print('All reservations: $reservations');
-        print('User reservations: $userReservations');
         return userReservations;
       } else {
         throw Exception('Failed to load reservations');
@@ -294,16 +358,14 @@ class Authentication {
     List<dynamic> reservations =
         reservationsJson != null ? jsonDecode(reservationsJson) : [];
 
-    List<String> userReservationIds = List<String>.from(loggedInUser['reservations']);
+    List<String> userReservationIds =
+        List<String>.from(loggedInUser['reservations']);
     List<Map<String, dynamic>> userReservations = reservations
-        .where((reservation) => userReservationIds
-            .contains(reservation['reservationId']))
+        .where((reservation) =>
+            userReservationIds.contains(reservation['reservationId']))
         .map((reservation) => Map<String, dynamic>.from(reservation))
         .toList();
 
-    print('User reservation IDs: \$userReservationIds');
-    print('All reservations: \$reservations');
-    print('User events loaded: \$userReservations');
     return userReservations;
   }
 
@@ -314,7 +376,6 @@ class Authentication {
         .where((event) => selectedSports.contains(event['sport']))
         .toList();
 
-    print('Filtered events based on sports selection: \$filteredEvents');
     return filteredEvents;
   }
 
@@ -327,13 +388,11 @@ class Authentication {
       List<Map<String, dynamic>> events) async {
     List<Map<String, dynamic>> completeEvents = [];
     for (var event in events) {
-      print('Processing event: \$event');
       var field = await getFieldForEvent(event);
       if (field != null && field.isNotEmpty) {
         completeEvents.add({...event, ...field});
       }
     }
-    print('Complete event details with field data: \$completeEvents');
     return completeEvents;
   }
 

@@ -567,6 +567,36 @@
       ],
       "imagePath": "lib/images/m1.png",
       "hostUser": true
+    },
+    {
+      "id": "1732275170321",
+      "userId": "1732275170321",
+      "username": "johnpork",
+      "firstName": "John",
+      "lastName": "Pork",
+      "email": "joe@gmail.com",
+      "password": "123",
+      "phone": "999333555",
+      "birthDate": "31/10/1999",
+      "sports": [
+        "Basketball",
+        "Football",
+        "Tennis",
+        "Golf"
+      ],
+      "favFields": [],
+      "reservations": [],
+      "friends": [],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": false,
+      "gender": "Male",
+      "availability": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Sunday"
+      ],
+      "municipality": "Samouco"
     }
   ],
   "fields": [
@@ -740,7 +770,7 @@
       "location": "Avenida Conceição Lopes",
       "coordinates": {
         "lat": 38.708,
-        "lon": -9.400
+        "lon": -9.4
       },
       "schedule": {
         "Monday": {
@@ -855,7 +885,7 @@
       "street": "Rua Duarte Rei, 2765-190, Estoril",
       "location": "Rua Duarte Rei",
       "coordinates": {
-        "lat": 38.710,
+        "lat": 38.71,
         "lon": -9.402
       },
       "schedule": {

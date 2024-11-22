@@ -49,7 +49,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   builder: (context) {
                     return const AlertDialog(
                       content: Text(
-                          "Account created! To activate your account, click the link we sent to your email."),
+                          "Account created!"),
                     );
                   },
                 );

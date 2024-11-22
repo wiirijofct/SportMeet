@@ -36,74 +36,92 @@ class Authentication {
     return hasAt && hasMinLength && hasDomain;
   }
 
-  static Future<bool> createUser(String username, String email, String name, String lastName,
-      String phone, String birthDate, List<String> sports, String password, bool hostUser) async {
-    if (_isCreatingUser) {
-      return false; // If a user is already being created, return false
-    }
-
-    _isCreatingUser = true; // Set flag to indicate user creation in progress
-
-    try {
-      // Check if username or email already exists
-      final response = await http.get(Uri.parse('$apiUrl/users'));
-      if (response.statusCode == 200) {
-        List<dynamic> users = json.decode(response.body);
-        for (var user in users) {
-          if (user['username'] == username || user['email'] == email) {
-            print('User already exists: $user');
-            _isCreatingUser = false; // Reset flag before returning
-            return false; // User already exists
-          }
-        }
-      } else {
-        throw Exception('Failed to load users');
-      }
-
-      // Add new user
-      final newUser = {
-        "userId": DateTime.now().millisecondsSinceEpoch, // Generate a unique ID
-        "username": username,
-        "firstName": name,
-        "lastName": lastName,
-        "email": email,
-        "password": password,
-        "phone": phone,
-        "birthDate": birthDate,
-        "sports": sports,
-        "favFields": [],
-        "reservations": [],
-        "friends": [],
-        "imagePath": "lib/images/m1.png",
-        "hostUser": hostUser,
-      };
-
-      final createResponse = await http.post(
-        Uri.parse('$apiUrl/users'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(newUser),
-      );
-
-      if (createResponse.statusCode == 201) {
-        print('User created: $newUser');
-        return true;
-      } else {
-        throw Exception('Failed to create user');
-      }
-    } catch (e) {
-      print('Error creating user: $e');
-      return false;
-    } finally {
-      _isCreatingUser = false; // Reset flag after user creation is complete
-    }
+ static Future<bool> createUser(
+  String username,
+  String email,
+  String name,
+  String lastName,
+  String phone,
+  String birthDate,
+  List<String> sports,
+  String password,
+  bool hostUser,
+  String gender,
+  List<String> availability,
+  String municipality,
+) async {
+  if (_isCreatingUser) {
+    return false; // If a user is already being created, return false
   }
+
+  _isCreatingUser = true; // Set flag to indicate user creation in progress
+
+  try {
+    // Check if username or email already exists
+    final response = await http.get(Uri.parse('$apiUrl/users'));
+    if (response.statusCode == 200) {
+      List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
+      for (var user in users) {
+        if (user['username'] == username || user['email'] == email) {
+          print('User already exists: $user');
+          _isCreatingUser = false; // Reset flag before returning
+          return false; // User already exists
+        }
+      }
+    } else {
+      throw Exception('Failed to load users');
+    }
+
+    String id = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Add new user
+    final newUser = {
+      "id": id,
+      "userId": id,
+      "username": username,
+      "firstName": name,
+      "lastName": lastName,
+      "email": email,
+      "password": password,
+      "phone": phone,
+      "birthDate": birthDate,
+      "sports": sports,
+      "favFields": [],
+      "reservations": [],
+      "friends": [],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": hostUser,
+      "gender": gender,
+      "availability": availability,
+      "municipality": municipality,
+    };
+
+    final createResponse = await http.post(
+      Uri.parse('$apiUrl/users'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(newUser),
+    );
+
+    if (createResponse.statusCode == 201) {
+      print('User created: $newUser');
+      return true;
+    } else {
+      throw Exception('Failed to create user');
+    }
+  } catch (e) {
+    print('Error creating user: $e');
+    return false;
+  } finally {
+    _isCreatingUser = false; // Reset flag after user creation is complete
+  }
+}
 
   static Future<bool> loginUser(
       String username, String password, bool isPermanent) async {
     try {
       final response = await http.get(Uri.parse('$apiUrl/users'));
       if (response.statusCode == 200) {
-        List<dynamic> users = json.decode(response.body);
+        List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
 
         for (var user in users) {
           if (user['username'] == username && user['password'] == password) {
@@ -153,7 +171,7 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/users'));
       if (response.statusCode == 200) {
-        List<dynamic> users = json.decode(response.body);
+        List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
 
         for (var user in users) {
           if (user['username'] == username && user['email'] == email) {
@@ -184,7 +202,7 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/users'));
       if (response.statusCode == 200) {
-        List<dynamic> users = json.decode(response.body);
+        List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
 
         var user = users.firstWhere((user) => user['username'] == username,
             orElse: () => null);
@@ -223,7 +241,7 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/reservations'));
       if (response.statusCode == 200) {
-        List<dynamic> reservations = json.decode(response.body);
+        List<dynamic> reservations = json.decode(utf8.decode(response.body as List<int>));
         List<String> userReservationIds =
             List<String>.from(loggedInUser['reservations']);
         List<Map<String, dynamic>> userReservations = reservations
@@ -250,7 +268,7 @@ class Authentication {
       print('Loading field with ID: $fieldId');
       final response = await http.get(Uri.parse('$apiUrl/fields/$fieldId'));
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        return json.decode(utf8.decode(response.body as List<int>));
       } else if (response.statusCode == 404) {
         throw Exception('Field with ID $fieldId not found');
       } else {

@@ -20,7 +20,7 @@ class UserService {
   Future<List<Map<String, dynamic>>> fetchUsers() async {
   final response = await http.get(Uri.parse('http://localhost:3000/users'));
   if (response.statusCode == 200) {
-    List<dynamic> users = json.decode(response.body);
+    List<dynamic> users = json.decode(utf8.decode(response.bodyBytes));
     return users.where((user) => user['id'] != id).map((user) {
       return {
         'id': user['id'],
@@ -51,7 +51,7 @@ class UserService {
     // Fetch the current user data
     final response = await http.get(Uri.parse('http://localhost:3000/users/$id'));
     if (response.statusCode == 200) {
-      final user = json.decode(response.body);
+      final user = json.decode(utf8.decode(response.bodyBytes));
       final List<dynamic> friends = user['friends'] ?? [];
 
       // Add the new friend ID to the friends list

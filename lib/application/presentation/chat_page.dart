@@ -64,8 +64,8 @@ class _ChatPageState extends State<ChatPage> {
       final friendResponse = await http.get(Uri.parse('http://localhost:3000/users'));
 
       if (chatResponse.statusCode == 200 && friendResponse.statusCode == 200) {
-        List<dynamic> chatData = json.decode(chatResponse.body);
-        List<dynamic> friendData = json.decode(friendResponse.body);
+        List<dynamic> chatData = json.decode(utf8.decode(chatResponse.bodyBytes));
+        List<dynamic> friendData = json.decode(utf8.decode(friendResponse.bodyBytes));
 
         setState(() {
           chats = chatData

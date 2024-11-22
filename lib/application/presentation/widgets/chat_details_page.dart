@@ -39,7 +39,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          messages = List<Map<String, dynamic>>.from(json.decode(response.body)['messages']);
+          messages = List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes))['messages']);
         });
       }
     } catch (e) {

@@ -8,7 +8,6 @@ import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/applogic/user.dart';
 import 'package:sport_meet/application/presentation/widgets/event_card.dart';
 import 'package:sport_meet/application/presentation/search/search_page.dart';
-import 'package:sport_meet/application/presentation/fields/register_field_page.dart';
 import 'package:sport_meet/application/presentation/fields/manage_fields_page.dart';
 import 'package:sport_meet/application/presentation/fields/favorite_fields_page.dart';
 import 'package:sport_meet/application/presentation/chat_page.dart';

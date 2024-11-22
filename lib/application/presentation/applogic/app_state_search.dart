@@ -40,7 +40,7 @@ class SearchPageState extends ChangeNotifier {
     try {
       final response = await http.get(Uri.parse('http://localhost:3000/fields'));
       if (response.statusCode == 200) {
-        fieldData = json.decode(response.body);
+        fieldData = json.decode(utf8.decode(response.bodyBytes));
         filteredFieldData = fieldData;
         notifyListeners();
       } else {

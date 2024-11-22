@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:sport_meet/application/presentation/applogic/auth.dart';
 import 'package:sport_meet/application/presentation/applogic/user.dart';
 
 class FieldsService {
@@ -21,7 +20,7 @@ class FieldsService {
  Future<List<Map<String, dynamic>>> fetchFields() async {
   final response = await http.get(Uri.parse('$apiUrl/fields'));
   if (response.statusCode == 200) {
-    List<dynamic> fields = json.decode(response.body);
+    List<dynamic> fields = json.decode(utf8.decode(response.bodyBytes));
     return fields.map((field) {
       return {
         'id': field['id'] ?? '',
@@ -83,7 +82,7 @@ Future<List<dynamic>> fetchAvailableSports() async {
   try {
     final response = await http.get(Uri.parse('$apiUrl/sports'));
     if (response.statusCode == 200) {
-      final List<dynamic> sportsList = json.decode(response.body);
+      final List<dynamic> sportsList = json.decode(utf8.decode(response.bodyBytes));
       return sportsList.map((sport) => sport['name']).toList();
     } else {
       throw Exception('Failed to load available sports');

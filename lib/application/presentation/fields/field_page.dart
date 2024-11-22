@@ -44,7 +44,7 @@ class _FieldPageState extends State<FieldPage> {
     try {
       final response = await http.get(Uri.parse('http://localhost:3000/reservations'));
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
         return data
             .where((reservation) => reservation['fieldId'].toString() == widget.fieldId)
             .map<Map<String, dynamic>>(

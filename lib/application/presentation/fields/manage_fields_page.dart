@@ -64,7 +64,7 @@ class _ManageFieldsPageState extends State<ManageFieldsPage> {
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(utf8.decode(response.bodyBytes));
         if (data['features'] != null && data['features'].isNotEmpty) {
           return data['features'][0]['place_name'];
         } else {

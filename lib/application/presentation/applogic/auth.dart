@@ -60,7 +60,7 @@ class Authentication {
     // Check if username or email already exists
     final response = await http.get(Uri.parse('$apiUrl/users'));
     if (response.statusCode == 200) {
-      List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
+      List<dynamic> users = json.decode(utf8.decode(response.bodyBytes));
       for (var user in users) {
         if (user['username'] == username || user['email'] == email) {
           print('User already exists: $user');
@@ -121,7 +121,7 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/users'));
       if (response.statusCode == 200) {
-        List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
+        List<dynamic> users = json.decode(utf8.decode(response.bodyBytes));
 
         for (var user in users) {
           if (user['username'] == username && user['password'] == password) {
@@ -171,7 +171,7 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/users'));
       if (response.statusCode == 200) {
-        List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
+        List<dynamic> users = json.decode(utf8.decode(response.bodyBytes));
 
         for (var user in users) {
           if (user['username'] == username && user['email'] == email) {
@@ -202,7 +202,7 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/users'));
       if (response.statusCode == 200) {
-        List<dynamic> users = json.decode(utf8.decode(response.body as List<int>));
+        List<dynamic> users = json.decode(utf8.decode(response.bodyBytes));
 
         var user = users.firstWhere((user) => user['username'] == username,
             orElse: () => null);
@@ -241,7 +241,7 @@ class Authentication {
     try {
       final response = await http.get(Uri.parse('$apiUrl/reservations'));
       if (response.statusCode == 200) {
-        List<dynamic> reservations = json.decode(utf8.decode(response.body as List<int>));
+        List<dynamic> reservations = json.decode(utf8.decode(response.bodyBytes));
         List<String> userReservationIds =
             List<String>.from(loggedInUser['reservations']);
         List<Map<String, dynamic>> userReservations = reservations
@@ -268,7 +268,7 @@ class Authentication {
       print('Loading field with ID: $fieldId');
       final response = await http.get(Uri.parse('$apiUrl/fields/$fieldId'));
       if (response.statusCode == 200) {
-        return json.decode(utf8.decode(response.body as List<int>));
+        return json.decode(utf8.decode(response.bodyBytes));
       } else if (response.statusCode == 404) {
         throw Exception('Field with ID $fieldId not found');
       } else {

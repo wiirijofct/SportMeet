@@ -92,7 +92,7 @@ class _SignUpFormState extends State<SignUpForm> {
     try {
       final response = await http.get(Uri.parse('$apiUrl/sports'));
       if (response.statusCode == 200) {
-        final List<dynamic> sportsList = json.decode(utf8.decode(response.body as List<int>));
+        final List<dynamic> sportsList = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           availableSports = sportsList.map((sport) => sport['name'].toString()).toList();
         });

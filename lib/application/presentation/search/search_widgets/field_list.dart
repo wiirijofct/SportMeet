@@ -18,7 +18,6 @@ class FieldList extends StatelessWidget {
             Navigator.of(context).push(
   MaterialPageRoute(
     builder: (context) {
-      print('Navigating to FieldPage with data: $field');
       return FieldPage(
         fieldId: field['fieldId'] ?? '',
         fieldName: field['name'] ?? '',

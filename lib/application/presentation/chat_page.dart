@@ -125,17 +125,17 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _navigateToChatDetail(Map<String, dynamic> chatCard) async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ChatDetailPage(
-        chatCard: chatCard,
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatDetailPage(
+          chatCard: chatCard,
+        ),
       ),
-    ),
-  );
-  // Refresh the chat list when returning from ChatDetailPage
-  _loadChats();
-}
+    );
+    // Refresh the chat list when returning from ChatDetailPage
+    _loadChats();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,21 +145,28 @@ class _ChatPageState extends State<ChatPage> {
         title: const Text('Chats'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: chatCards.length,
-        itemBuilder: (context, index) {
-          final chatCard = chatCards[index];
-          return ChatCard(
-            id: chatCard['id'],
-            friendId: chatCard['userId'],
-            name: chatCard['name'],
-            lastMessage: chatCard['lastMessage'],
-            timestamp: chatCard['timestamp'],
-            onTap: () => _navigateToChatDetail(chatCard),
-          );
-        },
-      ),
-    
+      body: chatCards.isEmpty
+          ? Center(
+              child: Text(
+                "You don't have any active chats, try adding some friends and come back.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 46, color: Colors.grey),
+              ),
+            )
+          : ListView.builder(
+              itemCount: chatCards.length,
+              itemBuilder: (context, index) {
+                final chatCard = chatCards[index];
+                return ChatCard(
+                  id: chatCard['id'],
+                  friendId: chatCard['userId'],
+                  name: chatCard['name'],
+                  lastMessage: chatCard['lastMessage'],
+                  timestamp: chatCard['timestamp'],
+                  onTap: () => _navigateToChatDetail(chatCard),
+                );
+              },
+            ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -191,40 +198,37 @@ class _ChatPageState extends State<ChatPage> {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
+          } else if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SearchPage(),
+              ),
+            );
+          } else if (index == 3) {
+            if (isHostUser) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ManageFieldsPage(),
+                ),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoriteFieldsPage(),
+                ),
+              );
+            }
+          } else if (index == 4) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileScreen(),
+              ),
+            );
           }
-              else if (index == 0) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SearchPage(),
-                ),
-              );
-            }
-            
-             else if (index == 3) {
-              if (isHostUser) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ManageFieldsPage(),
-                  ),
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FavoriteFieldsPage(),
-                  ),
-                );
-              }
-            } else if (index == 4) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileScreen(),
-                ),
-              );
-            }
         },
       ),
     );

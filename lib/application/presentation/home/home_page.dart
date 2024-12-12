@@ -366,14 +366,6 @@ class _HomePageState extends State<HomePage> {
                     onTap: settingButtonPressed,
                   ),
                   ListTile(
-                    leading: Icon(Ionicons.information_circle_outline,
-                        size: 30,
-                        color: Theme.of(context).colorScheme.onSecondary),
-                    title: Text('About Us',
-                        style: Theme.of(context).textTheme.headlineLarge),
-                    onTap: () {},
-                  ),
-                  ListTile(
                     leading: Icon(Icons.exit_to_app,
                         size: 30,
                         color: Theme.of(context).colorScheme.onSecondary),

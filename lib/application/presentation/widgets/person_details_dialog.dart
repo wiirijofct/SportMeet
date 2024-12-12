@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class PersonDetailsDialog extends StatelessWidget {
   final Map<String, dynamic> person;
-  final VoidCallback onAddFriend;
+  final VoidCallback? onAddFriend;
+  final VoidCallback? onRemoveFriend;
   final VoidCallback onSendMessage;
 
   const PersonDetailsDialog({
     required this.person,
-    required this.onAddFriend,
+    this.onAddFriend,
+    this.onRemoveFriend,
     required this.onSendMessage,
   });
 
@@ -94,14 +96,20 @@ class PersonDetailsDialog extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: onAddFriend,
-                child: const Text('Adicionar Amigo'),
-              ),
+              if (onAddFriend != null)
+                ElevatedButton(
+                  onPressed: onAddFriend,
+                  child: const Text('Add Friend'),
+                ),
+              if (onRemoveFriend != null)
+                ElevatedButton(
+                  onPressed: onRemoveFriend,
+                  child: const Text('Unfriend'),
+                ),
               const SizedBox(width: 10),
               ElevatedButton(
                 onPressed: onSendMessage,
-                child: const Text('Enviar Mensagem'),
+                child: const Text('Send Message'),
               ),
             ],
           ),

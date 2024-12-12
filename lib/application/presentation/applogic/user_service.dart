@@ -80,6 +80,40 @@ class UserService {
     }
   }
 
+  Future<void> removeFriend(String friendId) async {
+    print('Logged-in user ID: $id');
+    print('Removing friend with ID: $friendId');
+
+    // Fetch the current user data
+    final response = await http.get(Uri.parse('http://localhost:3000/users/$id'));
+    if (response.statusCode == 200) {
+      final user = json.decode(utf8.decode(response.bodyBytes));
+      final List<dynamic> friends = user['friends'] ?? [];
+
+      // Remove the friend ID from the friends list
+      friends.remove(friendId);
+
+      // Update the user data with the new friends list
+      final updateResponse = await http.put(
+        Uri.parse('http://localhost:3000/users/$id'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({...user, 'friends': friends}),
+      );
+
+      if (updateResponse.statusCode == 200) {
+        // Update the logged-in user's friends list in shared preferences
+        final loggedInUser = await User.getInfo();
+        loggedInUser['friends'] = friends;
+        await Authentication.saveLoggedInUser(loggedInUser);
+        print('Logged-in user updated in SharedPreferences.');
+      } else {
+        throw Exception('Failed to update user data');
+      }
+    } else {
+      throw Exception('Failed to fetch user data');
+    }
+  }
+
   List<String> getUniqueSports(List<dynamic> users) {
     final sports = users
         .expand((user) => user['sports'] as List<dynamic>)

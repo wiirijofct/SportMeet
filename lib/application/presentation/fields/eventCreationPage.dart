@@ -315,7 +315,6 @@ class _EventCreationPageState extends State<EventCreationPage> {
     return AppBar(
       toolbarHeight: 70,
       centerTitle: true,
-      backgroundColor: Colors.red,
       title: const Text(
         'Create Reservation',
         style: TextStyle(

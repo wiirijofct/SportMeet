@@ -34,7 +34,8 @@
         "1732282422610",
         "1732290472905",
         "1732295758456",
-        "1732296654839"
+        "1732296654839",
+        "1733431569890"
       ],
       "friends": [],
       "imagePath": "lib/images/m1.png",
@@ -444,6 +445,40 @@
         "Friday"
       ],
       "municipality": "Almada"
+    },
+    {
+      "id": "1734019197128",
+      "userId": "1734019197128",
+      "username": "msg",
+      "firstName": "msg",
+      "lastName": "test",
+      "email": "msg@gmail.com",
+      "password": "123",
+      "phone": "941256473",
+      "birthDate": "20/12/1991",
+      "sports": [
+        "Bowling",
+        "Cycling",
+        "Boxing",
+        "Basketball"
+      ],
+      "favFields": [],
+      "reservations": [
+        "1734021811475",
+        "1734021929245"
+      ],
+      "friends": [
+        "1"
+      ],
+      "imagePath": "lib/images/m1.png",
+      "hostUser": false,
+      "gender": "Male",
+      "availability": [
+        "Monday",
+        "Sunday",
+        "Saturday"
+      ],
+      "municipality": "Montijo"
     }
   ],
   "fields": [
@@ -992,6 +1027,153 @@
         "lib/images/Gecko.png",
         "lib/images/Gecko.png"
       ]
+    },
+    {
+      "id": "1734017215547",
+      "fieldId": "1734017215547",
+      "ownerId": "2",
+      "sport": "",
+      "name": "",
+      "street": "Nucleo de Engenharia Electrotécnica e de Computadores, Faculdade de Ciências e Tecnologia, Caparica, Setúbal 2825-149, Portugal",
+      "location": "Nucleo de Engenharia Electrotécnica e de Computadores",
+      "coordinates": {
+        "lat": 38.66096933843417,
+        "lon": -9.20603877613768
+      },
+      "schedule": {
+        "Monday": {
+          "Opens": "",
+          "Closes": ""
+        },
+        "Tuesday": {
+          "Opens": "",
+          "Closes": ""
+        },
+        "Wednesday": {
+          "Opens": "",
+          "Closes": ""
+        },
+        "Thursday": {
+          "Opens": "",
+          "Closes": ""
+        },
+        "Friday": {
+          "Opens": "",
+          "Closes": ""
+        },
+        "Saturday": {
+          "Opens": "",
+          "Closes": ""
+        },
+        "Sunday": {
+          "Opens": "",
+          "Closes": ""
+        }
+      },
+      "unavailability": [],
+      "isPublic": false,
+      "pricing": "€/hour",
+      "contact": {
+        "email": "",
+        "phone": ""
+      },
+      "description": "",
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "1734018031953",
+      "fieldId": "1734018031953",
+      "ownerId": "2",
+      "sport": "Football",
+      "name": "Campo di bola",
+      "street": "Rua Jaime De Morais 7, 2815-693 Sobreda, Setúbal, Portugal",
+      "location": "Rua Jaime De Morais 7",
+      "coordinates": {
+        "lat": 38.654495833328326,
+        "lon": -9.186811254548088
+      },
+      "schedule": {
+        "Monday": {
+          "Opens": "06:00",
+          "Closes": "21:00"
+        },
+        "Tuesday": {
+          "Opens": "00:00",
+          "Closes": "04:00"
+        },
+        "Wednesday": {
+          "Opens": "01:00",
+          "Closes": "06:00"
+        },
+        "Thursday": {
+          "Opens": "03:00",
+          "Closes": "20:00"
+        },
+        "Friday": {
+          "Opens": "02:00",
+          "Closes": "19:00"
+        },
+        "Saturday": {
+          "Opens": "02:00",
+          "Closes": "17:00"
+        },
+        "Sunday": false
+      },
+      "unavailability": [],
+      "isPublic": false,
+      "pricing": "€/hour",
+      "contact": {
+        "email": "texa@gmail.com",
+        "phone": "846375864"
+      },
+      "description": "",
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
+    },
+    {
+      "id": "1734018482907",
+      "fieldId": "1734018482907",
+      "ownerId": "2",
+      "sport": "Tennis",
+      "name": "lol",
+      "street": "Rua Agatão Lança 27, 2815-741 Sobreda, Setúbal, Portugal",
+      "location": "Rua Agatão Lança 27",
+      "coordinates": {
+        "lat": 38.65106238245301,
+        "lon": -9.184320372827582
+      },
+      "schedule": {
+        "Monday": false,
+        "Tuesday": false,
+        "Wednesday": false,
+        "Thursday": {
+          "Opens": "00:00",
+          "Closes": "04:00"
+        },
+        "Friday": false,
+        "Saturday": {
+          "Opens": "00:00",
+          "Closes": "04:00"
+        },
+        "Sunday": false
+      },
+      "unavailability": [],
+      "isPublic": false,
+      "pricing": "0€/hour",
+      "contact": {
+        "email": "afasf",
+        "phone": "gsdgasdg"
+      },
+      "description": "booty",
+      "images": [
+        "lib/images/Gecko.png",
+        "lib/images/Gecko.png"
+      ]
     }
   ],
   "reservations": [
@@ -1004,7 +1186,7 @@
         "1"
       ],
       "sport": "Basketball",
-      "date": "25/11/2024",
+      "date": "25/12/2024",
       "time": "5:30 PM",
       "slotsAvailable": 9,
       "maxSlots": 10
@@ -1081,6 +1263,48 @@
       "time": "6:00 PM",
       "slotsAvailable": 11,
       "maxSlots": 12
+    },
+    {
+      "id": "1733431569890",
+      "reservationId": "1733431569890",
+      "fieldId": "1732235337679",
+      "creatorId": "1",
+      "joinedIds": [
+        "1"
+      ],
+      "sport": "Swimming",
+      "date": "10/12/2024",
+      "time": "12:01 PM",
+      "slotsAvailable": 4,
+      "maxSlots": 5
+    },
+    {
+      "id": "1734021811475",
+      "reservationId": "1734021811475",
+      "fieldId": "1732235337678",
+      "creatorId": "1734019197128",
+      "joinedIds": [
+        "1734019197128"
+      ],
+      "sport": "Basketball",
+      "date": "12/12/2024",
+      "time": "6:30 AM",
+      "slotsAvailable": 4,
+      "maxSlots": 5
+    },
+    {
+      "id": "1734021929245",
+      "reservationId": "1734021929245",
+      "fieldId": "1732235337678",
+      "creatorId": "1734019197128",
+      "joinedIds": [
+        "1734019197128"
+      ],
+      "sport": "Basketball",
+      "date": "30/12/2024",
+      "time": "11:30 PM",
+      "slotsAvailable": 13,
+      "maxSlots": 14
     }
   ],
   "chats": [
@@ -1207,6 +1431,21 @@
           "sender": "1732302829270",
           "message": "mekie",
           "timestamp": "2024-11-22T19:18:55.723"
+        }
+      ]
+    },
+    {
+      "id": "1734019197128+1",
+      "users": [
+        "1734019197128",
+        "1"
+      ],
+      "messages": [
+        {
+          "id": "1734022008581",
+          "sender": "1734019197128",
+          "message": "Boas zézoca",
+          "timestamp": "2024-12-12T16:46:48.581"
         }
       ]
     }

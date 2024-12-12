@@ -14,7 +14,6 @@ class FavoriteFieldsPage extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Favorite Fields'),
-        backgroundColor: Colors.red,
         centerTitle: true,
       ),
       body: Center(

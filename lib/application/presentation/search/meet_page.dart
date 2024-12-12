@@ -128,39 +128,66 @@ class _MeetPageBodyState extends State<MeetPageBody> {
     ));
   }
 
-  void _showPersonDetails(BuildContext context, Map<String, dynamic> person) {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return PersonDetailsDialog(
-          person: person,
-          onAddFriend: () async {
-            Navigator.pop(context);
-            try {
-              final friendId = person['id'];
-              if (friendId != null) {
-                await _userService.addFriend(friendId);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Friend added successfully')),
-                );
-              } else {
-                throw Exception('Invalid friend ID');
+  void _showPersonDetails(BuildContext context, Map<String, dynamic> person) async {
+  final loggedInUser = await User.getInfo();
+  final List<dynamic> friends = loggedInUser['friends'] ?? [];
+  final bool isFriend = friends.contains(person['id']);
+
+  showDialog(
+    context: context,
+    builder: (_) {
+      return PersonDetailsDialog(
+        person: person,
+        onAddFriend: isFriend
+            ? null
+            : () async {
+                Navigator.pop(context);
+                try {
+                  final friendId = person['id'];
+                  if (friendId != null) {
+                    await _userService.addFriend(friendId);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Friend added successfully')),
+                    );
+                  } else {
+                    throw Exception('Invalid friend ID');
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to add friend: $e')),
+                  );
+                  print('Failed to add friend: $e');
+                }
+              },
+        onRemoveFriend: isFriend
+            ? () async {
+                Navigator.pop(context);
+                try {
+                  final friendId = person['id'];
+                  if (friendId != null) {
+                    await _userService.removeFriend(friendId);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Friend removed successfully')),
+                    );
+                  } else {
+                    throw Exception('Invalid friend ID');
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to remove friend: $e')),
+                  );
+                  print('Failed to remove friend: $e');
+                }
               }
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Failed to add friend: $e')),
-              );
-              print('Failed to add friend: $e');
-            }
-          },
-          onSendMessage: () {
-            Navigator.pop(context);
-            _showChatDialog(context, person);
-          },
-        );
-      },
-    );
-  }
+            : null,
+        onSendMessage: () {
+          Navigator.pop(context);
+          _showChatDialog(context, person);
+        },
+      );
+    },
+  );
+}
 
   void _showChatDialog(BuildContext context, Map<String, dynamic> person) {
     showDialog(
@@ -325,7 +352,6 @@ Widget build(BuildContext context) {
       automaticallyImplyLeading: false,
       toolbarHeight: 70,
       centerTitle: true,
-      backgroundColor: Colors.red,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

@@ -6,6 +6,7 @@ import 'package:sport_meet/application/presentation/fields/eventCreationPage.dar
 import 'package:sport_meet/application/presentation/widgets/reservation_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:sport_meet/application/presentation/applogic/auth.dart';
+import 'package:intl/intl.dart';
 
 class FieldPage extends StatefulWidget {
   final String fieldId;
@@ -45,103 +46,108 @@ class _FieldPageState extends State<FieldPage> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchReservations() async {
-    try {
-      final response =
-          await http.get(Uri.parse('http://localhost:3000/reservations'));
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-        if (data == null || data.isEmpty) {
-          return [];
-        }
-        return data
-            .where((reservation) =>
-                reservation['fieldId'].toString() == widget.fieldId)
-            .map<Map<String, dynamic>>((reservation) {
-          final Map<String, dynamic> res = reservation as Map<String, dynamic>;
-          res['joinedIds'] = List<String>.from(res['joinedIds'] ?? []);
-          return res;
-        }).toList();
-      } else {
-        throw Exception('Failed to load reservations');
+  try {
+    final response =
+        await http.get(Uri.parse('http://localhost:3000/reservations'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      if (data == null || data.isEmpty) {
+        return [];
       }
-    } catch (e) {
-      print('Error fetching reservations: $e');
-      return [];
+      final currentDate = DateTime.now();
+      final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+      return data
+          .where((reservation) {
+            final reservationDate = dateFormat.parse(reservation['date']);
+            return reservation['fieldId'].toString() == widget.fieldId &&
+                reservationDate.isAfter(currentDate);
+          })
+          .map<Map<String, dynamic>>((reservation) {
+        final Map<String, dynamic> res = reservation as Map<String, dynamic>;
+        res['joinedIds'] = List<String>.from(res['joinedIds'] ?? []);
+        return res;
+      }).toList();
+    } else {
+      throw Exception('Failed to load reservations');
     }
+  } catch (e) {
+    print('Error fetching reservations: $e');
+    return [];
   }
+}
 
   Future<void> _handleJoinReservation(BuildContext context, Map<String, dynamic> reservation) async {
-  final user = await Authentication.getLoggedInUser();
-  if (user == null) {
-    return;
-  }
+    final user = await Authentication.getLoggedInUser();
+    if (user == null) {
+      return;
+    }
 
-  // Check if the user has already joined the reservation
-  if (user['reservations'].contains(reservation['reservationId'].toString())) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('You have already joined this reservation.')),
-    );
-    return;
-  }
-
-  if (reservation['slotsAvailable'] > 0) {
-    final int newSlotsAvailable = reservation['slotsAvailable'] - 1; // Reduce available slots
-
-    reservation['slotsAvailable'] = newSlotsAvailable;
-    reservation['joinedIds'].add(user['id']); // Add user to joinedIds
-
-    try {
-      await FieldsService().updateReservation(
-        reservation['reservationId'],
-        reservation,
+    // Check if the user has already joined the reservation
+    if (user['reservations'].contains(reservation['reservationId'].toString())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You have already joined this reservation.')),
       );
+      return;
+    }
 
-      user['reservations'].add(reservation['reservationId'].toString());
+    if (reservation['slotsAvailable'] > 0) {
+      final int newSlotsAvailable = reservation['slotsAvailable'] - 1; // Reduce available slots
 
-      // Update user sports if the reservation sport is not already in the user's sports list
-      List<String> userSports = List<String>.from(user['sports']);
-      if (!userSports.contains(reservation['sport'])) {
-        userSports.add(reservation['sport']);
-      }
+      reservation['slotsAvailable'] = newSlotsAvailable;
+      reservation['joinedIds'].add(user['id']); // Add user to joinedIds
 
-      // Update user data
-      final userResponse = await Authentication.updateUser(
-        user['id'],
-        reservations: List<String>.from(user['reservations']),
-        sports: userSports,
-      );
+      try {
+        await FieldsService().updateReservation(
+          reservation['reservationId'],
+          reservation,
+        );
 
-      if (!userResponse) {
+        user['reservations'].add(reservation['reservationId'].toString());
+
+        // Update user sports if the reservation sport is not already in the user's sports list
+        List<String> userSports = List<String>.from(user['sports']);
+        if (!userSports.contains(reservation['sport'])) {
+          userSports.add(reservation['sport']);
+        }
+
+        // Update user data
+        final userResponse = await Authentication.updateUser(
+          user['id'],
+          reservations: List<String>.from(user['reservations']),
+          sports: userSports,
+        );
+
+        if (!userResponse) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to join reservation. Please try again.')),
+          );
+        } else {
+          // Update local user data
+          final updatedUser = {
+            ...user,
+            "reservations": List<String>.from(user['reservations']),
+            "sports": userSports,
+          };
+          await Authentication.saveLoggedInUser(updatedUser);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('You have successfully joined the reservation!')),
+          );
+          setState(() {
+            _reservationsFuture = _fetchReservations();
+          });
+        }
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to join reservation. Please try again.')),
         );
-      } else {
-        // Update local user data
-        final updatedUser = {
-          ...user,
-          "reservations": List<String>.from(user['reservations']),
-          "sports": userSports,
-        };
-        await Authentication.saveLoggedInUser(updatedUser);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('You have successfully joined the reservation!')),
-        );
-        setState(() {
-          _reservationsFuture = _fetchReservations();
-        });
       }
-    } catch (e) {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to join reservation. Please try again.')),
+        SnackBar(content: Text('No slots available for this reservation.')),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('No slots available for this reservation.')),
-    );
   }
-}
 
   void _showJoinDialog(BuildContext context, Map<String, dynamic> reservation) {
     showDialog(
@@ -356,7 +362,6 @@ AppBar _buildAppBar() {
   return AppBar(
     toolbarHeight: 70,
     centerTitle: true,
-    backgroundColor: Colors.red,
     title: const Text(
       'FIELD DETAILS',
       style: TextStyle(
@@ -377,9 +382,27 @@ Widget _buildFieldDetailRow({
       Icon(icon),
       const SizedBox(width: 8),
       Expanded(
-        child: Text(
-          '$title: $detail',
-          style: const TextStyle(fontSize: 16),
+        child: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: '$title: ',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              TextSpan(
+                text: detail,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ],

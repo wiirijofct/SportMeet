@@ -185,7 +185,6 @@ class _ReservationPageState extends State<ReservationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reservation Details'),
-        backgroundColor: Colors.red,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: Future.wait([

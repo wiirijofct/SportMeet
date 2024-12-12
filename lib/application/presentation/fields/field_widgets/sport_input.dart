@@ -4,8 +4,9 @@ import 'package:sport_meet/application/presentation/fields/field_widgets/input_l
 class SportInput extends StatelessWidget {
   final TextEditingController controller;
   final List<String> sportsOptions;
+  final String? Function(String?)? validator;
 
-  const SportInput({Key? key, required this.controller, required this.sportsOptions}) : super(key: key);
+  const SportInput({Key? key, required this.controller, required this.sportsOptions, this.validator}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +59,7 @@ class SportInput extends StatelessWidget {
                       borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
                     ),
                   ),
+                  validator: validator,
                 );
               },
             ),

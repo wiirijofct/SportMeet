@@ -23,6 +23,7 @@ class RegisterFieldPage extends StatefulWidget {
 }
 
 class _RegisterFieldPageState extends State<RegisterFieldPage> {
+  final _formKey = GlobalKey<FormState>();
   DateTime _selectedDate = DateTime.now();
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _sportController = TextEditingController();
@@ -83,7 +84,23 @@ class _RegisterFieldPageState extends State<RegisterFieldPage> {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
+  bool _validateSchedule() {
+    for (var times in schedule.values) {
+      if (times != false && (times['Opens'] == '' || times['Closes'] == '')) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> _addField() async {
+    if (!_formKey.currentState!.validate() || !_validateSchedule()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+
     if (ownerId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Owner ID not available')),
@@ -104,6 +121,11 @@ class _RegisterFieldPageState extends State<RegisterFieldPage> {
 
     String id = DateTime.now().millisecondsSinceEpoch.toString();
 
+    // Set hourly price to 0 if the field is private and no price is provided
+    String hourlyPrice = isPublic
+        ? 'Free'
+        : (_hourlyPriceController.text.isEmpty ? '0' : _hourlyPriceController.text);
+
     final fieldData = {
       'id': id, // You might want to generate or fetch this ID
       'fieldId': id, // You might want to generate or fetch this ID
@@ -119,7 +141,7 @@ class _RegisterFieldPageState extends State<RegisterFieldPage> {
       'schedule': schedule,
       'unavailability': unavailabilityDates.map((date) => _formatDate(DateTime.parse(date))).toList(), // Format unavailability dates
       'isPublic': isPublic,
-      'pricing': isPublic ? 'Free' : '${_hourlyPriceController.text}€/hour',
+      'pricing': isPublic ? 'Free' : '${hourlyPrice}€/hour',
       'contact': {
         'email': _emailController.text,
         'phone': _phoneController.text,
@@ -162,126 +184,158 @@ class _RegisterFieldPageState extends State<RegisterFieldPage> {
         thumbVisibility: true,
         child: SingleChildScrollView(
           padding: EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              UploadImages(),
-              SizedBox(height: 20),
-              FieldNameInput(controller: _fieldNameController),
-              SizedBox(height: 20),
-              SportInput(controller: _sportController, sportsOptions: sportsOptions),
-              SizedBox(height: 20),
-              StreetNameAndCoordinatesInput(
-                streetNameController: _streetNameController,
-                coordinatesController: _coordinatesController,
-              ),
-              SizedBox(height: 20),
-              HourlyPriceInput(
-                controller: _hourlyPriceController,
-                isPublic: isPublic,
-                onChanged: (bool? value) {
-                  setState(() {
-                    isPublic = value ?? false;
-                    if (isPublic) {
-                      _hourlyPriceController.text = "Free";
-                    } else {
-                      _hourlyPriceController.clear();
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UploadImages(),
+                SizedBox(height: 20),
+                FieldNameInput(
+                  controller: _fieldNameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Field name cannot be empty';
                     }
-                  });
-                },
-              ),
-              SizedBox(height: 20),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                    return null;
+                  },
                 ),
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      InputLabel("Contact Email"),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          hintText: "Enter contact email",
-                          hintStyle: TextStyle(color: Colors.grey.shade600),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade600),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade600),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                                color: Colors.blue.shade600, width: 2),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      InputLabel("Contact Phone"),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        controller: _phoneController,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          hintText: "Enter contact phone",
-                          hintStyle: TextStyle(color: Colors.grey.shade600),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade600),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade600),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                                color: Colors.blue.shade600, width: 2),
-                          ),
-                        ),
-                      ),
-                    ],
+                SizedBox(height: 20),
+                SportInput(
+                  controller: _sportController,
+                  sportsOptions: sportsOptions,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select a sport';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                StreetNameAndCoordinatesInput(
+                  streetNameController: _streetNameController,
+                  coordinatesController: _coordinatesController,
+                ),
+                SizedBox(height: 20),
+                HourlyPriceInput(
+                  controller: _hourlyPriceController,
+                  isPublic: isPublic,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isPublic = value ?? false;
+                      if (isPublic) {
+                        _hourlyPriceController.text = "Free";
+                      } else {
+                        _hourlyPriceController.clear();
+                      }
+                    });
+                  },
+                ),
+                SizedBox(height: 20),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: SchedulePopup(
-                      schedule: schedule,
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        InputLabel("Contact Email"),
+                        SizedBox(height: 10),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            hintText: "Enter contact email",
+                            hintStyle: TextStyle(color: Colors.grey.shade600),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.grey.shade600),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.grey.shade600),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: Colors.blue.shade600, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Contact email cannot be empty';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        InputLabel("Contact Phone"),
+                        SizedBox(height: 10),
+                        TextFormField(
+                          controller: _phoneController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            hintText: "Enter contact phone",
+                            hintStyle: TextStyle(color: Colors.grey.shade600),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.grey.shade600),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.grey.shade600),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: Colors.blue.shade600, width: 2),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Contact phone cannot be empty';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: UnavailabilityPopup(
-                      reasonController: _reasonController,
-                      onDatesSelected: (dates) {
-                        setState(() {
-                          unavailabilityDates = dates.map((date) => date.toIso8601String()).toList();
-                        });
-                      },
+                ),
+                SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SchedulePopup(
+                        schedule: schedule,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Description(controller: _descriptionController),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _addField,
-                child: Text('Register Field'),
-              ),
-            ],
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: UnavailabilityPopup(
+                        reasonController: _reasonController,
+                        onDatesSelected: (dates) {
+                          setState(() {
+                            unavailabilityDates = dates.map((date) => date.toIso8601String()).toList();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Description(controller: _descriptionController),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: _addField,
+                  child: Text('Register Field'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

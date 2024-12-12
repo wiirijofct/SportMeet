@@ -103,7 +103,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.chatCard['name']),
-        backgroundColor: Colors.red,
       ),
       body: Column(
         children: [

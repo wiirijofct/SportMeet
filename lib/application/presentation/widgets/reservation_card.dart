@@ -23,7 +23,7 @@ class ReservationCard extends StatelessWidget {
   Future<Map<String, dynamic>> _fetchCreatorDetails() async {
     final response = await http.get(Uri.parse('http://localhost:3000/users/$creatorId'));
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to load creator details');
     }

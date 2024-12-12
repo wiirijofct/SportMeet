@@ -3,8 +3,9 @@ import 'package:sport_meet/application/presentation/fields/field_widgets/input_l
 
 class FieldNameInput extends StatelessWidget {
   final TextEditingController controller;
+  final String? Function(String?)? validator;
 
-  const FieldNameInput({Key? key, required this.controller}) : super(key: key);
+  const FieldNameInput({Key? key, required this.controller, this.validator}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,7 @@ class FieldNameInput extends StatelessWidget {
                   borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
                 ),
               ),
+              validator: validator,
             ),
           ],
         ),

@@ -73,4 +73,4 @@ Number 22: “No error message in the add image button”
 Status:
 
 Number 23: “Two reservation at the same time”
-Status:
+Status: Solved

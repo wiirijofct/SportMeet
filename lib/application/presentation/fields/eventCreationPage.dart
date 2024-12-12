@@ -71,107 +71,124 @@ class _EventCreationPageState extends State<EventCreationPage> {
   }
 
   Future<void> _submitReservation() async {
-    if (_isSubmitting) return;
+  if (_isSubmitting) return;
 
-    if (!_formKey.currentState!.validate()) {
-      return;
+  if (!_formKey.currentState!.validate()) {
+    return;
+  }
+
+  if (_selectedDate == null || _selectedTime == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please select both date and time.')),
+    );
+    return;
+  }
+
+  setState(() {
+    _isSubmitting = true;
+  });
+
+  try {
+    final userInfo = await User.getInfo();
+
+    final userId = userInfo['id'].toString();
+    final reservationsResponse =
+        await http.get(Uri.parse('$apiUrl/reservations'));
+    if (reservationsResponse.statusCode != 200) {
+      throw Exception('Failed to fetch reservations.');
     }
 
-    if (_selectedDate == null || _selectedTime == null) {
+    final reservations = json.decode(reservationsResponse.body) as List;
+    final formattedDate = _formatDate(_selectedDate!);
+    final formattedTime = _selectedTime!.format(context);
+
+    // Check for existing reservations with the same fieldId, date, and time
+    final conflict = reservations.any((reservation) =>
+        reservation['fieldId'] == widget.fieldId &&
+        reservation['date'] == formattedDate &&
+        reservation['time'] == formattedTime);
+
+    if (conflict) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select both date and time.')),
+        const SnackBar(content: Text('A reservation already exists for the selected date and time.')),
       );
-      return;
-    }
-
-    setState(() {
-      _isSubmitting = true;
-    });
-
-    try {
-      final userInfo = await User.getInfo();
-
-      final userId = userInfo['id'].toString();
-      final reservationsResponse =
-          await http.get(Uri.parse('$apiUrl/reservations'));
-      if (reservationsResponse.statusCode != 200) {
-        throw Exception('Failed to fetch reservations.');
-      }
-
-      final newReservationId = DateTime.now().millisecondsSinceEpoch.toString();
-
-      final int maxSlots = int.parse(maxSlotsController.text);
-      final slotsAvailable = maxSlots - 1;
-
-      final formattedDate = _formatDate(_selectedDate!);
-      final formattedTime = _selectedTime!.format(context);
-
-      final newReservation = {
-        "id": newReservationId,
-        "reservationId": newReservationId,
-        "fieldId": widget.fieldId,
-        "creatorId": userId,
-        "joinedIds": [userId],
-        "sport": widget.sport,
-        "date": formattedDate,
-        "time": formattedTime,
-        "slotsAvailable": slotsAvailable,
-        "maxSlots": maxSlots,
-      };
-
-      final addReservationResponse = await http.post(
-        Uri.parse('$apiUrl/reservations'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(newReservation),
-      );
-
-      if (addReservationResponse.statusCode != 201) {
-        throw Exception('Failed to create reservation.');
-      }
-
-      final updatedUserReservations =
-          List<String>.from(userInfo['reservations']);
-      updatedUserReservations.add(newReservationId);
-
-      // Update user sports if the reservation sport is not already in the user's sports list
-      List<String> userSports = List<String>.from(userInfo['sports']);
-      if (!userSports.contains(widget.sport)) {
-        userSports.add(widget.sport);
-      }
-
-      final updatedUser = {
-        ...userInfo,
-        "reservations": updatedUserReservations,
-        "sports": userSports,
-      };
-
-      final updateUserResponse = await Authentication.updateUser(
-        userId,
-        reservations: updatedUserReservations,
-        sports: userSports,
-      );
-
-      if (!updateUserResponse) {
-        throw Exception('Failed to update user reservations.');
-      }
-
-      await Authentication.saveLoggedInUser(updatedUser);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Reservation successfully created!')),
-      );
-
-      Navigator.pop(context, true);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error creating reservation: $e')),
-      );
-    } finally {
       setState(() {
         _isSubmitting = false;
       });
+      return;
     }
+
+    final newReservationId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    final int maxSlots = int.parse(maxSlotsController.text);
+    final slotsAvailable = maxSlots - 1;
+
+    final newReservation = {
+      "id": newReservationId,
+      "reservationId": newReservationId,
+      "fieldId": widget.fieldId,
+      "creatorId": userId,
+      "joinedIds": [userId],
+      "sport": widget.sport,
+      "date": formattedDate,
+      "time": formattedTime,
+      "slotsAvailable": slotsAvailable,
+      "maxSlots": maxSlots,
+    };
+
+    final addReservationResponse = await http.post(
+      Uri.parse('$apiUrl/reservations'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(newReservation),
+    );
+
+    if (addReservationResponse.statusCode != 201) {
+      throw Exception('Failed to create reservation.');
+    }
+
+    final updatedUserReservations =
+        List<String>.from(userInfo['reservations']);
+    updatedUserReservations.add(newReservationId);
+
+    // Update user sports if the reservation sport is not already in the user's sports list
+    List<String> userSports = List<String>.from(userInfo['sports']);
+    if (!userSports.contains(widget.sport)) {
+      userSports.add(widget.sport);
+    }
+
+    final updatedUser = {
+      ...userInfo,
+      "reservations": updatedUserReservations,
+      "sports": userSports,
+    };
+
+    final updateUserResponse = await Authentication.updateUser(
+      userId,
+      reservations: updatedUserReservations,
+      sports: userSports,
+    );
+
+    if (!updateUserResponse) {
+      throw Exception('Failed to update user reservations.');
+    }
+
+    await Authentication.saveLoggedInUser(updatedUser);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Reservation successfully created!')),
+    );
+
+    Navigator.pop(context, true);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error creating reservation: $e')),
+    );
+  } finally {
+    setState(() {
+      _isSubmitting = false;
+    });
   }
+}
 
   int _calculateAge(String birthDate) {
     if (birthDate.isEmpty) return 0;

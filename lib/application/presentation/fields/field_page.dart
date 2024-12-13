@@ -38,52 +38,106 @@ class FieldPage extends StatefulWidget {
 
 class _FieldPageState extends State<FieldPage> {
   late Future<List<Map<String, dynamic>>> _reservationsFuture;
+  bool _isFavorite = false;
 
   @override
   void initState() {
     super.initState();
     _reservationsFuture = _fetchReservations();
+    _checkIfFavorite();
+  }
+
+  Future<void> _checkIfFavorite() async {
+    final user = await Authentication.getLoggedInUser();
+    if (user != null && user['favFields'].contains(widget.fieldId)) {
+      setState(() {
+        _isFavorite = true;
+      });
+    }
   }
 
   Future<List<Map<String, dynamic>>> _fetchReservations() async {
-  try {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/reservations'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-      if (data == null || data.isEmpty) {
-        return [];
+    try {
+      final response =
+          await http.get(Uri.parse('http://localhost:3000/reservations'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+        if (data == null || data.isEmpty) {
+          return [];
+        }
+        final currentDate = DateTime.now();
+        final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+        return data.where((reservation) {
+          final reservationDate = dateFormat.parse(reservation['date']);
+          return reservation['fieldId'].toString() == widget.fieldId &&
+              reservationDate.isAfter(currentDate);
+        }).map<Map<String, dynamic>>((reservation) {
+          final Map<String, dynamic> res = reservation as Map<String, dynamic>;
+          res['joinedIds'] = List<String>.from(res['joinedIds'] ?? []);
+          return res;
+        }).toList();
+      } else {
+        throw Exception('Failed to load reservations');
       }
-      final currentDate = DateTime.now();
-      final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
-      return data
-          .where((reservation) {
-            final reservationDate = dateFormat.parse(reservation['date']);
-            return reservation['fieldId'].toString() == widget.fieldId &&
-                reservationDate.isAfter(currentDate);
-          })
-          .map<Map<String, dynamic>>((reservation) {
-        final Map<String, dynamic> res = reservation as Map<String, dynamic>;
-        res['joinedIds'] = List<String>.from(res['joinedIds'] ?? []);
-        return res;
-      }).toList();
-    } else {
-      throw Exception('Failed to load reservations');
+    } catch (e) {
+      print('Error fetching reservations: $e');
+      return [];
     }
-  } catch (e) {
-    print('Error fetching reservations: $e');
-    return [];
   }
-}
 
-  Future<void> _handleJoinReservation(BuildContext context, Map<String, dynamic> reservation) async {
+  Future<void> _toggleFavorite() async {
+    final user = await Authentication.getLoggedInUser();
+    if (user == null) {
+      return;
+    }
+
+    List<String> favFields = List<String>.from(user['favFields']);
+    bool isCurrentlyFavorite = favFields.contains(widget.fieldId);
+
+    // Optimistically update the UI
+    setState(() {
+      _isFavorite = !isCurrentlyFavorite;
+    });
+
+    if (isCurrentlyFavorite) {
+      favFields.remove(widget.fieldId);
+    } else {
+      favFields.add(widget.fieldId);
+    }
+
+    final userResponse = await Authentication.updateUser(
+      user['id'],
+      favFields: favFields,
+    );
+
+    if (!userResponse) {
+      // Revert the UI update if the backend call fails
+      setState(() {
+        _isFavorite = isCurrentlyFavorite;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update favorite fields. Please try again.')),
+      );
+    } else {
+      // Update the local user data
+      final updatedUser = {
+        ...user,
+        "favFields": favFields,
+      };
+      await Authentication.saveLoggedInUser(updatedUser);
+    }
+  }
+
+  Future<void> _handleJoinReservation(
+      BuildContext context, Map<String, dynamic> reservation) async {
     final user = await Authentication.getLoggedInUser();
     if (user == null) {
       return;
     }
 
     // Check if the user has already joined the reservation
-    if (user['reservations'].contains(reservation['reservationId'].toString())) {
+    if (user['reservations']
+        .contains(reservation['reservationId'].toString())) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('You have already joined this reservation.')),
       );
@@ -91,7 +145,8 @@ class _FieldPageState extends State<FieldPage> {
     }
 
     if (reservation['slotsAvailable'] > 0) {
-      final int newSlotsAvailable = reservation['slotsAvailable'] - 1; // Reduce available slots
+      final int newSlotsAvailable =
+          reservation['slotsAvailable'] - 1; // Reduce available slots
 
       reservation['slotsAvailable'] = newSlotsAvailable;
       reservation['joinedIds'].add(user['id']); // Add user to joinedIds
@@ -119,7 +174,8 @@ class _FieldPageState extends State<FieldPage> {
 
         if (!userResponse) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to join reservation. Please try again.')),
+            SnackBar(
+                content: Text('Failed to join reservation. Please try again.')),
           );
         } else {
           // Update local user data
@@ -131,7 +187,8 @@ class _FieldPageState extends State<FieldPage> {
           await Authentication.saveLoggedInUser(updatedUser);
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('You have successfully joined the reservation!')),
+            SnackBar(
+                content: Text('You have successfully joined the reservation!')),
           );
           setState(() {
             _reservationsFuture = _fetchReservations();
@@ -139,7 +196,8 @@ class _FieldPageState extends State<FieldPage> {
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to join reservation. Please try again.')),
+          SnackBar(
+              content: Text('Failed to join reservation. Please try again.')),
         );
       }
     } else {
@@ -176,30 +234,32 @@ class _FieldPageState extends State<FieldPage> {
     );
   }
 
-  String _formatSchedule(Map<String, dynamic> schedule) {
-    final daysOfWeek = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday'
-    ];
-    String formattedSchedule = '';
-    for (var day in daysOfWeek) {
-      if (schedule.containsKey(day)) {
-        final daySchedule = schedule[day];
-        if (daySchedule is Map<String, String>) {
-          formattedSchedule +=
-              '$day: ${daySchedule['Opens']} - ${daySchedule['Closes']}\n';
-        } else if (daySchedule is bool && !daySchedule) {
-          formattedSchedule += '$day: Closed\n';
-        }
+String _formatSchedule(Map<String, dynamic> schedule) {
+  final daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+  String formattedSchedule = '';
+  for (var day in daysOfWeek) {
+    if (schedule.containsKey(day)) {
+      final daySchedule = schedule[day];
+      if (daySchedule is Map<String, dynamic>) {
+        formattedSchedule +=
+            '$day: ${daySchedule['Opens']} - ${daySchedule['Closes']}\n';
+      } else if (daySchedule is bool && !daySchedule) {
+        formattedSchedule += '$day: Closed\n';
       }
+    } else {
+      formattedSchedule += '$day: Closed\n';
     }
-    return formattedSchedule.trim();
   }
+  return formattedSchedule.trim();
+}
 
   Future<void> _navigateToEventCreationPage() async {
     final result = await Navigator.push(
@@ -229,133 +289,147 @@ class _FieldPageState extends State<FieldPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              widget.imagePath,
-              width: double.infinity,
-              height: 200,
-              fit: BoxFit.cover,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.fieldName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Ionicons.location_outline),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          widget.location,
-                          style: const TextStyle(fontSize: 16),
+  return Scaffold(
+    appBar: _buildAppBar(),
+    body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.asset(
+            widget.imagePath,
+            width: double.infinity,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.fieldName,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.time_outline,
-                    title: 'Schedule',
-                    detail: _formatSchedule(widget.schedule),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.mail_outline,
-                    title: 'Email',
-                    detail: widget.contactEmail,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.call_outline,
-                    title: 'Phone',
-                    detail: widget.contactPhone,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFieldDetailRow(
-                    icon: Ionicons.cash_outline,
-                    title: 'Pricing per hour',
-                    detail: widget.pricing,
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Upcoming Reservations',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
                     ),
+                    IconButton(
+                      icon: Icon(
+                        _isFavorite ? Ionicons.heart : Ionicons.heart_outline,
+                        color: _isFavorite ? Colors.red : Colors.grey,
+                        size: 30,
+                      ),
+                      onPressed: _toggleFavorite,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Ionicons.location_outline),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        widget.location,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildScheduleDetailRow(
+                  icon: Ionicons.time_outline,
+                  title: 'Schedule',
+                  detail: _formatSchedule(widget.schedule),
+                ),
+                const SizedBox(height: 8),
+                _buildFieldDetailRow(
+                  icon: Ionicons.mail_outline,
+                  title: 'Email',
+                  detail: widget.contactEmail,
+                ),
+                const SizedBox(height: 8),
+                _buildFieldDetailRow(
+                  icon: Ionicons.call_outline,
+                  title: 'Phone',
+                  detail: widget.contactPhone,
+                ),
+                const SizedBox(height: 8),
+                _buildFieldDetailRow(
+                  icon: Ionicons.cash_outline,
+                  title: 'Pricing per hour',
+                  detail: widget.pricing,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Upcoming Reservations',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 16),
-                  FutureBuilder<List<Map<String, dynamic>>>(
-                    future: _reservationsFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return const Center(
-                            child: Text('Error loading reservations'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                            child: Text('No upcoming reservations'));
-                      }
+                ),
+                const SizedBox(height: 16),
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: _reservationsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return const Center(
+                          child: Text('Error loading reservations'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                          child: Text('No upcoming reservations'));
+                    }
 
-                      final reservations = snapshot.data!;
+                    final reservations = snapshot.data!;
 
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: reservations.length,
-                        itemBuilder: (context, index) {
-                          final reservation = reservations[index];
-                          return GestureDetector(
-                            onTap: () {
-                              _showJoinDialog(context, reservation);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: ReservationCard(
-                                reservationDate: reservation['date'] ?? 'N/A',
-                                reservationTime: reservation['time'] ?? 'N/A',
-                                slotsAvailable:
-                                    reservation['slotsAvailable'] ?? 0,
-                                maxSlots: reservation['maxSlots'] ?? 1,
-                                creatorId: reservation['creatorId'] ?? 'N/A',
-                                joinedIds: List<String>.from(
-                                    reservation['joinedIds'] ?? []),
-                              ),
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: reservations.length,
+                      itemBuilder: (context, index) {
+                        final reservation = reservations[index];
+                        return GestureDetector(
+                          onTap: () {
+                            _showJoinDialog(context, reservation);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: ReservationCard(
+                              reservationDate: reservation['date'] ?? 'N/A',
+                              reservationTime: reservation['time'] ?? 'N/A',
+                              slotsAvailable:
+                                  reservation['slotsAvailable'] ?? 0,
+                              maxSlots: reservation['maxSlots'] ?? 1,
+                              creatorId: reservation['creatorId'] ?? 'N/A',
+                              joinedIds: List<String>.from(
+                                  reservation['joinedIds'] ?? []),
                             ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToEventCreationPage,
-        child: const Icon(Ionicons.add),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-    );
-  }
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: _navigateToEventCreationPage,
+      child: const Icon(Ionicons.add),
+      backgroundColor: Theme.of(context).primaryColor,
+    ),
+  );
+}
 }
 
 AppBar _buildAppBar() {
@@ -369,6 +443,44 @@ AppBar _buildAppBar() {
         letterSpacing: 2,
       ),
     ),
+  );
+}
+
+Widget _buildScheduleDetailRow({
+  required IconData icon,
+  required String title,
+  required String detail,
+}) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(icon),
+      const SizedBox(width: 8),
+      Expanded(
+        child: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: '$title:\n',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              TextSpan(
+                text: detail,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
   );
 }
 

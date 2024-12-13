@@ -33,7 +33,7 @@ class FieldCard extends StatelessWidget {
 
     if (schedule.containsKey(currentDay)) {
       final daySchedule = schedule[currentDay];
-      if (daySchedule is Map<String, String>) {
+      if (daySchedule is Map<String, dynamic>) {
         return '${daySchedule['Opens']} - ${daySchedule['Closes']}';
       } else if (daySchedule is bool && !daySchedule) {
         return 'Closed';

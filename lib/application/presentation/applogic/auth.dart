@@ -117,70 +117,69 @@ class Authentication {
   }
 
   static Future<bool> updateUser(
-    String userId, {
-    String? username,
-    String? email,
-    String? name,
-    String? lastName,
-    String? phone,
-    String? birthDate,
-    List<String>? sports,
-    String? password,
-    bool? hostUser,
-    String? gender,
-    List<String>? availability,
-    String? municipality,
-    List<String>? reservations,
-  }) async {
-    try {
-      // Fetch the current user data
-      final response = await http.get(Uri.parse('$apiUrl/users/$userId'));
-      if (response.statusCode != 200) {
-        throw Exception('Failed to load user');
-      }
-
-      Map<String, dynamic> user = json.decode(utf8.decode(response.bodyBytes));
-
-      // Update user fields if new values are provided
-      if (username != null) user['username'] = username;
-      if (email != null) user['email'] = email;
-      if (name != null) user['firstName'] = name;
-      if (lastName != null) user['lastName'] = lastName;
-      if (phone != null) user['phone'] = phone;
-      if (birthDate != null) user['birthDate'] = birthDate;
-      if (sports != null) {
-        user['sports'] = List<String>.from(user['sports']);
-        for (String sport in sports) {
-          if (!user['sports'].contains(sport)) {
-            user['sports'].add(sport);
-          }
-        }
-      }
-      if (password != null) user['password'] = password;
-      if (hostUser != null) user['hostUser'] = hostUser;
-      if (gender != null) user['gender'] = gender;
-      if (availability != null) user['availability'] = availability;
-      if (municipality != null) user['municipality'] = municipality;
-      if (reservations != null) user['reservations'] = reservations;
-
-      // Send the updated user data to the server
-      final updateResponse = await http.put(
-        Uri.parse('$apiUrl/users/$userId'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(user),
-      );
-
-      if (updateResponse.statusCode == 200) {
-        print('User updated: $user');
-        return true;
-      } else {
-        throw Exception('Failed to update user');
-      }
-    } catch (e) {
-      print('Error updating user: $e');
-      return false;
+  String userId, {
+  String? username,
+  String? email,
+  String? name,
+  String? lastName,
+  String? phone,
+  String? birthDate,
+  List<String>? sports,
+  List<String>? favFields,
+  String? password,
+  bool? hostUser,
+  String? gender,
+  List<String>? availability,
+  String? municipality,
+  List<String>? reservations,
+}) async {
+  try {
+    // Fetch the current user data
+    final response = await http.get(Uri.parse('$apiUrl/users/$userId'));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load user');
     }
+
+    Map<String, dynamic> user = json.decode(utf8.decode(response.bodyBytes));
+
+    // Update user fields if new values are provided
+    if (username != null) user['username'] = username;
+    if (email != null) user['email'] = email;
+    if (name != null) user['firstName'] = name;
+    if (lastName != null) user['lastName'] = lastName;
+    if (phone != null) user['phone'] = phone;
+    if (birthDate != null) user['birthDate'] = birthDate;
+    if (sports != null) {
+      user['sports'] = List<String>.from(sports);
+    }
+    if (favFields != null) {
+      user['favFields'] = List<String>.from(favFields);
+    }
+    if (password != null) user['password'] = password;
+    if (hostUser != null) user['hostUser'] = hostUser;
+    if (gender != null) user['gender'] = gender;
+    if (availability != null) user['availability'] = availability;
+    if (municipality != null) user['municipality'] = municipality;
+    if (reservations != null) user['reservations'] = reservations;
+
+    // Send the updated user data to the server
+    final updateResponse = await http.put(
+      Uri.parse('$apiUrl/users/$userId'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(user),
+    );
+
+    if (updateResponse.statusCode == 200) {
+      print('User updated: $user');
+      return true;
+    } else {
+      throw Exception('Failed to update user');
+    }
+  } catch (e) {
+    print('Error updating user: $e');
+    return false;
   }
+}
 
   static Future<bool> loginUser(
       String username, String password, bool isPermanent) async {

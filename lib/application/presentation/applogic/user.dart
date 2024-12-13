@@ -31,22 +31,21 @@ class User {
   }
 
   static Future<List<Map<String, dynamic>>> getFriends(String username) async {
-    // In this example, friends data is stored in the user's profile under 'friends' key
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? usersJson = prefs.getString('users');
-    List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? usersJson = prefs.getString('users');
+  List<dynamic> users = usersJson != null ? jsonDecode(usersJson) : [];
 
-    for (var user in users) {
-      if (user['username'] == username) {
-        List<int> friendsIds = List<int>.from(user['friends']);
-        return users
-            .where((u) => friendsIds.contains(u['userId']))
-            .map((u) => Map<String, dynamic>.from(u))
-            .toList();
-      }
+  for (var user in users) {
+    if (user['username'] == username) {
+      List<String> friendsIds = List<String>.from(user['friends']);
+      return users
+          .where((u) => friendsIds.contains(u['userId'].toString()))
+          .map((u) => Map<String, dynamic>.from(u))
+          .toList();
     }
-    return [];
   }
+  return [];
+}
 
   static Future<bool> addFriend(String friendUsername) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

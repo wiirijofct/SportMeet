@@ -29,7 +29,9 @@
         "Boxing",
         "Kickboxing"
       ],
-      "favFields": [],
+      "favFields": [
+        "1732235337678"
+      ],
       "reservations": [
         "1732282422610",
         "1732290472905",
@@ -37,7 +39,12 @@
         "1732296654839",
         "1733431569890"
       ],
-      "friends": [],
+      "friends": [
+        "2",
+        "3",
+        "3dcf",
+        "1734019197128"
+      ],
       "imagePath": "lib/images/m1.png",
       "hostUser": false
     },
